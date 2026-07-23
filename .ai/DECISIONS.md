@@ -157,3 +157,50 @@ The project must remain understandable regardless of future developers or AI mod
 Status:
 
 Approved
+
+
+---
+
+# Decision: AI_CONTEXT.md as Project-Independent Protocol
+
+Date:
+
+2026-07-23
+
+
+## Decision
+
+The AI_CONTEXT.md file is defined as a project-independent instruction layer for the AI documentation system.
+
+
+## Reason
+
+The project knowledge system must be reusable across different projects.
+
+Project-specific information must not be mixed with the instructions that define how the AI should read and use the documentation.
+
+
+## Rules
+
+AI_CONTEXT.md must contain only:
+
+- Documentation structure
+- Reading order
+- AI operating rules
+- Development workflow
+- Continuity instructions
+
+
+AI_CONTEXT.md must not contain:
+
+- Project name
+- Project goals
+- Business information
+- Technology details
+- Current status
+- Active tasks
+
+
+## Result
+
+The `.ai` folder becomes a reusable AI project memory framework that can be copied to future projects.
