@@ -35,3 +35,18 @@ a3a8a77
 Message:
 
 chore: initialize arandi platform architecture
+
+
+---
+
+# Version 0.1.1
+
+Date:
+
+2026-07-23
+
+## Added
+
+- Added AI_CONTEXT.md as the AI entry point for project understanding.
+- Defined AI reading order for project documentation.
+- Defined AI operating rules and workflow.
