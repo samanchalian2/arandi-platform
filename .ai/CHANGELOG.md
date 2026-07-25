@@ -36,7 +36,6 @@ Message:
 
 chore: initialize arandi platform architecture
 
-
 ---
 
 # Version 0.1.1
@@ -50,3 +49,23 @@ Date:
 - Added AI_CONTEXT.md as the AI entry point for project understanding.
 - Defined AI reading order for project documentation.
 - Defined AI operating rules and workflow.
+
+---
+
+# Version 0.1.2
+
+Date:
+
+2026-07-23
+
+## Updated
+
+- Refined AI_CONTEXT.md as a reusable AI documentation framework.
+- Completed Brain architecture refinement.
+- Verified GitHub repository workflow.
+- Completed initialization phase preparation.
+- Moved project toward Phase 1 UI foundation development.
+
+## Fixed
+
+- Removed duplicate documentation heading in CURRENT_STATE.md.
