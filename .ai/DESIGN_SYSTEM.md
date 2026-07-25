@@ -93,18 +93,43 @@ Rules:
 
 # Typography
 
-Typography goals:
+## Font System
 
-- High readability
-- Professional appearance
-- Clear hierarchy
+The platform uses a bilingual typography system.
+
+### English
+
+Primary Font:
+
+Exo
+
+Usage:
+
+- English content
+- Latin headings
+- Brand elements
+- Technical terminology
 
 
-Font selection:
+### Persian
 
-To be finalized during Phase 1.
+Primary Font:
+
+Vazirmatn
+
+Usage:
+
+- Persian content
+- RTL interfaces
+- Persian headings and body text
 
 
+## Typography Rules
+
+- The font system must support both LTR and RTL layouts.
+- Typography hierarchy must remain consistent across languages.
+- Font weights should be selected based on readability and enterprise appearance.
+- Avoid mixing multiple font families.
 ---
 
 # Color System

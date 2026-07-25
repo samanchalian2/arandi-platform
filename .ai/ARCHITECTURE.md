@@ -105,7 +105,17 @@ Rule:
 Animations should be purposeful and not excessive.
 
 ---
+## Typography
 
+Fonts:
+
+- Exo for English/LTR content
+- Vazirmatn for Persian/RTL content
+
+Implementation:
+
+Next.js font optimization system
+---
 ## Icons
 
 Lucide React

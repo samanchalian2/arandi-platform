@@ -204,3 +204,24 @@ AI_CONTEXT.md must not contain:
 ## Result
 
 The `.ai` folder becomes a reusable AI project memory framework that can be copied to future projects.
+
+---
+## Typography Decision
+
+Date:
+2026-07-25
+
+Decision:
+
+The project will use a bilingual font system:
+
+- Exo for English/LTR content
+- Vazirmatn for Persian/RTL content
+
+Reason:
+
+Provides a modern technology-oriented visual identity while maintaining Persian readability.
+
+Status:
+
+Frozen for Version 1.
