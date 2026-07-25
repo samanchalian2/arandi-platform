@@ -2,29 +2,80 @@
 
 ## Current Active Task
 
-Phase 2 - AI Interface Foundation
+Phase 1.4 - RTL & Bilingual Foundation
 
 
 ## Objective
 
-Create the foundation for Arandi Platform AI interaction layer.
+Prepare Arandi Platform for bilingual user experiences with proper RTL/LTR architecture.
 
 
-## Goals
-
-- Define AI interface architecture
-- Prepare chatbot UI foundation
-- Define knowledge interaction patterns
-- Design AI user experience approach
+## Tasks
 
 
-## Rules
+### 1. Font System
 
-Do not implement backend AI services yet.
+Implement:
 
-Focus on:
+- Exo for English/LTR
+- Vazirmatn for Persian/RTL
 
-- UI architecture
-- Component design
-- User experience
-- Future integration readiness
+Ensure Next.js font optimization is maintained.
+
+
+### 2. Direction Support
+
+Prepare:
+
+- LTR layout support
+- RTL layout support
+- Language-aware document direction
+
+
+### 3. Component Compatibility
+
+Review components:
+
+- Header
+- Footer
+- Container
+- Sections
+- UI components
+
+Ensure:
+
+- No hardcoded left/right assumptions
+- Use logical CSS properties where possible
+
+
+### 4. CSS Foundation
+
+Implement:
+
+- RTL-safe styles
+- Direction variables if required
+- Typography consistency
+
+
+### 5. Verification
+
+Test:
+
+- English LTR rendering
+- Persian RTL rendering
+- Responsive behavior
+
+Run:
+
+- npm run build
+- npm run lint
+
+
+## Completion Criteria
+
+The application can support both Persian RTL and English LTR interfaces without structural changes.
+
+
+## Next Phase
+
+AI Interface Foundation

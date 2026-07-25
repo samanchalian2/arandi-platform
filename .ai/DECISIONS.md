@@ -40,6 +40,7 @@ Approved
 
 ---
 
+
 # Decision 002
 
 ## Freeze Technology Architecture
@@ -285,3 +286,37 @@ Creates a balance between enterprise trust and modern AI technology positioning.
 Status:
 
 Applied for Version 1.
+
+---
+
+## Bilingual and RTL Foundation Decision
+
+Date:
+2026-07-25
+
+Decision:
+
+The platform will support bilingual experiences:
+
+- English (LTR)
+- Persian (RTL)
+
+Implementation direction:
+
+- English uses Exo typography
+- Persian uses Vazirmatn typography
+- Components must be RTL-compatible
+- Layouts must avoid directional CSS assumptions
+
+Reason:
+
+Arandi Platform targets enterprise users and requires a flexible bilingual foundation without future component rewrites.
+
+Scope:
+
+This phase only establishes technical foundation.
+Content translation is not included.
+
+Status:
+
+Planned for Version 1.
