@@ -199,6 +199,57 @@
     font-family: var(--font-body);
   }
 
+  [dir="rtl"] {
+    text-align: start;
+  }
+
+  [dir="rtl"] body {
+    font-family: var(--font-rtl);
+    line-height: 1.8;
+    letter-spacing: 0;
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4 {
+    font-family: var(--font-rtl);
+    line-height: 1.6;
+  }
+
+  [dir="rtl"] p,
+  [dir="rtl"] span,
+  [dir="rtl"] li,
+  [dir="rtl"] a,
+  [dir="rtl"] button {
+    font-family: var(--font-rtl);
+  }
+
+  [dir="rtl"] .header-shell {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .header-actions {
+    margin-inline-start: auto;
+  }
+
+  [dir="rtl"] .hero-actions {
+    justify-content: flex-start;
+  }
+
+  [dir="rtl"] .hero-card,
+  [dir="rtl"] .feature-grid {
+    text-align: start;
+  }
+
+  [dir="rtl"] .feature-grid {
+    direction: rtl;
+  }
+
+  [dir="rtl"] .feature-grid > * {
+    text-align: start;
+  }
+
   a {
     text-underline-offset: 0.18em;
     transition:

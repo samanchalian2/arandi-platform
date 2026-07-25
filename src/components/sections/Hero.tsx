@@ -30,7 +30,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.45)_45%,transparent_100%)]" />
       <Container className="relative grid gap-12 py-20 md:grid-cols-[1.08fr_0.92fr] md:py-24 lg:py-28">
         <SectionReveal className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             <Sparkles className="size-4" />
             Enterprise technology partner
           </div>
@@ -44,7 +44,7 @@ export function Hero() {
             operations, and move from strategy to delivery with clarity.
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row sm:justify-start">
             <Link
               href="#features"
               className={cn(buttonVariants({ variant: "default", size: "lg" }), "no-underline")}
@@ -62,8 +62,8 @@ export function Hero() {
         </SectionReveal>
 
         <SectionReveal className="self-center">
-          <div className="rounded-[1.75rem] border border-border/70 bg-background/90 p-6 shadow-[0_28px_70px_-35px_rgba(15,23,42,0.36)] backdrop-blur-sm sm:p-8">
-            <div className="flex items-center gap-3">
+          <div className="hero-card rounded-[1.75rem] border border-border/70 bg-background/90 p-6 shadow-[0_28px_70px_-35px_rgba(15,23,42,0.36)] backdrop-blur-sm sm:p-8">
+            <div className="flex items-start gap-3">
               <div className="rounded-2xl bg-primary/10 p-2 text-primary">
                 <ShieldCheck className="size-5" />
               </div>

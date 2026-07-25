@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Exo, Vazirmatn } from "next/font/google";
+import { Suspense } from "react";
+import { DirectionProvider } from "@/components/layout/DirectionProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import "./globals.css";
@@ -33,6 +35,9 @@ export default function RootLayout({
       className={`${exo.variable} ${vazirmatn.variable} h-full antialiased`}
     >
       <body className="min-h-full">
+        <Suspense fallback={null}>
+          <DirectionProvider />
+        </Suspense>
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">{children}</main>
