@@ -320,3 +320,40 @@ Content translation is not included.
 Status:
 
 Planned for Version 1.
+
+---
+
+## AI Interface Experience Decision
+
+Date:
+2026-07-25
+
+Decision:
+
+The Arandi Platform homepage will follow a Hybrid AI-first experience.
+
+Structure:
+
+- Enterprise introduction layer
+- Primary AI assistant interaction
+- Capability discovery sections
+
+The AI assistant is the central interaction point of the platform.
+
+Reason:
+
+The platform identity is based on AI-enabled enterprise services.
+The experience should communicate both trust and intelligence.
+
+Implementation direction:
+
+Phase 2 will create the AI interface foundation without backend integration.
+
+Scope:
+
+This decision covers UX architecture only.
+AI models, APIs, and knowledge systems will be implemented separately.
+
+Status:
+
+Frozen for Version 1.

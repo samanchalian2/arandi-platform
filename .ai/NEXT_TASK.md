@@ -2,68 +2,100 @@
 
 ## Current Active Task
 
-Phase 1.4 - RTL & Bilingual Foundation
+Phase 2 - AI Interface Foundation
 
 
 ## Objective
 
-Prepare Arandi Platform for bilingual user experiences with proper RTL/LTR architecture.
+Create the first UI foundation of the Arandi AI interaction experience.
+
+
+## Experience Direction
+
+Homepage follows Hybrid AI Experience:
+
+1. Enterprise introduction
+
+2. AI Assistant interface
+
+3. Capability discovery
 
 
 ## Tasks
 
 
-### 1. Font System
+### 1. AI Component Architecture
+
+Create:
+
+components/ai/
+
+Components:
+
+- ChatInterface
+- ChatMessage
+- ChatInput
+- AIAvatar
+
+
+Requirements:
+
+- Reusable components
+- Design System compliant
+- RTL/LTR compatible
+
+
+### 2. AI Interface UI
 
 Implement:
 
-- Exo for English/LTR
-- Vazirmatn for Persian/RTL
+- Conversation container
+- User message style
+- Assistant message style
+- Input area
+- Loading state
 
-Ensure Next.js font optimization is maintained.
+
+Constraints:
+
+- No backend
+- No API integration
+- No database
 
 
-### 2. Direction Support
+### 3. Homepage Integration
+
+Update homepage structure:
+
+Header
+
+↓
+
+Short Hero
+
+↓
+
+AI Interface
+
+↓
+
+Capabilities
+
+↓
+
+Footer
+
+
+### 4. Interaction Foundation
 
 Prepare:
 
-- LTR layout support
-- RTL layout support
-- Language-aware document direction
-
-
-### 3. Component Compatibility
-
-Review components:
-
-- Header
-- Footer
-- Container
-- Sections
-- UI components
-
-Ensure:
-
-- No hardcoded left/right assumptions
-- Use logical CSS properties where possible
-
-
-### 4. CSS Foundation
-
-Implement:
-
-- RTL-safe styles
-- Direction variables if required
-- Typography consistency
+- Message state structure
+- Future streaming response compatibility
+- Animation hooks
 
 
 ### 5. Verification
-
-Test:
-
-- English LTR rendering
-- Persian RTL rendering
-- Responsive behavior
 
 Run:
 
@@ -73,9 +105,9 @@ Run:
 
 ## Completion Criteria
 
-The application can support both Persian RTL and English LTR interfaces without structural changes.
+The homepage has a production-quality AI interface foundation ready for future backend connection.
 
 
 ## Next Phase
 
-AI Interface Foundation
+AI Knowledge Integration Architecture
