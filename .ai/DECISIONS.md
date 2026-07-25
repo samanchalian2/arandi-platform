@@ -225,3 +225,33 @@ Provides a modern technology-oriented visual identity while maintaining Persian 
 Status:
 
 Frozen for Version 1.
+
+---
+
+## Landing Page Visual Direction Decision
+
+Date:
+2026-07-25
+
+Decision:
+
+The landing page visual direction will follow:
+
+Enterprise Minimal + Subtle AI
+
+Characteristics:
+
+- Premium enterprise appearance
+- Clean composition
+- Generous whitespace
+- Subtle AI-inspired visual elements
+- Professional motion
+- Technology leadership feeling
+
+Reason:
+
+This direction balances enterprise trust with innovation and AI positioning.
+
+Status:
+
+Frozen for Version 1.
