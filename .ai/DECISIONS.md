@@ -255,3 +255,33 @@ This direction balances enterprise trust with innovation and AI positioning.
 Status:
 
 Frozen for Version 1.
+
+---
+
+## Visual Identity Refinement Decision
+
+Date:
+2026-07-25
+
+Decision:
+
+The landing page visual system follows:
+
+Enterprise Minimal + Subtle AI
+
+Implementation direction:
+
+- Premium enterprise color palette
+- Deep blue technology accents
+- Neutral backgrounds
+- Soft gradients
+- Purposeful motion
+- Clean spacing and hierarchy
+
+Reason:
+
+Creates a balance between enterprise trust and modern AI technology positioning.
+
+Status:
+
+Applied for Version 1.
