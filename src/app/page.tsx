@@ -1,7 +1,7 @@
 import { ChatInterface } from "@/components/ai/ChatInterface";
 import { Features } from "@/components/sections/Features";
 import { Hero } from "@/components/sections/Hero";
-import { getSiteContent } from "@/content/siteContent";
+import { getChatContent, getFeatureContent, getHeroContent } from "@/content";
 
 type PageProps = {
   searchParams?: Promise<{ lang?: string }> | { lang?: string };
@@ -9,13 +9,17 @@ type PageProps = {
 
 export default async function Home({ searchParams }: PageProps) {
   const params = await Promise.resolve(searchParams);
-  const content = getSiteContent(params?.lang);
+  const lang = params?.lang === "fa" ? "fa" : "en";
+
+  const heroContent = getHeroContent(lang);
+  const chatContent = getChatContent(lang);
+  const featureContent = getFeatureContent(lang);
 
   return (
-    <div className="flex flex-1 flex-col" dir={content.language === "fa" ? "rtl" : "ltr"} lang={content.language}>
-      <Hero content={content.hero} lang={content.language} />
-      <ChatInterface content={content.chat} lang={content.language} />
-      <Features content={content.features} lang={content.language} />
+    <div className="flex flex-1 flex-col" dir={lang === "fa" ? "rtl" : "ltr"} lang={lang}>
+      <Hero content={heroContent} lang={lang} />
+      <ChatInterface content={chatContent} lang={lang} />
+      <Features content={featureContent} lang={lang} />
     </div>
   );
 }

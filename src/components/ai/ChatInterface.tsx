@@ -8,7 +8,22 @@ import { ChatInput } from "@/components/ai/ChatInput";
 import { ChatMessage } from "@/components/ai/ChatMessage";
 import { Container } from "@/components/layout/Container";
 import { SectionReveal } from "@/components/ui/SectionReveal";
-import type { ChatContent, Language } from "@/content/siteContent";
+
+type ChatContent = {
+  badge: string;
+  heading: string;
+  description: string;
+  placeholder: string;
+  initialMessage: string;
+  emptyStateTitle: string;
+  emptyStateDescription: string;
+  inputLabel: string;
+  inputPlaceholder: string;
+  inputAriaLabel: string;
+  loadingText: string;
+  assistantReply: string;
+  assistantHint: string;
+};
 
 type Message = {
   role: "user" | "assistant";
@@ -18,7 +33,7 @@ type Message = {
 
 type ChatInterfaceProps = {
   content: ChatContent;
-  lang: Language;
+  lang: "en" | "fa";
 };
 
 export function ChatInterface({ content, lang }: ChatInterfaceProps) {

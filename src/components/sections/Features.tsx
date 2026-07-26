@@ -2,11 +2,21 @@ import { Cpu, Network, Sparkles } from "lucide-react";
 
 import { Container } from "@/components/layout/Container";
 import { SectionReveal } from "@/components/ui/SectionReveal";
-import type { FeatureContent, Language } from "@/content/siteContent";
+
+type FeatureContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  cards: Array<{
+    title: string;
+    description: string;
+    label: string;
+  }>;
+};
 
 type FeaturesProps = {
   content: FeatureContent;
-  lang: Language;
+  lang: "en" | "fa";
 };
 
 const icons = [Sparkles, Network, Cpu];

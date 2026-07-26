@@ -1,20 +1,34 @@
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
-import { getCompanyContent } from "@/content/company";
-import type { HeaderContent, Language } from "@/content/siteContent";
 
-type HeaderProps = {
-  content: HeaderContent;
-  lang?: Language;
+type NavigationContent = {
+  links: {
+    overview: string;
+    capabilities: string;
+    contact: string;
+  };
+  languageSwitch: {
+    en: string;
+    fa: string;
+  };
 };
 
-export function Header({ content, lang = "en" }: HeaderProps) {
-  const company = getCompanyContent(lang);
+type CompanyContent = {
+  name: string;
+  shortName: string;
+};
+
+type HeaderProps = {
+  content: NavigationContent;
+  company: CompanyContent;
+};
+
+export function Header({ content, company }: HeaderProps) {
   const navigationItems = [
-    { href: "#hero", label: content.navigation.overview },
-    { href: "#features", label: content.navigation.capabilities },
-    { href: "mailto:hello@arandi.platform", label: content.navigation.contact },
+    { href: "#hero", label: content.links.overview },
+    { href: "#features", label: content.links.capabilities },
+    { href: "mailto:hello@arandi.platform", label: content.links.contact },
   ];
 
   return (
@@ -29,7 +43,7 @@ export function Header({ content, lang = "en" }: HeaderProps) {
         </Link>
 
         <div className="header-actions flex items-center gap-2">
-          <nav className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Primary navigation">
+          <nav className="flex items-center gap-2 text-sm text-muted-foreground">
             {navigationItems.map((item) => (
               <Link
                 key={item.label}

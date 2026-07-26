@@ -1,14 +1,19 @@
 import { Container } from "@/components/layout/Container";
-import { getCompanyContent } from "@/content/company";
-import type { FooterContent, Language } from "@/content/siteContent";
+
+type FooterContent = {
+  tagline: string;
+};
+
+type CompanyContent = {
+  name: string;
+};
 
 type FooterProps = {
   content: FooterContent;
-  lang?: Language;
+  company: CompanyContent;
 };
 
-export function Footer({ content, lang = "en" }: FooterProps) {
-  const company = getCompanyContent(lang);
+export function Footer({ content, company }: FooterProps) {
   return (
     <footer className="border-t bg-background">
       <Container className="flex min-h-16 items-center justify-between gap-4 py-6 text-sm text-muted-foreground">

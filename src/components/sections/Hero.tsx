@@ -4,12 +4,19 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { buttonVariants } from "@/components/ui/button";
 import { SectionReveal } from "@/components/ui/SectionReveal";
-import type { HeroContent, Language } from "@/content/siteContent";
 import { cn } from "@/lib/utils";
+
+type HeroContent = {
+  badge: string;
+  title: string;
+  description: string;
+  primaryCta: string;
+  secondaryCta: string;
+};
 
 type HeroProps = {
   content: HeroContent;
-  lang: Language;
+  lang: "en" | "fa";
 };
 
 export function Hero({ content, lang }: HeroProps) {

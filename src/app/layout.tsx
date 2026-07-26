@@ -4,8 +4,7 @@ import { Suspense } from "react";
 import { DirectionProvider } from "@/components/layout/DirectionProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { getMetadataContent } from "@/content/metadata";
-import { getSiteContent } from "@/content/siteContent";
+import { getCompanyContent, getFooterContent, getMetadataContent, getNavigationContent } from "@/content";
 import "./globals.css";
 
 const exo = Exo({
@@ -42,12 +41,15 @@ type RootLayoutProps = Readonly<{
 
 export default async function RootLayout({ children, searchParams }: RootLayoutProps) {
   const params = await Promise.resolve(searchParams);
-  const content = getSiteContent(params?.lang);
+  const lang = params?.lang === "fa" ? "fa" : "en";
+  const navigationContent = getNavigationContent(lang);
+  const footerContent = getFooterContent(lang);
+  const companyContent = getCompanyContent(lang);
 
   return (
     <html
-      lang={content.language}
-      dir={content.language === "fa" ? "rtl" : "ltr"}
+      lang={lang}
+      dir={lang === "fa" ? "rtl" : "ltr"}
       className={`${exo.variable} ${vazirmatn.variable} h-full antialiased`}
     >
       <body className="min-h-full">
@@ -55,9 +57,9 @@ export default async function RootLayout({ children, searchParams }: RootLayoutP
           <DirectionProvider />
         </Suspense>
         <div className="flex min-h-screen flex-col">
-          <Header content={content.header} lang={content.language} />
+          <Header content={navigationContent} company={companyContent} />
           <main className="flex-1">{children}</main>
-          <Footer content={content.footer} lang={content.language} />
+          <Footer content={footerContent} company={companyContent} />
         </div>
       </body>
     </html>
