@@ -69,3 +69,21 @@ Date:
 ## Fixed
 
 - Removed duplicate documentation heading in CURRENT_STATE.md.
+
+---
+
+# Version 0.1.3
+
+Date:
+
+2026-07-26
+
+## Added
+
+- Introduced a localized content provider abstraction for homepage and layout content access.
+- Centralized content resolution behind a provider interface while keeping UI components presentation-only.
+
+## Verified
+
+- npm run build ✅
+- npm run lint ✅

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { DirectionProvider } from "@/components/layout/DirectionProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { getCompanyContent, getFooterContent, getMetadataContent, getNavigationContent } from "@/content";
+import { contentProvider } from "@/content";
 import "./globals.css";
 
 const exo = Exo({
@@ -25,7 +25,7 @@ export async function generateMetadata({
   searchParams?: Promise<{ lang?: string }> | { lang?: string };
 }): Promise<Metadata> {
   const params = await Promise.resolve(searchParams);
-  const metadata = getMetadataContent(params?.lang);
+  const metadata = contentProvider.getMetadata(params?.lang);
 
   return {
     title: metadata.title,
@@ -42,9 +42,7 @@ type RootLayoutProps = Readonly<{
 export default async function RootLayout({ children, searchParams }: RootLayoutProps) {
   const params = await Promise.resolve(searchParams);
   const lang = params?.lang === "fa" ? "fa" : "en";
-  const navigationContent = getNavigationContent(lang);
-  const footerContent = getFooterContent(lang);
-  const companyContent = getCompanyContent(lang);
+  const pageContent = contentProvider.getPageContent(lang);
 
   return (
     <html
@@ -57,9 +55,9 @@ export default async function RootLayout({ children, searchParams }: RootLayoutP
           <DirectionProvider />
         </Suspense>
         <div className="flex min-h-screen flex-col">
-          <Header content={navigationContent} company={companyContent} />
+          <Header content={pageContent.navigation} company={pageContent.company} />
           <main className="flex-1">{children}</main>
-          <Footer content={footerContent} company={companyContent} />
+          <Footer content={pageContent.footer} company={pageContent.company} />
         </div>
       </body>
     </html>

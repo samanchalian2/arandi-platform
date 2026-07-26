@@ -19,4 +19,9 @@ export type { FooterContent, Language as FooterLanguage } from "./footer";
 export { metadataContent, getMetadataContent } from "./metadata";
 export type { MetadataContent, Language as MetadataLanguage } from "./metadata";
 
+export { contentProvider, createContentProvider, type AppPageContent, type ContentProvider, LocalContentProvider } from "./provider";
+export { createContentAdapter, type AdapterType } from "./adapters/factory";
+export type { ContentAdapter } from "./adapters/types";
+export type { AppPageContent as AdapterPageContent } from "./adapters/types";
+
 export type { Language } from "./company";

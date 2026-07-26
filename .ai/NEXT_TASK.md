@@ -2,11 +2,11 @@
 
 ## Current Active Task
 
-Content Architecture Foundation Completed
+Content Provider Abstraction Completed
 
 ## Objective
 
-Establish a clean content layer for the homepage and UI experience so the project is ready for future CMS-driven content management.
+Introduce a provider layer that becomes the single access point for localized app content, keeping the UI presentation-only and ready for future CMS or data-source swaps.
 
 ## Status
 
@@ -14,9 +14,10 @@ Completed
 
 ## Implemented
 
-- Centralized company, navigation, hero, feature, assistant, footer, and metadata content in structured modules.
-- Kept bilingual Persian/English support intact.
-- Preserved the existing Next.js App Router and UI design while removing hardcoded content from reusable components.
+- Added a localized content provider abstraction in src/content/provider.ts.
+- Moved page and layout content resolution behind the provider layer.
+- Kept the UI components presentation-only and prop-driven.
+- Preserved bilingual English/Persian behavior and current visual output.
 
 ## Verification
 
