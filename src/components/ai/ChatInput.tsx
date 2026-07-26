@@ -8,13 +8,25 @@ type ChatInputProps = {
   disabled?: boolean;
   isLoading?: boolean;
   onSend?: () => void;
+  label: string;
+  placeholder: string;
+  ariaLabel: string;
 };
 
-export function ChatInput({ value, onChange, disabled = false, isLoading = false, onSend }: ChatInputProps) {
+export function ChatInput({
+  value,
+  onChange,
+  disabled = false,
+  isLoading = false,
+  onSend,
+  label,
+  placeholder,
+  ariaLabel,
+}: ChatInputProps) {
   return (
     <div className="rounded-[1.25rem] border border-border/70 bg-background/95 p-3 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.45)]">
       <label className="sr-only" htmlFor="ai-chat-input">
-        Ask Arandi Assistant
+        {label}
       </label>
       <div className="flex items-end gap-2">
         <textarea
@@ -27,7 +39,7 @@ export function ChatInput({ value, onChange, disabled = false, isLoading = false
               onSend?.();
             }
           }}
-          placeholder="Ask about infrastructure, AI, or transformation..."
+          placeholder={placeholder}
           rows={2}
           disabled={disabled || isLoading}
           dir="auto"
@@ -38,7 +50,7 @@ export function ChatInput({ value, onChange, disabled = false, isLoading = false
           size="icon"
           className="shrink-0 rounded-2xl"
           disabled={disabled || isLoading || value.trim().length === 0}
-          aria-label="Send message"
+          aria-label={ariaLabel}
           onClick={() => onSend?.()}
         >
           {isLoading ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}

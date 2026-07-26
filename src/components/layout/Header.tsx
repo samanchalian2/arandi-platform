@@ -1,23 +1,31 @@
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
+import { getCompanyContent } from "@/content/company";
+import type { HeaderContent, Language } from "@/content/siteContent";
 
-const navigationItems = [
-  { href: "#hero", label: "Overview" },
-  { href: "#features", label: "Capabilities" },
-  { href: "mailto:hello@arandi.platform", label: "Contact" },
-];
+type HeaderProps = {
+  content: HeaderContent;
+  lang?: Language;
+};
 
-export function Header() {
+export function Header({ content, lang = "en" }: HeaderProps) {
+  const company = getCompanyContent(lang);
+  const navigationItems = [
+    { href: "#hero", label: content.navigation.overview },
+    { href: "#features", label: content.navigation.capabilities },
+    { href: "mailto:hello@arandi.platform", label: content.navigation.contact },
+  ];
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur">
       <Container className="header-shell flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
           className="text-sm font-semibold uppercase tracking-[0.24em] text-foreground"
-          aria-label="Arandi Platform home"
+          aria-label={`${company.name} home`}
         >
-          Arandi
+          {company.shortName}
         </Link>
 
         <div className="header-actions flex items-center gap-2">
@@ -35,10 +43,10 @@ export function Header() {
 
           <div className="ms-2 flex items-center rounded-full border border-border/70 bg-background/90 p-1 text-xs font-medium text-muted-foreground">
             <Link href="/?lang=en" className="rounded-full px-2.5 py-1.5 transition-colors hover:bg-muted hover:text-foreground">
-              EN
+              {content.languageSwitch.en}
             </Link>
             <Link href="/?lang=fa" className="rounded-full px-2.5 py-1.5 transition-colors hover:bg-muted hover:text-foreground">
-              FA
+              {content.languageSwitch.fa}
             </Link>
           </div>
         </div>

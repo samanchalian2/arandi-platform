@@ -357,3 +357,31 @@ AI models, APIs, and knowledge systems will be implemented separately.
 Status:
 
 Frozen for Version 1.
+
+---
+## Brand Identity Decision
+
+Date:
+2026-07-26
+
+Decision:
+
+Company name:
+- Persian: آرن دی بنیان
+- English: Arandi Bonyan
+
+AI Assistant:
+- Persian: ژوپیتر
+- English: Jupiter / Jupiter AI
+
+Relationship:
+
+Arandi Bonyan is the technology company.
+Jupiter is the AI assistant/product.
+
+Reason:
+
+Maintain clear separation between corporate identity and product identity.
+
+Status:
+Frozen for Version 1.

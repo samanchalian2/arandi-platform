@@ -8,6 +8,7 @@ import { ChatInput } from "@/components/ai/ChatInput";
 import { ChatMessage } from "@/components/ai/ChatMessage";
 import { Container } from "@/components/layout/Container";
 import { SectionReveal } from "@/components/ui/SectionReveal";
+import type { ChatContent, Language } from "@/content/siteContent";
 
 type Message = {
   role: "user" | "assistant";
@@ -15,17 +16,19 @@ type Message = {
   timestamp: string;
 };
 
-const initialMessages: Message[] = [
-  {
-    role: "assistant",
-    content:
-      "I can help outline enterprise AI strategy, infrastructure planning, and transformation priorities.",
-    timestamp: "Now",
-  },
-];
+type ChatInterfaceProps = {
+  content: ChatContent;
+  lang: Language;
+};
 
-export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+export function ChatInterface({ content, lang }: ChatInterfaceProps) {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "assistant",
+      content: content.initialMessage,
+      timestamp: "Now",
+    },
+  ]);
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,10 +36,10 @@ export function ChatInterface() {
 
   const placeholder = useMemo(() => {
     if (messages.length === 1) {
-      return "Start a conversation with Arandi Assistant";
+      return content.placeholder;
     }
-    return "Ask about architecture, delivery, or AI readiness";
-  }, [messages.length]);
+    return content.assistantHint;
+  }, [content.assistantHint, content.placeholder, messages.length]);
 
   const handleSend = () => {
     const trimmed = draft.trim();
@@ -49,7 +52,7 @@ export function ChatInterface() {
       { role: "user", content: trimmed, timestamp: "Now" },
       {
         role: "assistant",
-        content: "A focused response will be prepared here for future AI integration.",
+        content: content.assistantReply,
         timestamp: "Preparing",
       },
     ]);
@@ -62,21 +65,19 @@ export function ChatInterface() {
   };
 
   return (
-    <section id="assistant" className="border-b border-border/70 bg-[linear-gradient(180deg,_rgba(240,246,255,0.95),_rgba(255,255,255,1))]">
+    <section id="assistant" dir={lang === "fa" ? "rtl" : "ltr"} className="border-b border-border/70 bg-[linear-gradient(180deg,_rgba(240,246,255,0.95),_rgba(255,255,255,1))]">
       <Container className="py-20 md:py-24 lg:py-28">
         <SectionReveal className="mx-auto max-w-5xl rounded-[2rem] border border-border/70 bg-background/90 p-6 shadow-[0_24px_70px_-36px_rgba(15,23,42,0.35)] backdrop-blur-sm sm:p-8 lg:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                 <Bot className="size-4" />
-                Enterprise AI Assistant
+                {content.badge}
               </div>
               <h2 className="mt-4 text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
-                Explore AI-ready infrastructure and transformation pathways.
+                {content.heading}
               </h2>
-              <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                A polished interaction surface for future conversational workflows, designed for enterprise clarity.
-              </p>
+              <p className="mt-4 text-lg leading-8 text-muted-foreground">{content.description}</p>
             </div>
             <div className="flex items-center gap-2 rounded-full border border-border/70 bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
               <MessageSquareText className="size-4" />
@@ -88,10 +89,8 @@ export function ChatInterface() {
             {!hasMessages ? (
               <div className="flex min-h-[18rem] items-center justify-center rounded-[1.25rem] border border-dashed border-border/70 bg-background/70 p-8 text-center">
                 <div className="max-w-md">
-                  <p className="text-lg font-semibold text-foreground">Start with a focused question.</p>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    Ask about delivery priorities, enterprise architecture, or AI positioning.
-                  </p>
+                  <p className="text-lg font-semibold text-foreground">{content.emptyStateTitle}</p>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">{content.emptyStateDescription}</p>
                 </div>
               </div>
             ) : (
@@ -108,7 +107,7 @@ export function ChatInterface() {
                   <div className="flex justify-start gap-3">
                     <AIAvatar />
                     <div className="rounded-[1.25rem] border border-border/70 bg-background px-4 py-3 text-sm text-muted-foreground">
-                      Preparing an enterprise response...
+                      {content.loadingText}
                     </div>
                   </div>
                 ) : null}
@@ -122,6 +121,9 @@ export function ChatInterface() {
                 isLoading={isLoading}
                 disabled={false}
                 onSend={handleSend}
+                label={content.inputLabel}
+                placeholder={content.inputPlaceholder}
+                ariaLabel={content.inputAriaLabel}
               />
             </div>
           </div>
