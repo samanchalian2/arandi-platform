@@ -217,8 +217,8 @@ Modified Content Layer:
 
 Verification:
 
-- npm run build (pending)
-- npm run lint (pending)
+- npm run build ✅
+- npm run lint ✅ (1 pre-existing warning: unused placeholder parameter in src/integrations/ai/gateway.ts)
 
 Commit:
 
