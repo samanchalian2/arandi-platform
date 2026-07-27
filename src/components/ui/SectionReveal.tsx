@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type SectionRevealProps = {
   children: ReactNode;
@@ -9,7 +9,20 @@ type SectionRevealProps = {
 };
 
 export function SectionReveal({ children, className }: SectionRevealProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  if (!isMounted) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <motion.div

@@ -11,17 +11,17 @@ export type HeroContent = {
 export const heroContent: Record<Language, HeroContent> = {
   en: {
     badge: "Enterprise AI assistant",
-    title: "Jupiter AI helps ambitious teams shape intelligent operating models.",
+    title: "Jupiter; Your smart companion in the digital world",
     description:
-      "A premium bilingual experience for enterprise strategy, transformation guidance, and AI-ready foundations.",
+      "A modern perspective on organizational technology strategy; a clear path to digital transformation and infrastructure ready for the AI-powered future.",
     primaryCta: "Explore Jupiter AI",
     secondaryCta: "View capabilities",
   },
   fa: {
     badge: "دستیار هوش مصنوعی سازمانی",
-    title: "جپتر ای‌آی به تیم‌های ambitious کمک می‌کند مدل‌های عملیاتی هوشمند بسازند.",
+    title: "ژوپیتر؛ همراه هوشمند شما در دنیای دیجیتال",
     description:
-      "یک تجربه مدرن و دو زبانه برای راهبرد سازمانی، راهنمای تحول دیجیتال و زیرساخت‌های آماده برای هوش مصنوعی.",
+      "نگاهی نو به راهبرد فناوری سازمان‌ها؛ مسیری روشن برای تحول دیجیتال و زیرساختی آماده برای آینده‌ی هوش مصنوعی.",
     primaryCta: "کاوش در Jupiter AI",
     secondaryCta: "مشاهده توانمندی‌ها",
   },

@@ -23,5 +23,16 @@ export { contentProvider, createContentProvider, type AppPageContent, type Conte
 export { createContentAdapter, type AdapterType } from "./adapters/factory";
 export type { ContentAdapter } from "./adapters/types";
 export type { AppPageContent as AdapterPageContent } from "./adapters/types";
+export type {
+    CmsMetadata,
+    CmsSource,
+    ChatSectionSchema,
+    EditableHomepageSection,
+    FeaturesSectionSchema,
+    HeroSectionSchema,
+    SectionAppearance,
+    SectionSchema,
+    SectionVisibility,
+} from "./adapters/schemas";
 
 export type { Language } from "./company";

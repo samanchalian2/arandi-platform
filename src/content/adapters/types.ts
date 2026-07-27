@@ -1,18 +1,16 @@
-import type { ChatContent } from "../chat";
 import type { CompanyContent, Language } from "../company";
-import type { FeatureContent } from "../features";
 import type { FooterContent } from "../footer";
-import type { HeroContent } from "../hero";
 import type { MetadataContent } from "../metadata";
 import type { NavigationContent } from "../navigation";
+import type { ChatSectionSchema, FeaturesSectionSchema, HeroSectionSchema } from "./schemas";
 
 export type AppPageContent = {
   language: Language;
   company: CompanyContent;
   navigation: NavigationContent;
-  hero: HeroContent;
-  features: FeatureContent;
-  chat: ChatContent;
+  hero: HeroSectionSchema;
+  features: FeaturesSectionSchema;
+  chat: ChatSectionSchema;
   footer: FooterContent;
   metadata: MetadataContent;
 };

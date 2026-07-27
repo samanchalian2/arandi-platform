@@ -19,7 +19,7 @@ export type ChatContent = {
 export const chatContent: Record<Language, ChatContent> = {
   en: {
     badge: "Jupiter AI",
-    heading: "Explore AI-ready infrastructure and transformation pathways.",
+    heading: "Experience practical AI-based solutions on the path to your business’s digital transformation.",
     description:
       "A polished interaction surface for future conversational workflows, designed for enterprise clarity.",
     placeholder: "Start a conversation with Jupiter AI",
@@ -37,7 +37,7 @@ export const chatContent: Record<Language, ChatContent> = {
   },
   fa: {
     badge: "ژوپیتر",
-    heading: "راهکارهای زیرساختی و مسیرهای تحول با هوش مصنوعی را khám کنید.",
+    heading: "راهکارهای کاربردی مبتنی بر هوش مصنوعی را در مسیر تحول دیجیتال کسب‌وکارتان تجربه کنید.",
     description:
       "یک تجربه تعاملی منظم برای جریان‌های آینده‌ی گفت‌وگوی هوش مصنوعی، طراحی‌شده برای شفافیت سازمانی.",
     placeholder: "با Jupiter AI گفتگو را آغاز کنید",
