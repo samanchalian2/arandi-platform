@@ -1,18 +1,24 @@
 export type Language = "en" | "fa";
 
+import { getDomainContentModel } from "./domain";
+
 export type FooterContent = {
   tagline: string;
 };
 
 export const footerContent: Record<Language, FooterContent> = {
-  en: {
-    tagline: "AI-ready enterprise foundation",
-  },
-  fa: {
-    tagline: "بنیاد سازمانی آماده برای هوش مصنوعی",
-  },
+  en: getFooterContent("en"),
+  fa: getFooterContent("fa"),
 };
 
 export function getFooterContent(lang?: string | null) {
-  return footerContent[lang === "fa" ? "fa" : "en"];
+  const page = getDomainContentModel(lang).pages.find((item) => item.slug === "home");
+
+  if (!page) {
+    throw new Error("Home page is not configured in domain content.");
+  }
+
+  return {
+    tagline: page.footerTagline,
+  };
 }

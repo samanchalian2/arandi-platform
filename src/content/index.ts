@@ -19,6 +19,22 @@ export type { FooterContent, Language as FooterLanguage } from "./footer";
 export { metadataContent, getMetadataContent } from "./metadata";
 export type { MetadataContent, Language as MetadataLanguage } from "./metadata";
 
+export { getDomainContentModel } from "./domain";
+export type {
+    ArticleEntity,
+    CareersEntity,
+    CompanyEntity,
+    ContactEntity,
+    DomainContentModel,
+    IndustryEntity,
+    KnowledgeBaseEntity,
+    PageEntity,
+    PageSectionEntity,
+    ProjectEntity,
+    ServiceEntity,
+    SolutionEntity,
+} from "./domain";
+
 export { contentProvider, createContentProvider, type AppPageContent, type ContentProvider, LocalContentProvider } from "./provider";
 export { createContentAdapter, type AdapterType } from "./adapters/factory";
 export type { ContentAdapter } from "./adapters/types";

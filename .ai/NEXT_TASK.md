@@ -2,31 +2,37 @@
 
 ## Current Active Task
 
-Content Provider Abstraction Completed
+AI Gateway Integration (Placeholder to Implementation)
 
 ## Objective
 
-Introduce a provider layer that becomes the single access point for localized app content, keeping the UI presentation-only and ready for future CMS or data-source swaps.
+Keep content domain entity-based and implement real AI gateway integration in a dedicated application service layer.
 
 ## Status
 
-Completed
+Pending
 
-## Implemented
+## Completed Prerequisite
 
-- Added a localized content provider abstraction in src/content/provider.ts.
-- Moved page and layout content resolution behind the provider layer.
-- Kept the UI components presentation-only and prop-driven.
-- Preserved bilingual English/Persian behavior and current visual output.
+- Removed AI assistant from content domain entities.
+- Kept Knowledge Base as a content entity.
+- Added AI integration placeholder module:
+	- src/integrations/ai/types.ts
+	- src/integrations/ai/gateway.ts
+	- src/integrations/ai/README.md
+- Preserved current UI behavior and avoided API implementation.
+
+## Scope for Next Implementation
+
+- Implement provider-specific gateway adapter (without UI redesign).
+- Add request/response validation and error mapping.
+- Connect Chat interface to integration layer behind existing UX.
+- Add environment-based provider configuration.
 
 ## Verification
 
 Run:
 
-npm run build
-
 npm run lint
 
-## Next Phase
-
-CMS content schema and knowledge architecture planning
+npm run build

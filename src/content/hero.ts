@@ -1,5 +1,7 @@
 export type Language = "en" | "fa";
 
+import { getDomainContentModel } from "./domain";
+
 export type HeroContent = {
   badge: string;
   title: string;
@@ -9,24 +11,23 @@ export type HeroContent = {
 };
 
 export const heroContent: Record<Language, HeroContent> = {
-  en: {
-    badge: "Enterprise AI assistant",
-    title: "Jupiter; Your smart companion in the digital world",
-    description:
-      "A modern perspective on organizational technology strategy; a clear path to digital transformation and infrastructure ready for the AI-powered future.",
-    primaryCta: "Explore Jupiter AI",
-    secondaryCta: "View capabilities",
-  },
-  fa: {
-    badge: "دستیار هوش مصنوعی سازمانی",
-    title: "ژوپیتر؛ همراه هوشمند شما در دنیای دیجیتال",
-    description:
-      "نگاهی نو به راهبرد فناوری سازمان‌ها؛ مسیری روشن برای تحول دیجیتال و زیرساختی آماده برای آینده‌ی هوش مصنوعی.",
-    primaryCta: "کاوش در Jupiter AI",
-    secondaryCta: "مشاهده توانمندی‌ها",
-  },
+  en: getHeroContent("en"),
+  fa: getHeroContent("fa"),
 };
 
 export function getHeroContent(lang?: string | null) {
-  return heroContent[lang === "fa" ? "fa" : "en"];
+  const page = getDomainContentModel(lang).pages.find((item) => item.slug === "home");
+  const section = page?.sections.find((item) => item.type === "hero");
+
+  if (!section || section.type !== "hero") {
+    throw new Error("Hero section is not configured in domain page content.");
+  }
+
+  return {
+    badge: section.badge,
+    title: section.title,
+    description: section.description,
+    primaryCta: section.primaryCta,
+    secondaryCta: section.secondaryCta,
+  };
 }

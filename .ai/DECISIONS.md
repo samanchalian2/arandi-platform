@@ -229,6 +229,33 @@ Frozen for Version 1.
 
 ---
 
+## AI Content Boundary Decision
+
+Date:
+2026-07-27
+
+Decision:
+
+AI assistant is not a content domain entity.
+
+AI is treated as an application integration service with a gateway boundary:
+
+- Chat UI sends user messages
+- AI gateway forwards normalized requests to external model APIs
+- Responses are returned to chat UI
+
+Reason:
+
+This separation prevents mixing business content modeling with runtime inference infrastructure and creates a cleaner CMS integration path.
+
+Knowledge Base remains in content domain and is available as contextual input for AI requests.
+
+Status:
+
+Approved
+
+---
+
 ## Landing Page Visual Direction Decision
 
 Date:
@@ -385,3 +412,8 @@ Maintain clear separation between corporate identity and product identity.
 
 Status:
 Frozen for Version 1.
+
+---
+Decision:
+AI assistant is not a content entity.
+AI is implemented as an external service integration.

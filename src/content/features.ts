@@ -1,5 +1,7 @@
 export type Language = "en" | "fa";
 
+import { getDomainContentModel } from "./domain";
+
 export type FeatureContent = {
   eyebrow: string;
   title: string;
@@ -12,54 +14,30 @@ export type FeatureContent = {
 };
 
 export const featureContent: Record<Language, FeatureContent> = {
-  en: {
-    eyebrow: "Capabilities",
-    title: "Structured foundation for future services and solutions.",
-    description:
-      "This section provides an initial information architecture for upcoming offerings and partner engagement areas.",
-    cards: [
-      {
-        title: "Artificial Intelligence",
-        description: "Foundation for AI-enabled advisory, automation, and decision support journeys.",
-        label: "1. Focus area",
-      },
-      {
-        title: "Enterprise IT Infrastructure",
-        description: "Foundation for modern infrastructure strategy, delivery, and operational resilience.",
-        label: "2. Focus area",
-      },
-      {
-        title: "Digital Transformation",
-        description: "Foundation for transformation programs, technology adoption, and change enablement.",
-        label: "3. Focus area",
-      },
-    ],
-  },
-  fa: {
-    eyebrow: "توانمندی‌ها",
-    title: "بنیان ساختاریافته برای خدمات و راه‌حل‌های آینده.",
-    description:
-      "این بخش یک معماری اولیه‌ی اطلاعات برای ارائه‌های آینده و حوزه‌های همکاری با شرکای تجاری فراهم می‌کند.",
-    cards: [
-      {
-        title: "هوش مصنوعی",
-        description: "بنیان برای مسیرهای مشاوره، خودکارسازی و پشتیبانی از تصمیمات با هوش مصنوعی.",
-        label: "۱. حوزه تمرکز",
-      },
-      {
-        title: "زیرساخت فناوری سازمانی",
-        description: "بنیان برای استراتژی زیرساخت مدرن، اجرا و پایداری عملیاتی.",
-        label: "۲. حوزه تمرکز",
-      },
-      {
-        title: "تحول دیجیتال",
-        description: "بنیان برای برنامه‌های تحول، پذیرش فناوری و توانمندسازی تغییر.",
-        label: "۳. حوزه تمرکز",
-      },
-    ],
-  },
+  en: getFeatureContent("en"),
+  fa: getFeatureContent("fa"),
 };
 
 export function getFeatureContent(lang?: string | null) {
-  return featureContent[lang === "fa" ? "fa" : "en"];
+  const model = getDomainContentModel(lang);
+  const page = model.pages.find((item) => item.slug === "home");
+  const section = page?.sections.find((item) => item.type === "features");
+
+  if (!section || section.type !== "features") {
+    throw new Error("Features section is not configured in domain page content.");
+  }
+
+  return {
+    eyebrow: section.eyebrow,
+    title: section.title,
+    description: section.description,
+    cards: section.serviceCardIds
+      .map((serviceId) => model.services.find((service) => service.id === serviceId))
+      .filter((service): service is NonNullable<typeof service> => Boolean(service))
+      .map((service) => ({
+        title: service.title,
+        description: service.summary,
+        label: service.label,
+      })),
+  };
 }

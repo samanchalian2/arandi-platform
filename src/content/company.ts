@@ -1,5 +1,7 @@
 export type Language = "en" | "fa";
 
+import { getDomainContentModel } from "./domain";
+
 export type CompanyContent = {
   name: string;
   shortName: string;
@@ -8,20 +10,17 @@ export type CompanyContent = {
 };
 
 export const companyContent: Record<Language, CompanyContent> = {
-  en: {
-    name: "Arandi Bonyan",
-    shortName: "Arandi Bonyan",
-    assistantName: "Jupiter",
-    assistantLabel: "Jupiter AI",
-  },
-  fa: {
-    name: "آرن دی بنیان",
-    shortName: "آرن دی بنیان",
-    assistantName: "ژوپیتر",
-    assistantLabel: "ژوپیتر",
-  },
+  en: getCompanyContent("en"),
+  fa: getCompanyContent("fa"),
 };
 
 export function getCompanyContent(lang?: string | null) {
-  return companyContent[lang === "fa" ? "fa" : "en"];
+  const model = getDomainContentModel(lang);
+
+  return {
+    name: model.company.legalName,
+    shortName: model.company.shortName,
+    assistantName: model.company.assistant.name,
+    assistantLabel: model.company.assistant.label,
+  };
 }

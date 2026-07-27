@@ -1,0 +1,20 @@
+export { getDomainContentModel } from "./localDomainContent";
+export type {
+    ArticleEntity,
+    CareersEntity,
+    CompanyEntity,
+    ContactEntity,
+    ContentStatus,
+    DomainContentModel,
+    FeaturesPageSectionEntity,
+    HeroPageSectionEntity,
+    IndustryEntity,
+    KnowledgeBaseEntity,
+    LocalizedEntity,
+    PageEntity,
+    PageSectionEntity,
+    ProjectEntity,
+    ServiceEntity,
+    SolutionEntity,
+    ChatPageSectionEntity,
+} from "./types";

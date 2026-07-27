@@ -185,6 +185,41 @@ Verification:
 - npm run build ✅
 - npm run lint ✅
 
+---
+
+# Phase 1.5 Completed
+
+Status:
+
+Completed
+
+Implemented:
+
+- Corrected domain architecture boundary: AI assistant removed from content domain entities.
+- Preserved Knowledge Base as a first-class content entity.
+- Moved chat copy dependency to page chat section content fields to keep UI behavior unchanged.
+- Added AI integration placeholder boundary with no runtime API calls.
+
+New Integration Placeholder:
+
+- src/integrations/ai/types.ts
+- src/integrations/ai/gateway.ts
+- src/integrations/ai/README.md
+
+Modified Content Layer:
+
+- src/content/domain/types.ts
+- src/content/domain/localDomainContent.ts
+- src/content/domain/index.ts
+- src/content/index.ts
+- src/content/adapters/localContentAdapter.ts
+- src/content/chat.ts
+
+Verification:
+
+- npm run build (pending)
+- npm run lint (pending)
+
 Commit:
 
 Pending

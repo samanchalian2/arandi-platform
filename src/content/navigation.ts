@@ -1,5 +1,7 @@
 export type Language = "en" | "fa";
 
+import { getDomainContentModel } from "./domain";
+
 export type NavigationContent = {
   links: {
     overview: string;
@@ -13,30 +15,26 @@ export type NavigationContent = {
 };
 
 export const navigationContent: Record<Language, NavigationContent> = {
-  en: {
-    links: {
-      overview: "Overview",
-      capabilities: "Capabilities",
-      contact: "Contact",
-    },
-    languageSwitch: {
-      en: "EN",
-      fa: "FA",
-    },
-  },
-  fa: {
-    links: {
-      overview: "معرفی",
-      capabilities: "توانمندی‌ها",
-      contact: "تماس",
-    },
-    languageSwitch: {
-      en: "EN",
-      fa: "FA",
-    },
-  },
+  en: getNavigationContent("en"),
+  fa: getNavigationContent("fa"),
 };
 
 export function getNavigationContent(lang?: string | null) {
-  return navigationContent[lang === "fa" ? "fa" : "en"];
+  const page = getDomainContentModel(lang).pages.find((item) => item.slug === "home");
+
+  if (!page) {
+    throw new Error("Home page is not configured in domain content.");
+  }
+
+  return {
+    links: {
+      overview: page.navigation.overviewLabel,
+      capabilities: page.navigation.capabilitiesLabel,
+      contact: page.navigation.contactLabel,
+    },
+    languageSwitch: {
+      en: "EN",
+      fa: "FA",
+    },
+  };
 }

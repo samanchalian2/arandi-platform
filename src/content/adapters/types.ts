@@ -1,4 +1,5 @@
 import type { CompanyContent, Language } from "../company";
+import type { DomainContentModel } from "../domain";
 import type { FooterContent } from "../footer";
 import type { MetadataContent } from "../metadata";
 import type { NavigationContent } from "../navigation";
@@ -18,4 +19,5 @@ export type AppPageContent = {
 export interface ContentAdapter {
   getPageContent(lang?: string | null): AppPageContent;
   getMetadata(lang?: string | null): MetadataContent;
+  getDomainContent(lang?: string | null): DomainContentModel;
 }

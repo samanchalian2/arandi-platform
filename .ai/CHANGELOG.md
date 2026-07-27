@@ -87,3 +87,25 @@ Date:
 
 - npm run build ✅
 - npm run lint ✅
+
+---
+
+# Version 0.2.0
+
+Date:
+
+2026-07-27
+
+## Updated
+
+- Replaced homepage-centric content architecture with an enterprise domain content model.
+- Added canonical content entities for Company, Services, Solutions, Industries, Projects, Articles, KnowledgeBase, AI, Contact, Careers, and Pages.
+- Added domain source-of-truth files in src/content/domain for entity definitions and local bilingual data.
+- Refactored local content adapter to project UI page sections from domain entities.
+- Extended provider and adapter contracts with getDomainContent(lang) for CMS-ready integration paths.
+- Kept UI contracts and visual output unchanged while moving all content sourcing behind entity-based projection.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅

@@ -1,5 +1,7 @@
 export type Language = "en" | "fa";
 
+import { getDomainContentModel } from "./domain";
+
 export type ChatContent = {
   badge: string;
   heading: string;
@@ -17,44 +19,32 @@ export type ChatContent = {
 };
 
 export const chatContent: Record<Language, ChatContent> = {
-  en: {
-    badge: "Jupiter AI",
-    heading: "Experience practical AI-based solutions on the path to your business’s digital transformation.",
-    description:
-      "A polished interaction surface for future conversational workflows, designed for enterprise clarity.",
-    placeholder: "Start a conversation with Jupiter AI",
-    initialMessage:
-      "I can help outline enterprise AI strategy, infrastructure planning, and transformation priorities.",
-    emptyStateTitle: "Start with a focused question.",
-    emptyStateDescription:
-      "Ask about delivery priorities, enterprise architecture, or AI positioning.",
-    inputLabel: "Ask Jupiter AI",
-    inputPlaceholder: "Ask about infrastructure, AI, or transformation...",
-    inputAriaLabel: "Send message",
-    loadingText: "Preparing an enterprise response...",
-    assistantReply: "A focused response will be prepared here for future AI integration.",
-    assistantHint: "Ask about architecture, delivery, or AI readiness",
-  },
-  fa: {
-    badge: "ژوپیتر",
-    heading: "راهکارهای کاربردی مبتنی بر هوش مصنوعی را در مسیر تحول دیجیتال کسب‌وکارتان تجربه کنید.",
-    description:
-      "یک تجربه تعاملی منظم برای جریان‌های آینده‌ی گفت‌وگوی هوش مصنوعی، طراحی‌شده برای شفافیت سازمانی.",
-    placeholder: "با Jupiter AI گفتگو را آغاز کنید",
-    initialMessage:
-      "می‌توانم در زمینه استراتژی هوش مصنوعی سازمانی، برنامه‌ریزی زیرساخت و اولویت‌های تحول راهنمایی کنم.",
-    emptyStateTitle: "با یک پرسش متمرکز شروع کنید.",
-    emptyStateDescription:
-      "در مورد اولویت‌های اجرایی، معماری سازمانی یا موقعیت هوش مصنوعی بپرسید.",
-    inputLabel: "از Jupiter AI بپرسید",
-    inputPlaceholder: "در مورد زیرساخت، هوش مصنوعی یا تحول بپرسید...",
-    inputAriaLabel: "ارسال پیام",
-    loadingText: "در حال آماده‌سازی پاسخ سازمانی...",
-    assistantReply: "پاسخی متمرکز برای ادغام آینده‌ای هوش مصنوعی آماده می‌شود.",
-    assistantHint: "در مورد معماری، اجرا یا آمادگی هوش مصنوعی بپرسید",
-  },
+  en: getChatContent("en"),
+  fa: getChatContent("fa"),
 };
 
 export function getChatContent(lang?: string | null) {
-  return chatContent[lang === "fa" ? "fa" : "en"];
+  const model = getDomainContentModel(lang);
+  const page = model.pages.find((item) => item.slug === "home");
+  const section = page?.sections.find((item) => item.type === "chat");
+
+  if (!section || section.type !== "chat") {
+    throw new Error("Chat section is not configured in domain page content.");
+  }
+
+  return {
+    badge: section.badge,
+    heading: section.heading,
+    description: section.description,
+    placeholder: section.placeholder,
+    initialMessage: section.initialMessage,
+    emptyStateTitle: section.emptyStateTitle,
+    emptyStateDescription: section.emptyStateDescription,
+    inputLabel: section.inputLabel,
+    inputPlaceholder: section.inputPlaceholder,
+    inputAriaLabel: section.inputAriaLabel,
+    loadingText: section.loadingText,
+    assistantReply: section.assistantReply,
+    assistantHint: section.assistantHint,
+  };
 }

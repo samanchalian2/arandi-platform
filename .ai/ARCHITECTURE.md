@@ -2,7 +2,7 @@
 
 ## Architecture Version
 
-Frozen v1.1
+Frozen v1.3
 
 Status:
 Approved
@@ -270,3 +270,73 @@ or
 2. A new major version is planned.
 
 Minor preferences or external trends do not justify architecture changes.
+
+---
+
+# Content Domain Architecture (v1.3)
+
+## Goal
+
+The content layer is now entity-first instead of homepage-section-first.
+
+This allows direct CMS mapping to enterprise entities without changing UI components.
+
+## Canonical Entities
+
+- Company
+- Services
+- Solutions
+- Industries
+- Projects
+- Articles
+- KnowledgeBase
+- Contact
+- Careers
+- Pages
+
+## Source of Truth
+
+Canonical domain content is defined in:
+
+- src/content/domain/types.ts
+- src/content/domain/localDomainContent.ts
+
+The local adapter projects UI-facing page data from domain entities.
+
+## Provider and Adapter Contract
+
+- ContentAdapter exposes:
+	- getDomainContent(lang)
+	- getPageContent(lang)
+	- getMetadata(lang)
+- ContentProvider mirrors the same contract.
+
+getPageContent and getMetadata are projection APIs for current UI compatibility.
+
+getDomainContent is the CMS-ready API for future integrations.
+
+## CMS Integration Readiness
+
+Payload, Strapi, and Directus integration can map directly to domain entities and then feed the adapter projection layer.
+
+No UI changes are required for CMS migration.
+
+## AI Integration Boundary
+
+AI is an application integration service and not a content entity.
+
+Integration flow:
+
+1. Chat UI sends user messages.
+2. AI gateway forwards normalized requests to external AI model APIs.
+3. Responses are returned to the chat interface.
+
+Placeholder implementation files:
+
+- src/integrations/ai/types.ts
+- src/integrations/ai/gateway.ts
+- src/integrations/ai/README.md
+
+Note:
+
+Knowledge Base remains part of content domain and can be used as AI context input.
