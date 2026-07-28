@@ -109,3 +109,22 @@ Date:
 
 - npm run build ✅
 - npm run lint ✅
+
+---
+
+# Version 0.2.1
+
+Date:
+
+2026-07-28
+
+## Added
+
+- Created a shared enterprise page component framework in src/components/page.
+- Added PageContainer, PageHero, PageSection, PageTitle, PageGrid, and PageCTA as reusable building blocks for upcoming enterprise routes.
+- Reused the existing Container, SectionReveal, and Button system without changing homepage components or content architecture.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)

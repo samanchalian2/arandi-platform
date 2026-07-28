@@ -5,11 +5,11 @@ Enterprise Website Structure
 
 Goals
 
-Create enterprise routing
-
-Create reusable page components
+Create enterprise routes using the shared page component framework
 
 Build six static pages
+
+Update header navigation to route-based links
 
 Do not modify provider/domain architecture
 
@@ -26,3 +26,7 @@ No duplicated layout
 Build passes
 
 Lint passes
+
+Prerequisite Status
+
+Shared reusable page components completed in Phase 2.1A
