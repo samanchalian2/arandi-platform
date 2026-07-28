@@ -55,7 +55,7 @@ export default async function RootLayout({ children, searchParams }: RootLayoutP
           <DirectionProvider />
         </Suspense>
         <div className="flex min-h-screen flex-col">
-          <Header content={pageContent.navigation} company={pageContent.company} />
+          <Header content={pageContent.navigation} company={pageContent.company} lang={lang} />
           <main className="flex-1">{children}</main>
           <Footer content={pageContent.footer} company={pageContent.company} />
         </div>

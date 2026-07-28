@@ -3,6 +3,7 @@ import type { ContentAdapter, AppPageContent } from "./types";
 import type { MetadataContent } from "../metadata";
 import type { ChatSectionSchema, FeaturesSectionSchema, HeroSectionSchema } from "./schemas";
 import { getDomainContentModel } from "../domain";
+import { getEnterpriseContent } from "../enterprise";
 
 function normalizeLanguage(lang?: string | null): Language {
   return lang === "fa" ? "fa" : "en";
@@ -102,6 +103,7 @@ export class LocalContentAdapter implements ContentAdapter {
   getPageContent(lang?: string | null): AppPageContent {
     const language = normalizeLanguage(lang);
     const model = getDomainContentModel(language);
+    const enterpriseNavigation = getEnterpriseContent(language).navigation;
     const homePage = model.pages.find((page) => page.slug === "home");
 
     if (!homePage) {
@@ -121,6 +123,14 @@ export class LocalContentAdapter implements ContentAdapter {
           overview: homePage.navigation.overviewLabel,
           capabilities: homePage.navigation.capabilitiesLabel,
           contact: homePage.navigation.contactLabel,
+        },
+        enterpriseLinks: {
+          company: enterpriseNavigation.company,
+          services: enterpriseNavigation.services,
+          solutions: enterpriseNavigation.solutions,
+          industries: enterpriseNavigation.industries,
+          projects: enterpriseNavigation.projects,
+          contact: enterpriseNavigation.contact,
         },
         languageSwitch: {
           en: "EN",

@@ -19,6 +19,8 @@ export type { FooterContent, Language as FooterLanguage } from "./footer";
 export { metadataContent, getMetadataContent } from "./metadata";
 export type { MetadataContent, Language as MetadataLanguage } from "./metadata";
 
+export { getEnterpriseContent } from "./enterprise";
+
 export { getDomainContentModel } from "./domain";
 export type {
     ArticleEntity,

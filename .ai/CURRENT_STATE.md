@@ -1,5 +1,96 @@
 # Current State
 
+## Phase 2.3.1 Status
+
+Completed on 2026-07-28.
+
+Implemented:
+
+- Updated header logo link to preserve active language query (`?lang=en` / `?lang=fa`).
+- Localized breadcrumb Home label using existing localization content in src/content/enterprise.ts.
+- Localized header aria-label suffix using existing localization content.
+- Introduced a single canonical enterprise navigation item builder in src/content/navigation.ts and reused it in Header.
+- Kept provider, adapters, domain models, schemas, and enterprise content architecture unchanged.
+- Reviewed Phase 2.3 exports and removed no compatibility APIs.
+
+Verification:
+
+- npm run build ✅
+- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
+
+## Phase 2.3 Status
+
+Completed on 2026-07-28.
+
+Implemented:
+
+- Added centralized bilingual enterprise localization content in src/content/enterprise.ts.
+- Removed hardcoded EN/FA visible strings from all six enterprise route pages and replaced them with content-layer lookups.
+- Localized enterprise header route labels through existing navigation content flow.
+- Localized enterprise metadata via content-layer-driven metadata callback usage.
+- Localized breadcrumb labels, hero text, section text, cards, CTA text, and contact form labels/placeholders/notes using existing architecture.
+
+Verification:
+
+- npm run build ✅
+- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
+
+## Phase 2.2 Status
+
+Completed on 2026-07-28.
+
+Implemented:
+
+- Replaced placeholder content across all six enterprise pages (Company, Services, Solutions, Industries, Projects, Contact).
+- Kept the existing EnterprisePage template and shared page framework intact.
+- Added structured enterprise content sections:
+  - Company: overview, mission, vision, core values, and why Arandi.
+  - Services: six service cards (Artificial Intelligence, Software Development, Enterprise Solutions, Data & Analytics, Cloud & Infrastructure, Digital Transformation).
+  - Solutions: enterprise solution cards with delivery outcomes.
+  - Industries: six industry cards (Oil & Gas, Petrochemical, Energy, Manufacturing, Government, Smart Cities).
+  - Projects: realistic enterprise project showcase cards.
+  - Contact: professional contact methods, office information, and UI-only contact form layout.
+
+Verification:
+
+- npm run build ✅
+- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
+
+## Phase 2.1C Status
+
+Completed on 2026-07-28.
+
+Implemented:
+
+- Added reusable breadcrumb component at src/components/page/PageBreadcrumb.tsx.
+- Added reusable enterprise page template at src/components/page/EnterprisePage.tsx to compose breadcrumb, hero, sections, and CTA.
+- Refactored all enterprise routes to use EnterprisePage and reduce duplicated page composition.
+- Added shared metadata helper at src/lib/pageMetadata.ts and moved repeated per-page metadata generation logic into it.
+- Updated Header navigation behavior to highlight the active route using usePathname without visual redesign.
+
+Verification:
+
+- npm run build ✅
+- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
+
+## Phase 2.1B Status
+
+Completed on 2026-07-28.
+
+Implemented:
+
+- Barrel export created at src/components/page/index.ts.
+- Enterprise static routes created: /company, /services, /solutions, /industries, /projects, /contact.
+- Each route composes PageHero, PageSection, PageCTA, and supporting page framework components via imports from @/components/page.
+- Localized page metadata added per route using contentProvider and lang query resolution.
+- Header navigation targets updated from homepage anchors to enterprise routes.
+- Language query behavior preserved for route navigation and language switching.
+
+Verification:
+
+- npm run build ✅
+- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
+
 ## Project
 
 Arandi Platform
