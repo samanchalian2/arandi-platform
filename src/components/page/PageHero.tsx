@@ -87,16 +87,16 @@ export function PageHero({
     return (
         <PageContainer
             className={cn(
-                "relative overflow-hidden py-16 md:py-20 lg:py-24",
+                "relative overflow-hidden ds-section-padding",
                 aside ? "grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:items-center" : "",
                 className,
             )}
             surfaceClassName={cn(
-                "bg-[radial-gradient(circle_at_top_left,_rgba(85,125,255,0.16),_transparent_36%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(241,247,255,0.94))]",
+                "ds-hero-surface",
                 surfaceClassName,
             )}
         >
-            <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.45)_45%,transparent_100%)]" />
+            <div className="ds-hero-overlay absolute inset-0" />
 
             <SectionReveal className={cn("relative z-10", align === "center" && !aside && "mx-auto max-w-3xl", contentClassName)}>
                 <PageTitle
@@ -107,7 +107,7 @@ export function PageHero({
                     as="h1"
                     actions={actionNodes}
                 />
-                {children ? <div className="mt-8">{children}</div> : null}
+                {children ? <div className="ds-content-gap-sm">{children}</div> : null}
             </SectionReveal>
 
             {aside ? <div className="relative z-10">{aside}</div> : null}

@@ -24,25 +24,27 @@ export function Hero({ content, lang }: HeroProps) {
     <section
       id="hero"
       dir={lang === "fa" ? "rtl" : "ltr"}
-      className="relative overflow-hidden border-b border-border/70 bg-[radial-gradient(circle_at_top_left,_rgba(85,125,255,0.16),_transparent_36%),linear-gradient(135deg,_rgba(255,255,255,0.98),_rgba(241,247,255,0.94))]"
+      className="ds-hero-surface relative overflow-hidden border-b border-border/70"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.45)_45%,transparent_100%)]" />
-      <Container className="relative py-16 md:py-20 lg:py-24">
+      <div className="ds-hero-float pointer-events-none absolute -top-14 left-[10%] size-36 rounded-full bg-primary/12 blur-2xl" />
+      <div className="ds-hero-float pointer-events-none absolute -bottom-16 right-[8%] size-44 rounded-full bg-accent/24 blur-3xl" />
+      <div className="ds-hero-overlay absolute inset-0" />
+      <Container className="relative ds-section-padding">
         <SectionReveal className={cn("mx-auto max-w-3xl", lang === "fa" ? "text-right" : "text-center")}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+          <div className="ds-eyebrow inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-2 text-primary ds-subtle-ring">
             <Sparkles className="size-4" />
             {content.badge}
           </div>
 
-          <h1 className="mt-6 text-4xl font-semibold leading-[1.02] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-6xl">
+          <h1 className="ds-heading-1 mt-6 font-semibold text-foreground">
             {content.title}
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+          <p className="ds-body-lg mx-auto mt-6 max-w-2xl text-muted-foreground">
             {content.description}
           </p>
 
-          <div className="hero-actions mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="hero-actions mt-9 flex flex-col justify-center gap-3.5 sm:flex-row sm:items-center">
             <Link
               href="#assistant"
               className={cn(buttonVariants({ variant: "default", size: "lg" }), "no-underline")}

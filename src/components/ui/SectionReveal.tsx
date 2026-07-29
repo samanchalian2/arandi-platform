@@ -3,6 +3,8 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
 
+import { revealTransition, revealVariants } from "./motion";
+
 type SectionRevealProps = {
   children: ReactNode;
   className?: string;
@@ -26,10 +28,11 @@ export function SectionReveal({ children, className }: SectionRevealProps) {
 
   return (
     <motion.div
-      initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+      initial={shouldReduceMotion ? { opacity: 1, y: 0 } : "hidden"}
+      whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : "visible"}
+      variants={revealVariants}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.55, ease: "easeOut" }}
+      transition={revealTransition}
       className={className}
     >
       {children}

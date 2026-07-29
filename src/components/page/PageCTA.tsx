@@ -80,7 +80,7 @@ export function PageCTA({
     return (
         <SectionReveal
             className={cn(
-                "rounded-[1.75rem] border border-border/70 bg-card p-8 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)] md:p-10",
+                "ds-panel ds-cta-surface ds-glass ds-subtle-ring ds-radius-panel ds-padding-panel",
                 aside && "grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center",
                 className,
             )}

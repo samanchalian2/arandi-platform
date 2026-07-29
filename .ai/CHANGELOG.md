@@ -282,3 +282,148 @@ Date:
 
 - npm run build ✅
 - npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.2.8
+
+Date:
+
+2026-07-28
+
+## Updated
+
+- Completed Phase 2.4A global design system polish with no architecture changes.
+- Enhanced global CSS design tokens and reusable visual utilities for:
+	- Typography rhythm
+	- Spacing consistency
+	- Elevation/shadow system
+	- Glass surfaces
+	- Gradient surfaces
+	- Motion and transition timing
+- Improved shared UI consistency across reusable components:
+	- Button sizing, radius, hover/focus quality
+	- Container and section spacing rhythm
+	- Page primitives (hero, sections, grid, CTA, titles)
+	- Header/footer polish
+	- Home sections and chat surfaces
+- Preserved layout structures, routing, localization behavior, provider/adapters/domain/schemas, AI integration, and enterprise content architecture.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.2.9
+
+Date:
+
+2026-07-28
+
+## Updated
+
+- Refined and locked Phase 2.4B requirements as a Design System-only implementation scope.
+- Added strict token-only rule for visual values across reusable components.
+- Added controlled glassmorphism constraints (Hero, CTA, Header, AI Chat container only).
+- Added reusable motion-system requirements (stagger, hover micro-interactions, easing, focus, reduced-motion, animation tokens).
+- Added AI chat architecture-readiness requirements for future typing/streaming/citations/thinking/suggestions/avatar animation support.
+- Added mandatory responsive validation targets (Mobile/Tablet/Desktop/Ultra-wide) and overflow checks.
+- Added WCAG AA accessibility validation requirements.
+- Added dark mode readiness requirements through token and variable preparation only.
+- Kept architecture and content-system constraints unchanged.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.3.0
+
+Date:
+
+2026-07-28
+
+## Updated
+
+- Implemented Phase 2.4B Design System Refinement and Validation through shared reusable components and global design-system primitives.
+- Expanded token framework in src/app/globals.css for typography, spacing rhythm, radius tiers, elevation, motion timing, z-index, chat sizing, and responsive readiness variables.
+- Standardized shared motion behavior via reusable motion primitives in src/components/ui/motion.ts and SectionReveal integration.
+- Refined shared UI and layout primitives:
+	- button.tsx
+	- Header.tsx
+	- Footer.tsx
+	- PageContainer/PageSection/PageTitle/PageHero/PageCTA/PageGrid
+- Refined homepage shared sections (Hero, Features) for tighter enterprise visual rhythm and typography readability.
+- Prepared AI chat reusable component architecture for future streaming-focused capabilities by adding UI scaffolding for:
+	- message state (ready/thinking/streaming)
+	- citation rendering slots
+	- suggestion chips
+	- animated avatar states
+	- tokenized chat shell and scroll/empty-state utilities
+- Kept architecture, routing, localization architecture, provider/adapter/domain/schema, and AI integration unchanged.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.3.1
+
+Date:
+
+2026-07-28
+
+## Updated
+
+- Completed Phase 2.4C final UI polish and mobile completion using shared reusable components only.
+- Implemented full responsive Header mobile navigation behavior with:
+	- hamburger menu on mobile/tablet
+	- animated slide-in menu
+	- active-route highlighting
+	- `?lang=` preservation across enterprise links
+	- logo language preservation
+	- body scroll lock while menu is open
+	- Escape key close
+	- keyboard focus trap in menu dialog
+- Refined Header enterprise polish (spacing, hover states, sticky shadow transition, premium glass consistency).
+- Refined Hero visual quality without layout redesign (gradient/background tuning, subtle floating accents, improved CTA spacing).
+- Refined Footer hierarchy and spacing for stronger enterprise appearance while preserving content model.
+- Strengthened reusable CTA visual emphasis through premium surface/gradient polish.
+- Polished chat UI visuals only (no AI architecture changes):
+	- bubble surfaces
+	- avatar state styling
+	- typing indicator surface
+	- input area focus/hover quality
+	- motion polish
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.3.2
+
+Date:
+
+2026-07-29
+
+## Fixed
+
+- Corrected the final Phase 2.4C responsive Header defect where desktop navigation could appear below the header at non-desktop widths.
+- Moved the desktop navigation cutoff to `xl`; tablet and mobile now show only logo, language switch, and hamburger control.
+- Added overflow containment to the off-canvas mobile drawer wrapper so a closed drawer cannot create horizontal page overflow.
+
+## Verified
+
+- Browser validation at 390px, 900px, and 1440px confirmed the required responsive navigation behavior.
+- Mobile drawer validation confirmed `?lang=` preservation, body scroll lock, focus trap entry, Escape close, and focus return to the trigger.
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)

@@ -326,3 +326,181 @@ Continue with:
 1. Execute final bilingual QA pass for Phase 2.4 acceptance.
 2. Confirm UX consistency of localized navigation and breadcrumbs across breakpoints.
 3. Prepare final sign-off notes before next implementation phase.
+
+---
+
+## Session 011
+
+Date:
+
+2026-07-28
+
+## Objective
+
+Implement Phase 2.4A global design system quality upgrade while keeping architecture and page structures unchanged.
+
+## Completed Actions
+
+- Upgraded reusable global visual foundation in src/app/globals.css with improved spacing rhythm, typography flow, elevation tokens, glass utilities, gradient utilities, and motion utilities.
+- Refined shared UI primitives for consistent button hierarchy, border radius behavior, and interaction quality.
+- Improved shared layout and page primitives (Container, Header, Footer, PageContainer, PageSection, PageTitle, PageHero, PageCTA, PageGrid) to increase enterprise-grade polish without layout redesign.
+- Applied reusable styling upgrades to shared homepage and chat components to align overall visual quality system-wide.
+- Kept routing, localization architecture, provider/adapters/domain/schemas, AI integration, and enterprise content untouched.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Run Phase 2.4B UX QA across desktop/mobile breakpoints.
+2. Validate EN/FA visual readability after global visual polish.
+3. Prepare final visual sign-off notes before next implementation phase.
+
+---
+
+## Session 012
+
+Date:
+
+2026-07-28
+
+## Objective
+
+Add and lock refined requirements for the next implementation cycle (Phase 2.4B) without architecture changes.
+
+## Completed Actions
+
+- Updated Phase 2.4B scope from general QA to Design System refinement and validation with strict constraints.
+- Added token-only design rule and prohibited arbitrary visual constants in shared components.
+- Added controlled glass usage boundaries for premium surfaces only.
+- Added reusable motion-system requirements and reduced-motion support requirements.
+- Added AI chat UI architecture-readiness requirements for future interaction capabilities.
+- Added explicit responsive validation matrix and no-overflow requirement.
+- Added WCAG AA accessibility validation checklist.
+- Added dark mode readiness requirements via token preparation only.
+- Kept architecture, routing, localization, provider/adapter/domain/schema, and enterprise content constraints unchanged.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Implement Phase 2.4B refinement using token-only shared component updates.
+2. Validate responsive and accessibility requirements across shared components.
+3. Document implementation outcomes and residual gaps for review.
+
+---
+
+## Session 013
+
+Date:
+
+2026-07-28
+
+## Objective
+
+Implement Phase 2.4B exactly as defined in NEXT_TASK using shared reusable components and design-system primitives.
+
+## Completed Actions
+
+- Expanded global token and utility system in src/app/globals.css for:
+	- Typography hierarchy
+	- Spacing rhythm
+	- Radius and elevation tiers
+	- Motion/easing/duration tokens
+	- Chat sizing tokens
+	- Focus and interaction utilities
+- Added reusable motion primitives in src/components/ui/motion.ts and integrated SectionReveal with tokenized motion variants.
+- Refined shared primitives and reusable components (Header, Footer, Button, Page primitives, Hero, Features) to reduce oversized rhythm and improve enterprise visual polish.
+- Implemented controlled glass strategy on premium surfaces while keeping standard cards on non-glass surfaces.
+- Prepared AI chat UI architecture for future streaming-oriented capabilities by adding reusable scaffolding for thinking/streaming states, citations, suggestion chips, and animated avatar states (UI-only; no backend behavior added).
+- Preserved architecture/routing/localization/provider/adapter/domain/schema and AI integration boundaries.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Execute Phase 2.4C visual QA and accessibility pass across breakpoints.
+2. Capture any residual polish issues requiring token-level adjustment.
+3. Prepare final sign-off notes.
+
+---
+
+## Session 014
+
+Date:
+
+2026-07-28
+
+## Objective
+
+Complete Phase 2.4C final UI polish and mobile navigation completion before Phase 3.
+
+## Completed Actions
+
+- Implemented responsive mobile/tablet Header navigation with shared component updates only:
+	- hamburger trigger
+	- animated slide-in dialog menu
+	- active page highlighting
+	- language-preserving links (`?lang=`)
+	- logo language preservation
+	- body scroll lock while open
+	- Escape key close
+	- keyboard focus trap
+- Improved Header enterprise quality (spacing, hover states, sticky shadow transition, premium glass behavior).
+- Improved Hero visual quality (gradient/background accents, subtle floating motion, CTA spacing) without layout redesign.
+- Improved Footer hierarchy/spacing/typography treatment while preserving existing content architecture.
+- Improved reusable CTA premium emphasis and spacing via shared surface treatment.
+- Improved Chat UI polish only (no AI architecture changes): message bubbles, avatar treatment, typing indicator surface, input focus/hover, and motion refinement.
+- Preserved routing/provider/adapter/domain/schema/localization architecture and page content boundaries.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Start Phase 3 scope definition and implementation planning.
+2. Keep architecture boundaries frozen unless the next phase explicitly revises constraints.
+3. Execute Phase 3 tasks through reusable shared component patterns.
+
+---
+
+## Session 015
+
+Date:
+
+2026-07-29
+
+## Objective
+
+Resolve the final Phase 2.4C responsive Header defect before beginning Phase 3.
+
+## Completed Actions
+
+- Verified the reported header issue and corrected the responsive breakpoint behavior in the shared Header component.
+- Desktop navigation now renders only at `xl` and larger; tablet/mobile retain logo, language switch, and hamburger only.
+- Kept the animated mobile drawer, language-preserving navigation links, active route state, body scroll lock, Escape close, and focus trap intact.
+- Added overflow containment to the overlay wrapper to prevent an off-canvas closed drawer from increasing document width.
+- Browser-tested 390px mobile, 900px tablet, and 1440px desktop layouts with no horizontal overflow.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts

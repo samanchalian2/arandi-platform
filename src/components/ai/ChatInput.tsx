@@ -11,6 +11,8 @@ type ChatInputProps = {
   label: string;
   placeholder: string;
   ariaLabel: string;
+  suggestionChips?: string[];
+  onSelectSuggestion?: (value: string) => void;
 };
 
 export function ChatInput({
@@ -22,12 +24,28 @@ export function ChatInput({
   label,
   placeholder,
   ariaLabel,
+  suggestionChips = [],
+  onSelectSuggestion,
 }: ChatInputProps) {
   return (
-    <div className="rounded-[1.25rem] border border-border/70 bg-background/95 p-3 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.45)]">
+    <div className="ds-chat-shell ds-chat-input-area ds-subtle-ring rounded-2xl p-3 shadow-[var(--elevation-1)]">
       <label className="sr-only" htmlFor="ai-chat-input">
         {label}
       </label>
+      {suggestionChips.length > 0 ? (
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          {suggestionChips.map((chip) => (
+            <button
+              key={chip}
+              type="button"
+              className="ds-chip ds-focus-visible text-xs"
+              onClick={() => onSelectSuggestion?.(chip)}
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <div className="flex items-end gap-2">
         <textarea
           id="ai-chat-input"
@@ -43,12 +61,12 @@ export function ChatInput({
           rows={2}
           disabled={disabled || isLoading}
           dir="auto"
-          className="min-h-[3.25rem] flex-1 resize-none rounded-2xl border border-transparent bg-muted/50 px-3 py-2 text-sm leading-7 text-foreground outline-none transition focus:border-primary/30 focus:bg-background"
+          className="ds-focus-visible min-h-14 flex-1 resize-none rounded-2xl border border-transparent bg-muted/55 px-3 py-2 text-sm leading-7 text-foreground outline-none transition duration-[var(--duration-base)] ease-[var(--ease-standard)] focus:border-primary/30 focus:bg-background"
         />
         <Button
           type="button"
           size="icon"
-          className="shrink-0 rounded-2xl"
+          className="shrink-0 rounded-2xl shadow-[var(--elevation-1)]"
           disabled={disabled || isLoading || value.trim().length === 0}
           aria-label={ariaLabel}
           onClick={() => onSend?.()}

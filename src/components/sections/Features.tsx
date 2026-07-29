@@ -24,23 +24,23 @@ const icons = [Sparkles, Network, Cpu];
 export function Features({ content, lang }: FeaturesProps) {
   return (
     <section id="features" dir={lang === "fa" ? "rtl" : "ltr"} className="border-b border-border/70 bg-background">
-      <Container className="py-20 md:py-24 lg:py-28">
+      <Container className="ds-section-padding">
         <SectionReveal className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">{content.eyebrow}</p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+          <p className="ds-eyebrow text-primary">{content.eyebrow}</p>
+          <h2 className="ds-heading-2 mt-4 font-semibold text-foreground">
             {content.title}
           </h2>
-          <p className="mt-4 text-lg leading-8 text-muted-foreground">{content.description}</p>
+          <p className="ds-body-lg mt-5 text-muted-foreground">{content.description}</p>
         </SectionReveal>
 
-        <div className="feature-grid mt-10 grid gap-6 md:grid-cols-3">
+        <div className="feature-grid ds-grid ds-content-gap ds-motion-stagger grid gap-6 md:grid-cols-3">
           {content.cards.map((feature, index) => {
             const Icon = icons[index] ?? Sparkles;
 
             return (
               <SectionReveal key={feature.title} className="h-full">
-                <article className="flex h-full flex-col rounded-[1.5rem] border border-border/70 bg-card p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
-                  <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <article className="ds-card ds-subtle-ring ds-padding-card flex h-full flex-col">
+                  <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-[var(--elevation-1)]">
                     <Icon className="size-5" />
                   </div>
                   <h3 className="mt-6 text-xl font-semibold text-foreground">{feature.title}</h3>

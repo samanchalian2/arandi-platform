@@ -1,23 +1,26 @@
-Phase 2.4
+Phase 3.0
 
-Enterprise Localization QA and Final Review
+Implementation Kickoff
+
+Phase 2.4C completion note:
+
+- Final responsive Header defect is resolved and validated at mobile, tablet, and desktop breakpoints.
+- The mobile drawer preserves language parameters, locks body scroll, supports Escape close and keyboard focus trapping, and produces no horizontal overflow.
 
 Goals
 
-- Perform final bilingual QA across enterprise routes after Phase 2.3.1 cleanup.
-- Verify language persistence behavior for header logo and enterprise route links.
-- Verify breadcrumb Home label and header aria-label localization behavior.
-- Confirm no architecture drift from the frozen boundaries.
+- Begin Phase 3 implementation planning and scoped execution based on current architecture.
+- Keep all established localization and content-system boundaries intact.
+- Continue building via shared reusable components and design-system primitives.
 
 Constraints
 
 - Keep architecture frozen (no provider/adapter/domain/schema/content-system redesign).
-- Keep existing enterprise route/page composition unchanged.
-- Keep AI integration unchanged.
+- Keep page structure/routing/localization architecture unchanged.
+- Keep enterprise content unchanged.
+- Keep AI integration architecture unchanged unless explicitly required by the Phase 3 spec.
 
 Acceptance
 
-- Header logo preserves active `?lang` query.
-- Breadcrumb Home label and header aria suffix are localized from existing content.
-- Enterprise navigation item construction remains centralized in one canonical builder.
+- Phase 3 scope is defined with concrete deliverables before implementation expansion.
 - Build and lint continue to pass.
