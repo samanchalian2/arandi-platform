@@ -1,5 +1,71 @@
 # Current State
 
+## Phase 3.4 Status
+
+Completed on 2026-07-29 (implementation phase).
+
+Implemented code (no UI/layout/routing/AI changes):
+
+- Implemented CMS API layer on top of Prisma foundation under `src/app/api/cms`.
+- Base API namespace added:
+  - `/api/cms/*`
+
+Implemented endpoints:
+
+- Pages API
+  - `GET /api/cms/pages`
+  - `GET /api/cms/pages/[identifier]` (slug-based read)
+  - `POST /api/cms/pages`
+  - `PUT /api/cms/pages/[identifier]` (id-based update)
+  - `DELETE /api/cms/pages/[identifier]` (id-based delete)
+- Sections API
+  - `GET /api/cms/sections`
+  - `POST /api/cms/sections`
+  - `PUT /api/cms/sections/[id]`
+  - `DELETE /api/cms/sections/[id]`
+- Cards API
+  - `GET /api/cms/cards`
+  - `POST /api/cms/cards`
+  - `PUT /api/cms/cards/[id]`
+  - `DELETE /api/cms/cards/[id]`
+- Theme API
+  - `GET /api/cms/theme`
+  - `PUT /api/cms/theme`
+- Media API
+  - `GET /api/cms/media`
+  - `POST /api/cms/media`
+  - `PUT /api/cms/media/[id]`
+  - `DELETE /api/cms/media/[id]`
+
+Translation handling:
+
+- Implemented `?lang=en|fa` handling across read endpoints.
+- All translatable data is served from translation tables.
+- No language-based content duplication introduced.
+
+Validation and error model:
+
+- Added request validation utilities and parsing guards.
+- Added consistent response envelope for success/error in API layer.
+- Added typed error codes and structured error details.
+
+Security preparation:
+
+- Added API-level permission hooks with RBAC-ready permission map.
+- Added header-based principal extraction placeholders for future auth integration.
+- Kept access permissive by default to preserve backward compatibility until auth is implemented.
+
+Compatibility status:
+
+- Existing provider/service contracts remain working.
+- Existing pages continue rendering unchanged.
+- No changes to UI components, layouts, routing behavior, or AI chat integration.
+
+Validation:
+
+- `npm run build` ✅
+- `npm run lint` ✅ (pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+
 ## Phase 3.3 Status
 
 Completed on 2026-07-29 (implementation phase).

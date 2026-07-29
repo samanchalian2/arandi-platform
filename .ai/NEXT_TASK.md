@@ -1,37 +1,37 @@
-Phase 3.4
+Phase 3.5
 
-CMS Consumption Bridge on Prisma Data (No UI Changes)
+CMS Service Consumption Bridge + Auth Enforcement Preparation
 
 Context
 
-- Phase 3.3 Prisma/PostgreSQL database foundation is implemented.
-- Prisma schema, seed, and Prisma-backed repositories are now available.
-- Existing pages still use backward-compatible local-provider outputs.
+- Phase 3.4 CMS API layer is complete on top of Prisma models.
+- Existing UI/pages still rely on backward-compatible provider outputs.
 
 Goals
 
-- Move content consumption path to CMS service/repository data flow while preserving exact page output contracts.
-- Keep UI/layout/routing unchanged.
+- Bridge existing content adapters to consume CMS service/repository data in a non-breaking way.
+- Add switchable strict auth enforcement for CMS APIs without implementing login UI.
 
 Tasks
 
-1. Add projection layer from Prisma-backed CMS models to existing adapter schemas (`HeroSectionSchema`, `FeaturesSectionSchema`, `ChatSectionSchema`, navigation/footer/company metadata outputs).
-2. Refactor `LocalContentAdapter` internals to optionally source from `CmsContentService` (Prisma path) while preserving exact return shapes.
-3. Add runtime-safe fallback chain (`prisma -> local`) to guarantee no production break when DB is unavailable.
-4. Add integrity checks for required CMS data (home page, sections, translations, navigation keys) with deterministic fallback behavior.
-5. Keep all existing public content APIs unchanged.
+1. Add projection adapters from CMS API/service models to current `ContentAdapter` output contracts.
+2. Implement deterministic fallback flow (`prisma -> local`) in provider/adapter internals.
+3. Add API auth mode switch (`permissive` vs `strict`) using environment/config flag.
+4. Extend RBAC hooks with centralized permission mapping for all CMS endpoints.
+5. Add lightweight API contract tests for pages/sections/cards/theme/media responses.
 
 Constraints
 
-- No UI changes.
+- No admin panel UI.
+- No UI component changes.
 - No layout redesign.
-- No routing changes.
-- No admin panel.
+- No routing behavior changes.
 - No AI chat modifications.
 
 Acceptance
 
-- Existing pages render identically before/after bridge.
-- Prisma-backed CMS path is usable without breaking service/provider contracts.
+- Existing pages render identically.
+- CMS API remains backward compatible.
+- Strict mode can be enabled without breaking type/build.
 - `npm run build` passes.
 - `npm run lint` passes (allowing only pre-existing known warning).

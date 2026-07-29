@@ -130,6 +130,59 @@ Date:
 - npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
 
 ---
+
+# Version 0.4.3
+
+Date:
+
+2026-07-29
+
+## Added
+
+- Implemented Phase 3.4 CMS API layer under `src/app/api/cms`.
+- Added shared API utilities:
+	- `src/app/api/cms/_lib/http.ts`
+	- `src/app/api/cms/_lib/validation.ts`
+	- `src/app/api/cms/_lib/security.ts`
+	- `src/app/api/cms/_lib/queries.ts`
+	- `src/app/api/cms/_lib/mappers.ts`
+- Added route handlers:
+	- `src/app/api/cms/pages/route.ts`
+	- `src/app/api/cms/pages/[identifier]/route.ts`
+	- `src/app/api/cms/sections/route.ts`
+	- `src/app/api/cms/sections/[id]/route.ts`
+	- `src/app/api/cms/cards/route.ts`
+	- `src/app/api/cms/cards/[id]/route.ts`
+	- `src/app/api/cms/theme/route.ts`
+	- `src/app/api/cms/media/route.ts`
+	- `src/app/api/cms/media/[id]/route.ts`
+
+## Implemented
+
+- CRUD-style CMS APIs for Pages, Sections, Cards, Theme, and Media.
+- Translation-aware reads using `lang=en|fa`.
+- Consistent API response/error handling with centralized helpers.
+- Validation guards for request payloads and query parameters.
+- RBAC-ready authorization hooks for future strict access control.
+
+## Fixed
+
+- Resolved Prisma JSON input typing in API write/update paths using explicit `Prisma.InputJsonValue` casts.
+
+## Scope Compliance
+
+- No UI changes.
+- No layout redesign.
+- No routing changes outside CMS API endpoints.
+- No AI integration changes.
+- Backward compatibility preserved.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
 Added reusable enterprise page framework.
 
 No routing changes.
