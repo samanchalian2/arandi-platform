@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Menu, X } from "lucide-react";
+import {
+  Globe2,
+  Menu,
+  Sparkles,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -166,6 +171,9 @@ export function Header({ content, company, lang }: HeaderProps) {
   const menuButtonLabel = currentLang === "fa" ? "باز کردن منو" : "Open menu";
   const closeButtonLabel = currentLang === "fa" ? "بستن منو" : "Close menu";
   const mobileMenuTitle = currentLang === "fa" ? "ناوبری" : "Navigation";
+  const mobileMenuSubtitle = currentLang === "fa"
+    ? "میانبر ورود به بخش های اصلی"
+    : "Quick access to core sections";
 
   return (
     <header
@@ -223,6 +231,7 @@ export function Header({ content, company, lang }: HeaderProps) {
             <Link
               href={buildLanguageHref("en")}
               aria-current={currentLang === "en" ? "page" : undefined}
+              onClick={closeMobileMenu}
               className={cn(
                 "ds-focus-visible rounded-full px-2 py-1.5 transition-colors sm:px-2.5",
                 currentLang === "en"
@@ -235,6 +244,7 @@ export function Header({ content, company, lang }: HeaderProps) {
             <Link
               href={buildLanguageHref("fa")}
               aria-current={currentLang === "fa" ? "page" : undefined}
+              onClick={closeMobileMenu}
               className={cn(
                 "ds-focus-visible rounded-full px-2 py-1.5 transition-colors sm:px-2.5",
                 currentLang === "fa"
@@ -269,7 +279,7 @@ export function Header({ content, company, lang }: HeaderProps) {
         >
           <div
             className={cn(
-              "absolute inset-0 bg-foreground/35 transition-opacity duration-[var(--duration-slow)] ease-[var(--ease-emphasized)]",
+              "absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(8,25,47,0.28),rgba(8,25,47,0.5))] backdrop-blur-[2px] transition-opacity duration-[var(--duration-slow)] ease-[var(--ease-emphasized)]",
               isMobileMenuOpen ? "opacity-100" : "opacity-0",
             )}
             onClick={closeMobileMenu}
@@ -281,7 +291,7 @@ export function Header({ content, company, lang }: HeaderProps) {
             aria-modal="true"
             aria-label={mobileMenuTitle}
             className={cn(
-              "ds-glass absolute inset-y-0 flex w-full max-w-md flex-col overflow-y-auto border-border/70 px-6 pb-7 pt-7 shadow-[var(--elevation-3)] transition-transform duration-[var(--duration-hero)] ease-[var(--ease-emphasized)]",
+              "ds-glass absolute inset-y-0 flex w-full max-w-md flex-col overflow-y-auto border-border/70 px-5 pb-6 pt-6 shadow-[var(--elevation-3)] transition-transform duration-[var(--duration-hero)] ease-[var(--ease-emphasized)]",
               // The panel always anchors to the logical "end" edge, which matches
               // where the hamburger button itself sits in each language: `end-0`
               // resolves to `right: 0` under `dir="ltr"` (en, button on the right)
@@ -293,8 +303,14 @@ export function Header({ content, company, lang }: HeaderProps) {
               isMobileMenuOpen ? "translate-x-0" : isRtl ? "-translate-x-full" : "translate-x-full",
             )}
           >
-            <div className="mb-7 flex items-center justify-between">
-              <p className="ds-caps-label text-muted-foreground">{mobileMenuTitle}</p>
+            <div className="mb-5 flex items-center justify-between">
+              <div className={cn("min-w-0", isRtl ? "text-right" : "text-left")}>
+                <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  <Sparkles className="size-3.5 text-primary" />
+                  {mobileMenuTitle}
+                </p>
+                <p className="mt-2 truncate text-sm font-medium text-foreground/90">{brandDisplayName}</p>
+              </div>
               <button
                 type="button"
                 className="ds-focus-visible inline-flex size-10 items-center justify-center rounded-xl border border-border/70 bg-background/80 text-foreground transition-colors hover:bg-muted"
@@ -304,33 +320,41 @@ export function Header({ content, company, lang }: HeaderProps) {
                 <X className="size-4" />
               </button>
             </div>
-            <nav className="flex flex-col gap-2 text-base font-medium text-muted-foreground">
+
+            <div className="mb-5 rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(59,130,246,0.15),rgba(30,64,175,0.06))] px-4 py-3">
+              <p className={cn("text-xs text-foreground/85", isRtl ? "text-right" : "text-left")}>
+                {mobileMenuSubtitle}
+              </p>
+            </div>
+
+            <nav className="flex flex-col gap-2 text-base text-muted-foreground">
               {navigationItems.map((item) => (
                 <Link
                   key={`mobile-${item.label}`}
                   href={item.href}
                   aria-current={pathname === item.path ? "page" : undefined}
                   className={cn(
-                    "ds-focus-visible rounded-2xl border border-transparent px-4 py-3 transition-all duration-[var(--duration-base)] ease-[var(--ease-standard)] hover:border-border/75 hover:bg-muted/72 hover:text-foreground",
+                    "ds-focus-visible rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold transition-all duration-[var(--duration-base)] ease-[var(--ease-standard)] hover:border-border/75 hover:bg-muted/72 hover:text-foreground",
                     pathname === item.path && "border-primary/25 bg-primary/10 text-foreground shadow-[var(--elevation-1)]",
                   )}
                   onClick={closeMobileMenu}
                 >
-                  {item.label}
+                  <span className={cn("block truncate", isRtl ? "text-right" : "text-left")}>{item.label}</span>
                 </Link>
               ))}
             </nav>
 
-            <div className="mt-6 border-t border-border/70 pt-5">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <div className="mt-6 rounded-2xl border border-border/70 bg-background/55 p-4">
+              <p className={cn("mb-3 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground", isRtl ? "text-right" : "text-left")}>
+                <Globe2 className="size-3.5" />
                 {localizedContent.languageSwitch.en}/{localizedContent.languageSwitch.fa}
               </p>
-              <div className="flex items-center gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Link
                   href={buildLanguageHref("en")}
                   aria-current={currentLang === "en" ? "page" : undefined}
                   className={cn(
-                    "ds-focus-visible rounded-full border border-border/75 px-4 py-2 text-sm transition-colors",
+                    "ds-focus-visible rounded-xl border border-border/75 px-4 py-2 text-center text-sm transition-colors",
                     currentLang === "en"
                       ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]"
                       : "bg-background/72 font-semibold text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -343,7 +367,7 @@ export function Header({ content, company, lang }: HeaderProps) {
                   href={buildLanguageHref("fa")}
                   aria-current={currentLang === "fa" ? "page" : undefined}
                   className={cn(
-                    "ds-focus-visible rounded-full border border-border/75 px-4 py-2 text-sm transition-colors",
+                    "ds-focus-visible rounded-xl border border-border/75 px-4 py-2 text-center text-sm transition-colors",
                     currentLang === "fa"
                       ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]"
                       : "bg-background/72 font-semibold text-muted-foreground hover:bg-muted hover:text-foreground",
