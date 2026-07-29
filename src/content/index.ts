@@ -21,6 +21,50 @@ export type { MetadataContent, Language as MetadataLanguage } from "./metadata";
 
 export { getEnterpriseContent } from "./enterprise";
 
+export {
+    createCmsContentService,
+    createPrismaCmsContentService,
+    CmsContentService,
+    createLocalCmsRepositories,
+    createPrismaCmsRepositories,
+    loadCmsCollectionFromPrisma,
+    mapDomainToCmsCollection,
+} from "./cms";
+export type {
+    CmsAccessRepository,
+    CmsAuditInfo,
+    CmsCardModel,
+    CmsCardVariant,
+    CmsEntityCollection,
+    CmsLocaleCode,
+    CmsLocaleResolution,
+    CmsMediaModel,
+    CmsNavigationItemModel,
+    CmsNavigationMenuModel,
+    CmsPageBlockModel,
+    CmsPageBuilderModel,
+    CmsPageModel,
+    CmsPageSectionModel,
+    CmsPageVersionModel,
+    CmsPermissionModel,
+    CmsPublishState,
+    CmsRepositories,
+    CmsRepositoryAdapterType,
+    CmsResolvedPage,
+    CmsRoleModel,
+    CmsRuntimeSnapshot,
+    CmsSectionStyle,
+    CmsSectionVisibilityRules,
+    CmsSiteModel,
+    CmsThemeComponentOverrides,
+    CmsThemeModel,
+    CmsThemeTokenSet,
+    CmsTranslatableField,
+    CmsTranslationMap,
+    CmsTranslationModel,
+    TranslationStatus,
+} from "./cms";
+
 export { getDomainContentModel } from "./domain";
 export type {
     ArticleEntity,

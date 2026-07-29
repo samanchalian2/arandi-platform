@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Theme {
+  id                 String   @id @default(uuid()) @db.Uuid
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  slug               String   @unique
+  name               String
+  isDefault          Boolean  @default(false)
+  tokens             Json
+  semanticTokens     Json
+  componentOverrides Json
+
+  @@index([isDefault])
+}
+
+model Language {
+  id         String   @id @default(uuid()) @db.Uuid
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  code       String   @unique
+  name       String
+  isDefault  Boolean  @default(false)
+  isActive   Boolean  @default(true)
+
+  pageTranslations       PageTranslation[]
+  sectionTranslations    SectionTranslation[]
+  cardTranslations       CardTranslation[]
+  navigationTranslations NavigationTranslation[]
+
+  @@index([isDefault])
+  @@index([isActive])
+}
+
+model Page {
+  id           String   @id @default(uuid()) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  slug         String   @unique
+  route        String
+  pageType     String
+  publishState String   @default("published")
+  seoKeywords  String[]
+
+  sections     Section[]
+  translations PageTranslation[]
+
+  @@index([publishState])
+}
+
+model PageTranslation {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  pageId         String   @db.Uuid
+  languageCode   String
+  title          String
+  seoTitle       String
+  seoDescription String
+
+  page     Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+
+  @@unique([pageId, languageCode])
+  @@index([languageCode])
+}
+
+model Section {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pageId      String   @db.Uuid
+  key         String
+  sectionType String
+  order       Int
+  enabled     Boolean  @default(true)
+  style       Json
+  payload     Json
+
+  page         Page                 @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  cards        Card[]
+  translations SectionTranslation[]
+
+  @@index([pageId, order])
+  @@unique([pageId, key])
+}
+
+model SectionTranslation {
+  id           String   @id @default(uuid()) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sectionId    String   @db.Uuid
+  languageCode String
+  title        String?
+  subtitle     String?
+  description  String?
+  data         Json
+
+  section  Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+
+  @@unique([sectionId, languageCode])
+  @@index([languageCode])
+}
+
+model Card {
+  id           String   @id @default(uuid()) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sectionId    String?  @db.Uuid
+  key          String   @unique
+  variant      String
+  order        Int      @default(0)
+  publishState String   @default("published")
+  tags         String[]
+  metrics      Json
+  payload      Json
+  mediaId      String?  @db.Uuid
+
+  section      Section?           @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  media        Media?             @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  translations CardTranslation[]
+
+  @@index([sectionId, order])
+  @@index([publishState])
+}
+
+model CardTranslation {
+  id           String   @id @default(uuid()) @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  cardId       String   @db.Uuid
+  languageCode String
+  title        String
+  subtitle     String?
+  description  String?
+  statusBadge  String?
+  ctaLabel     String?
+  ctaHref      String?
+
+  card     Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+
+  @@unique([cardId, languageCode])
+  @@index([languageCode])
+}
+
+model Navigation {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  key       String   @unique
+  href      String
+  order     Int
+  isExternal Boolean @default(false)
+  openInNewTab Boolean @default(false)
+
+  translations NavigationTranslation[]
+
+  @@index([order])
+}
+
+model NavigationTranslation {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  navigationId   String   @db.Uuid
+  languageCode   String
+  label          String
+
+  navigation Navigation @relation(fields: [navigationId], references: [id], onDelete: Cascade)
+  language   Language   @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+
+  @@unique([navigationId, languageCode])
+  @@index([languageCode])
+}
+
+model Media {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  alt       String?
+  caption   String?
+  url       String   @unique
+  type      String
+  width     Int?
+  height    Int?
+  metadata  Json
+
+  cards Card[]
+}
+
+model Setting {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  key       String   @unique
+  value     Json
+  group     String?
+  isPublic  Boolean  @default(true)
+
+  @@index([group])
+}

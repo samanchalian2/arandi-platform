@@ -427,3 +427,137 @@ Date:
 - Mobile drawer validation confirmed `?lang=` preservation, body scroll lock, focus trap entry, Escape close, and focus return to the trigger.
 - npm run build ✅
 - npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.4.0
+
+Date:
+
+2026-07-29
+
+## Added
+
+- Added Phase 3.1 Enterprise CMS architecture foundation documentation (architecture-only).
+- Added conceptual CMS layered architecture covering presentation, application/content orchestration, domain entities, and infrastructure repositories.
+- Added conceptual enterprise database model for pages, versions, sections, blocks, cards, themes, localization, media, and RBAC.
+- Added multilingual architecture design including locale fallback policy and translation status tracking.
+- Added reusable Page Builder entity model (`Page -> Section -> Block`) with schema-versioning strategy.
+- Added generic Card system architecture with typed card variants and shared card contracts.
+- Added Theme architecture model mapped to existing runtime token variables for zero-UI-change compatibility.
+- Added Roles & Permissions (RBAC) architecture with enterprise role set and permission groups.
+- Added backward compatibility strategy preserving existing provider/adapter contracts.
+
+## Scope Compliance
+
+- No admin panel UI implemented.
+- No page layout changes.
+- No UI redesign.
+- No AI integration changes.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.4.1
+
+Date:
+
+2026-07-29
+
+## Added
+
+- Implemented Phase 3.2 CMS foundation code under `src/content/cms`.
+- Added canonical CMS models for:
+	- page/page version
+	- page section/page block
+	- generic card
+	- translation
+	- theme
+	- navigation
+	- media
+	- roles and permissions (RBAC)
+- Added repository interfaces and local repository implementation.
+- Added service layer with locale fallback resolution, page retrieval, page builder assembly, navigation/theme resolution, and translation retrieval.
+- Added local mapping layer from existing domain content to CMS entities to preserve compatibility.
+
+## Updated
+
+- Extended `ContentProvider` with additive `getCmsService()` API without breaking existing methods.
+- Extended `src/content/index.ts` exports with CMS service/contracts for incremental adoption.
+
+## Scope Compliance
+
+- No UI changes.
+- No layout redesign.
+- No routing changes.
+- No admin panel implementation.
+- No AI integration changes.
+- Existing pages preserved through backward-compatible additive integration.
+
+---
+
+# Version 0.4.2
+
+Date:
+
+2026-07-29
+
+## Added
+
+- Implemented Phase 3.3 CMS Database Foundation with Prisma + PostgreSQL.
+- Added `prisma/schema.prisma` with complete models:
+	- Theme
+	- Language
+	- Page
+	- PageTranslation
+	- Section
+	- SectionTranslation
+	- Card
+	- CardTranslation
+	- Navigation
+	- NavigationTranslation
+	- Media
+	- Setting
+- Added UUID primary keys and `createdAt`/`updatedAt` audit fields for all listed entities.
+- Added translation-table architecture using `languageCode` (`en`, `fa`) to avoid page duplication.
+- Added Prisma seed script (`prisma/seed.ts`) seeded from current local CMS/domain content for compatibility.
+- Added Prisma runtime/generate/seed tooling:
+	- `@prisma/client`
+	- `prisma`
+	- `tsx`
+	- npm scripts: `prisma:generate`, `prisma:seed`
+
+## Updated
+
+- Added Prisma-backed CMS repository implementation:
+	- `src/content/cms/prismaRepositories.ts`
+	- `createPrismaCmsRepositories(...)`
+	- `loadCmsCollectionFromPrisma(...)`
+- Added async Prisma service bootstrap in `src/content/cms/factory.ts`:
+	- `createPrismaCmsContentService(...)`
+- Refactored local repository module to expose reusable collection-backed constructor:
+	- `createCmsRepositoriesFromCollection(...)`
+- Extended CMS/content barrel exports for Prisma repository/service constructors.
+
+## Scope Compliance
+
+- No UI changes.
+- No layout redesign.
+- No routing changes.
+- No admin panel implementation.
+- No AI chat modifications.
+- Backward compatibility preserved.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)

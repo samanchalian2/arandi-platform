@@ -504,3 +504,177 @@ Resolve the final Phase 2.4C responsive Header defect before beginning Phase 3.
 
 - npm run build ✅
 - npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+---
+
+## Session 016
+
+Date:
+
+2026-07-29
+
+## Objective
+
+Execute Phase 3.1 Enterprise CMS Architecture as architecture-only foundation.
+
+## Completed Actions
+
+- Designed Enterprise CMS layered architecture for future scalability:
+	- presentation compatibility layer (existing Next.js pages/components)
+	- content application layer (resolution/orchestration)
+	- CMS domain entity layer
+	- repository/infrastructure abstraction layer
+- Designed conceptual database model for:
+	- sites/locales/pages/page_versions/page_sections/content_blocks/cards
+	- menus/menu_items/themes/media_assets
+	- users/roles/permissions and relation tables
+- Designed multilingual architecture with locale overlays, explicit fallback chain, and translation completeness statuses.
+- Designed reusable Page Builder architecture with ordered section/block composition and schema-versioned blocks.
+- Designed generic card architecture for reusable typed enterprise cards.
+- Designed theme architecture mapped to existing design-token runtime variables to avoid UI/layout changes.
+- Designed RBAC architecture with enterprise roles and permission groups for content lifecycle governance.
+- Defined backward compatibility path preserving current provider/adapter contracts and route/layout behavior.
+- Explicitly kept admin panel implementation, UI redesign, page layout changes, and AI integration changes out of scope.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Phase 3.2 typed CMS contracts and repository interfaces.
+2. Add projection/mapping contracts between CMS entities and existing content outputs.
+3. Preserve full backward compatibility and keep UI/layout unchanged.
+
+---
+
+## Session 017
+
+Date:
+
+2026-07-29
+
+## Objective
+
+Implement Phase 3.2 exactly as documented: CMS core architecture, repositories, service layer, and core generic models with backward compatibility.
+
+## Completed Actions
+
+- Implemented `src/content/cms/types.ts` with enterprise CMS models for:
+	- pages, page versions, sections, blocks
+	- generic cards
+	- translations and localization state
+	- theme tokens and semantic/component overrides
+	- navigation menus/items
+	- media assets
+	- RBAC roles/permissions
+- Implemented repository contracts in `src/content/cms/repositories.ts`.
+- Implemented local domain-to-CMS projection in `src/content/cms/localMappers.ts`.
+- Implemented local in-memory repository adapter in `src/content/cms/localRepositories.ts` from existing EN/FA domain content.
+- Implemented service layer in `src/content/cms/services.ts`:
+	- locale resolution with fallback
+	- page lookup by slug+locale
+	- page-builder composition model
+	- active theme retrieval
+	- locale-aware menu retrieval
+	- translation lookup utilities
+- Implemented CMS factory/export wiring in `src/content/cms/factory.ts` and `src/content/cms/index.ts`.
+- Added additive provider integration:
+	- `ContentProvider.getCmsService()`
+	- retained existing provider outputs and contracts unchanged for backward compatibility.
+- Added CMS exports to `src/content/index.ts` for incremental adoption.
+
+## Scope Compliance
+
+- No UI changes.
+- No layout changes.
+- No routing changes.
+- No admin panel implementation.
+- No AI chat modifications.
+- Existing pages continue working.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Phase 3.3 incremental consumption bridge from local adapter outputs to CMS service outputs.
+2. Preserve output-shape parity for all existing page content contracts.
+3. Keep strict no-UI/no-routing/no-layout change policy.
+
+---
+
+## Session 018
+
+Date:
+
+2026-07-29
+
+## Objective
+
+Implement Phase 3.3 CMS Database Foundation with Prisma/PostgreSQL while preserving full backward compatibility and zero UI/layout/routing/AI changes.
+
+## Completed Actions
+
+- Installed and configured Prisma toolchain for the repository.
+- Added complete Prisma schema in `prisma/schema.prisma` for:
+	- Theme
+	- Language
+	- Page
+	- PageTranslation
+	- Section
+	- SectionTranslation
+	- Card
+	- CardTranslation
+	- Navigation
+	- NavigationTranslation
+	- Media
+	- Setting
+- Implemented UUID IDs and `createdAt`/`updatedAt` on all required entities.
+- Implemented translation-table strategy with `languageCode` for multilingual content (`en`, `fa`) and no page duplication.
+- Implemented Media model fields (`title`, `alt`, `caption`, `url`, `type`, `width`, `height`, `metadata`).
+- Implemented generic Setting model for future logo/company/social/theme/seo/contact use-cases.
+- Implemented Prisma-backed repository bridge:
+	- `src/content/cms/prismaRepositories.ts`
+	- `loadCmsCollectionFromPrisma(...)`
+	- `createPrismaCmsRepositories(...)`
+- Kept existing repository/service contracts intact by mapping DB data back into existing CMS model contracts.
+- Added async Prisma service constructor:
+	- `createPrismaCmsContentService(...)`.
+- Refactored local repository module for shared collection-backed construction:
+	- `createCmsRepositoriesFromCollection(...)`.
+- Added seed script (`prisma/seed.ts`) from current local CMS/domain content to preserve output parity.
+- Added npm scripts/config:
+	- `prisma:generate`
+	- `prisma:seed`
+	- `prisma.seed` command via `tsx`.
+
+## Scope Compliance
+
+- No UI changes.
+- No Header/Footer/layout modifications.
+- No routing changes.
+- No admin panel implementation.
+- No AI chat modifications.
+- Backward compatibility preserved.
+- Existing pages continue working.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ with one pre-existing warning in src/integrations/ai/gateway.ts
+
+## Next Session
+
+Continue with:
+
+1. Phase 3.4 consumption bridge from current local adapter output to Prisma-backed CMS service data.
+2. Preserve strict output-shape parity for all existing provider contracts.
+3. Keep no-UI/no-layout/no-routing/no-AI-change policy.
