@@ -28,6 +28,11 @@ export type CmsPage = {
     };
     translation: CmsPageTranslation | null;
     translations?: CmsPageTranslation[];
+    settings?: {
+        themeSlug: string;
+        navigationVisible: boolean;
+        pageOrder: number;
+    };
     createdAt: string;
     updatedAt: string;
 };
@@ -88,4 +93,25 @@ export type PageDetailsData = {
     page: CmsPage;
     theme: CmsTheme | null;
     sections: CmsSection[];
+};
+
+export type EditableTranslation = {
+    title: string;
+    seoTitle: string;
+    seoDescription: string;
+};
+
+export type UpdatePagePayload = {
+    id: string;
+    lang: "en" | "fa";
+    slug: string;
+    status: string;
+    themeSlug: string;
+    navigationVisible: boolean;
+    pageOrder: number;
+    seoKeywords: string[];
+    translations: {
+        en: EditableTranslation;
+        fa: EditableTranslation;
+    };
 };

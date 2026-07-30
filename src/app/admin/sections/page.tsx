@@ -1,4 +1,7 @@
-import { AdminEmptyState, AdminTable, AdminToolbar } from "@/components/admin";
+import Link from "next/link";
+
+import { AdminEmptyState, AdminToolbar } from "@/components/admin";
+import { buttonVariants } from "@/components/ui/button";
 import { requireAdminRoles } from "@/lib/admin/auth/guards";
 import { ADMIN_ROUTE_ROLES } from "@/lib/admin/auth/rbac";
 
@@ -7,20 +10,19 @@ export default async function AdminSectionsPage() {
 
     return (
         <div className="space-y-4">
-            <AdminToolbar title="Sections" description="Read-only section registry for initial admin foundation." />
-            <AdminTable
-                columns={[
-                    { key: "key", label: "Key" },
-                    { key: "type", label: "Type" },
-                    { key: "page", label: "Page" },
-                    { key: "order", label: "Order" },
-                ]}
-                rows={[
-                    { key: "hero", type: "hero", page: "home", order: 1 },
-                    { key: "features", type: "features", page: "home", order: 2 },
-                ]}
+            <AdminToolbar
+                title="Sections"
+                description="Page Builder foundation is page-scoped. Open a page and manage sections from its details view."
+                actions={
+                    <Link href="/admin/pages" className={buttonVariants({ size: "sm", variant: "outline" })}>
+                        Go to Pages
+                    </Link>
+                }
             />
-            <AdminEmptyState title="Editing disabled" description="Section editors and schema builders are intentionally out of scope in 4.1." />
+            <AdminEmptyState
+                title="Select a page to view sections"
+                description="Use Pages Management to open /admin/pages/[identifier]/sections with live CMS data."
+            />
         </div>
     );
 }

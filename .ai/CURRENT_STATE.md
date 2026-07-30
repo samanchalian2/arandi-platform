@@ -1,5 +1,213 @@
 # Current State
 
+## Phase 4.5 Status
+
+Completed on 2026-07-30 (Section Edit Mode and Ordering).
+
+### Implemented Scope
+
+- Added section detail/edit route:
+  - `/admin/pages/[identifier]/sections/[id]`
+- Added section detail/edit UX with:
+  - read-only mode
+  - edit mode
+  - EN/FA translation tabs
+  - dirty-state detection
+  - unsaved-changes browser unload warning
+  - client-side validation feedback
+
+### API Enhancements
+
+- Extended `GET /api/cms/sections/[id]` for section detail fetch.
+- Extended `PUT /api/cms/sections/[id]` with:
+  - section settings update support
+  - translation update support
+  - enabled state update support
+  - order update support
+  - translator-only field restriction (translation fields only)
+- Added `PATCH /api/cms/sections/reorder` with validation for:
+  - section ownership
+  - duplicate orders
+  - duplicate/invalid ids
+- Kept `DELETE /api/cms/sections/[id]` and enforced RBAC scope.
+
+### React Query Mutation Layer
+
+- Added `useSectionMutation` with:
+  - `updateSection()`
+  - `reorderSections()`
+  - `deleteSection()`
+- Implemented optimistic updates with rollback for list/detail caches.
+
+### Reusable Components Added
+
+- `AdminSectionEditForm`
+- `AdminSectionDetails`
+- `AdminSectionOrderEditor`
+- `AdminDeleteConfirmDialog`
+
+### Section List Upgrade
+
+- Upgraded `AdminSectionList` with:
+  - drag handle
+  - drag-and-drop reorder preview
+  - save order button
+  - optimistic reorder mutation flow
+  - link to section detail/edit page
+
+### RBAC Behavior Implemented
+
+- Viewer: GET/read only.
+- Editor: update/reorder allowed, delete denied.
+- Admin/SuperAdmin: update/reorder/delete allowed.
+- Translator: write permission limited to translation fields in section update; reorder/delete denied.
+
+### Validation
+
+- Client validation:
+  - required title
+  - max lengths
+  - valid section type
+- Server validation:
+  - schema/shape checks
+  - ownership checks (reorder)
+  - permission checks
+
+### Verification
+
+- `npm run build` ✅
+- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+- Runtime permission probes on local dev server verified expected denied outcomes:
+  - viewer update -> 403
+  - translator reorder -> 403
+  - editor delete -> 403
+  - translator structure update -> 403
+- Full CRUD happy-path runtime verification remains blocked by local CMS data/API dependency failures (`/api/cms/pages` returning 500 in current environment).
+
+### Scope Compliance
+
+- No public website UI changes.
+- No routing changes outside admin and admin CMS API scope.
+- No authentication architecture changes.
+- No RBAC foundation redesign.
+- No localization architecture changes.
+
+## Phase 4.4 Status
+
+Completed on 2026-07-30 (Section Management and Page Builder foundation, read-only).
+
+### Implemented Scope
+
+- Added page-scoped section management route:
+  - `/admin/pages/[identifier]/sections`
+- Added read-only section management using live CMS API data.
+- Implemented required reusable components:
+  - `AdminSectionList`
+  - `AdminSectionCard`
+  - `AdminSectionTypeBadge`
+  - `AdminDragPlaceholder`
+  - `AdminSectionEmptyState`
+  - `AdminSectionToolbar`
+- Added page-level orchestration component:
+  - `AdminPageSectionsManagement`
+
+### Section Management Features
+
+- View sections of a page.
+- View section order.
+- View section type.
+- View status (enabled/disabled).
+- View language availability.
+- View last update.
+- Search sections by key/type/title.
+- Filter sections by status.
+- Responsive table (desktop) and cards (mobile).
+
+### Data Layer Added (React Query)
+
+- `useSections(pageId)`
+- `useSection(id)`
+- Implemented through live `/api/cms/sections` calls (no mock data).
+
+### Page Details Enhancement
+
+- Added Sections panel improvements in `/admin/pages/[identifier]`:
+  - section count
+  - section preview
+  - link to `/admin/pages/[identifier]/sections`
+
+### Future-Phase Readiness
+
+- Added drag/reorder placeholder to prepare for Phase 4.5 section editing.
+- Preserved read-only architecture to enable Phase 4.6 card builder layering.
+
+### Scope Compliance
+
+- No public website UI changes.
+- No public routing changes.
+- No AI chat changes.
+- No authentication changes.
+- No RBAC architecture changes.
+- No localization architecture changes.
+- No section editing actions introduced in this phase.
+
+### Validation
+
+- `npm run build` ✅
+- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+
+## Phase 4.3 Status
+
+Completed on 2026-07-30 (Admin Page Editing, edit mode integration).
+
+### Implemented Scope
+
+- Added page edit mode on `/admin/pages/[identifier]` with read-only fallback mode retained.
+- Implemented editable fields for:
+  - slug/identifier
+  - status
+  - theme slug
+  - navigation visibility
+  - page order
+  - SEO keywords
+  - translation-specific title/SEO title/SEO description
+- Added EN/FA tabbed translation editing with independent per-language field state.
+- Added reusable admin form controls and validation message/saving bar components.
+
+### CMS API and Data Integration
+
+- Extended `GET /api/cms/pages/[identifier]` to include page-level settings payload:
+  - `themeSlug`
+  - `navigationVisible`
+  - `pageOrder`
+- Extended `PUT /api/cms/pages/[identifier]` to support edit-mode payload fields with:
+  - server validation for required/max-length/value ranges
+  - duplicate slug conflict detection (`409 CONFLICT`)
+  - settings persistence via `Setting` upserts keyed by page id
+- Connected details page save action to existing page endpoint through React Query mutation with optimistic cache updates.
+
+### UX Behaviors Added
+
+- Dirty-state detection for edit sessions.
+- Save/Cancel workflow.
+- Unsaved-changes warning on browser unload during active dirty edit state.
+- Client validation feedback before submit.
+
+### Scope Compliance
+
+- No public website changes.
+- No public routing changes.
+- No AI chat changes.
+- No Prisma schema changes.
+- No auth/RBAC model changes.
+- No localization architecture changes.
+- No section/card/media/theme editor expansion beyond page-level metadata settings.
+
+### Validation
+
+- `npm run build` ✅
+- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+
 ## Phase 4.2 Status
 
 Completed on 2026-07-30 (Admin Page Management, read-only integration).

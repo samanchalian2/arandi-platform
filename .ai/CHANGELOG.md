@@ -4,6 +4,166 @@ All important project changes are recorded here.
 
 ---
 
+# Version 0.4.6
+
+Date:
+
+2026-07-30
+
+## Added
+
+- Implemented Phase 4.5 Section Edit Mode and Ordering.
+- Added admin section detail route:
+	- `/admin/pages/[identifier]/sections/[id]`
+- Added reusable admin components:
+	- `AdminSectionEditForm`
+	- `AdminSectionDetails`
+	- `AdminSectionOrderEditor`
+	- `AdminDeleteConfirmDialog`
+- Added section mutation layer:
+	- `src/lib/admin/sections/useSectionMutation.ts`
+
+## Updated
+
+- Upgraded `AdminSectionList` with:
+	- drag handle
+	- drag-and-drop reorder preview
+	- save/reset order controls
+	- optimistic reorder behavior
+	- section detail navigation links
+- Updated `AdminPageSectionsManagement` to support role-aware ordering controls.
+- Expanded sections API client/types for detail update, reorder, and delete operations.
+
+## API
+
+- Extended `GET /api/cms/sections/[id]`.
+- Extended `PUT /api/cms/sections/[id]` with section settings and translation updates plus validation.
+- Added `PATCH /api/cms/sections/reorder` with ownership/id/order validation.
+- Preserved `DELETE /api/cms/sections/[id]` with enforced permission checks.
+- Enhanced CMS principal role mapping from admin session roles to CMS permission roles.
+
+## RBAC Rules Applied
+
+- Viewer: read-only.
+- Editor: update/reorder allowed; delete denied.
+- Admin/SuperAdmin: update/reorder/delete allowed.
+- Translator: translation-only section updates; reorder/delete denied.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+- Runtime RBAC probes verified expected 403 denials for restricted actions.
+
+---
+
+# Version 0.4.5
+
+Date:
+
+2026-07-30
+
+## Added
+
+- Implemented Phase 4.4 Section Management and Page Builder foundation (read-only).
+- Added page-scoped sections route:
+	- `/admin/pages/[identifier]/sections`
+- Added reusable admin section components:
+	- `AdminSectionList`
+	- `AdminSectionCard`
+	- `AdminSectionTypeBadge`
+	- `AdminDragPlaceholder`
+	- `AdminSectionEmptyState`
+	- `AdminSectionToolbar`
+	- `AdminPageSectionsManagement`
+- Added new admin section data layer:
+	- `src/lib/admin/sections/types.ts`
+	- `src/lib/admin/sections/api.ts`
+	- `src/lib/admin/sections/useSections.ts`
+	- `src/lib/admin/sections/useSection.ts`
+
+## Updated
+
+- Enhanced page details (`/admin/pages/[identifier]`) sections panel with:
+	- section count
+	- section preview
+	- link to page-scoped section management
+- Replaced legacy mock content in `/admin/sections` with guidance to use page-scoped section management flow.
+
+## Architecture Readiness
+
+- Prepared section management UX and component structure for:
+	- Phase 4.5 section editing
+	- Phase 4.6 card builder
+
+## Scope Compliance
+
+- No public website UI changes.
+- No public routing changes.
+- No AI chat changes.
+- No authentication/RBAC architecture changes.
+- No localization architecture changes.
+- No section editing/write actions introduced.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
+# Version 0.4.4
+
+Date:
+
+2026-07-30
+
+## Added
+
+- Implemented Phase 4.3 admin page edit mode on `/admin/pages/[identifier]`.
+- Added reusable admin form components for edit workflows:
+	- `AdminValidationMessage`
+	- `AdminTextField`
+	- `AdminTextarea`
+	- `AdminSelect`
+	- `AdminSwitch`
+	- `AdminTabs`
+	- `AdminFormSection`
+	- `AdminCancelButton`
+	- `AdminSaveBar`
+
+## Updated
+
+- Upgraded page details UI to support read-only/edit-mode toggle with:
+	- EN/FA independent tab editing
+	- dirty-state tracking
+	- save/cancel flow
+	- unsaved-change browser unload warning
+- Extended admin page client API/hook flow for optimistic-safe page updates.
+
+## API
+
+- Extended `GET /api/cms/pages/[identifier]` to return page-level settings payload.
+- Extended `PUT /api/cms/pages/[identifier]` to support edit-mode settings fields and stronger validation.
+- Added duplicate slug conflict check with `409 CONFLICT` response behavior.
+- Added `Setting` upsert persistence for `themeSlug`, `navigationVisible`, and `pageOrder`.
+
+## Scope Compliance
+
+- No public website changes.
+- No public routing changes.
+- No AI chat changes.
+- No Prisma schema changes.
+- No auth/RBAC model changes.
+- No localization architecture changes.
+
+## Verification
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+---
+
 # Version 0.1.0
 
 Date:

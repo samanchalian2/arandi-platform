@@ -6,6 +6,8 @@ import { asError, failure, success } from "../../_lib/http";
 import { mapPage } from "../../_lib/mappers";
 import { requirePermission } from "../../_lib/security";
 import {
+    parseOptionalBoolean,
+    parseOptionalNumber,
     parseLang,
     parseOptionalString,
     parseOptionalStringArray,
@@ -40,10 +42,40 @@ export async function GET(request: NextRequest, { params }: Params) {
             return failure("NOT_FOUND", "Page not found.", 404);
         }
 
-        return success(mapPage(page, lang, includeTranslations));
+        const settings = await prisma.setting.findMany({
+            where: {
+                key: {
+                    startsWith: `page.${page.id}.`,
+                },
+            },
+        });
+
+        const settingsMap = new Map(settings.map((item) => [item.key, item.value]));
+        const mapped = mapPage(page, lang, includeTranslations);
+
+        return success({
+            ...mapped,
+            settings: {
+                themeSlug: (settingsMap.get(`page.${page.id}.themeSlug`) as string | undefined) ?? "default",
+                navigationVisible: (settingsMap.get(`page.${page.id}.navigationVisible`) as boolean | undefined) ?? true,
+                pageOrder: (settingsMap.get(`page.${page.id}.pageOrder`) as number | undefined) ?? 0,
+            },
+        });
     } catch (error) {
         const err = asError(error);
         return failure("INTERNAL_ERROR", err.message, 500, err.details);
+    }
+}
+
+function assertRequiredString(value: string | undefined, fieldName: string) {
+    if (!value || value.trim().length === 0) {
+        throw new Error(`${fieldName} must be a non-empty string.`);
+    }
+}
+
+function assertMaxLength(value: string | undefined, fieldName: string, max: number) {
+    if (value && value.length > max) {
+        throw new Error(`${fieldName} must be at most ${max} characters.`);
     }
 }
 
@@ -64,10 +96,63 @@ export async function PUT(request: NextRequest, { params }: Params) {
         const status = parseOptionalString(body.status);
         const seoKeywords = parseOptionalStringArray(body.seoKeywords);
         const translations = body.translations ? parseTranslations(body.translations) : undefined;
+        const settings = body.settings;
+
+        const navigationVisible = settings && typeof settings === "object"
+            ? parseOptionalBoolean((settings as Record<string, unknown>).navigationVisible)
+            : undefined;
+        const pageOrder = settings && typeof settings === "object"
+            ? parseOptionalNumber((settings as Record<string, unknown>).pageOrder)
+            : undefined;
+        const themeSlug = settings && typeof settings === "object"
+            ? parseOptionalString((settings as Record<string, unknown>).themeSlug)
+            : undefined;
+
+        if (slug !== undefined) {
+            assertRequiredString(slug, "slug");
+            assertMaxLength(slug, "slug", 120);
+        }
+
+        if (status !== undefined && status !== "published" && status !== "draft") {
+            throw new Error("status must be either published or draft.");
+        }
+
+        if (seoKeywords !== undefined) {
+            if (seoKeywords.some((item) => item.length > 50)) {
+                throw new Error("Each SEO keyword must be at most 50 characters.");
+            }
+            if (seoKeywords.length > 25) {
+                throw new Error("SEO keywords must be at most 25 items.");
+            }
+        }
+
+        if (pageOrder !== undefined && (!Number.isInteger(pageOrder) || pageOrder < 0)) {
+            throw new Error("pageOrder must be a non-negative integer.");
+        }
+
+        assertMaxLength(themeSlug, "themeSlug", 80);
 
         const existing = await prisma.page.findUnique({ where: { id } });
         if (!existing) {
             return failure("NOT_FOUND", "Page not found.", 404);
+        }
+
+        if (slug && slug !== existing.slug) {
+            const duplicate = await prisma.page.findUnique({ where: { slug } });
+            if (duplicate && duplicate.id !== existing.id) {
+                return failure("CONFLICT", "Page slug already exists.", 409);
+            }
+        }
+
+        if (translations) {
+            for (const [languageCode, translation] of Object.entries(translations)) {
+                assertRequiredString(translation?.title, `translations.${languageCode}.title`);
+                assertRequiredString(translation?.seoTitle, `translations.${languageCode}.seoTitle`);
+                assertRequiredString(translation?.seoDescription, `translations.${languageCode}.seoDescription`);
+                assertMaxLength(translation?.title, `translations.${languageCode}.title`, 120);
+                assertMaxLength(translation?.seoTitle, `translations.${languageCode}.seoTitle`, 160);
+                assertMaxLength(translation?.seoDescription, `translations.${languageCode}.seoDescription`, 320);
+            }
         }
 
         const updated = await prisma.$transaction(async (tx) => {
@@ -109,6 +194,57 @@ export async function PUT(request: NextRequest, { params }: Params) {
                         },
                     });
                 }
+            }
+
+            if (themeSlug !== undefined) {
+                await tx.setting.upsert({
+                    where: { key: `page.${page.id}.themeSlug` },
+                    update: {
+                        value: themeSlug,
+                        group: "page",
+                        isPublic: false,
+                    },
+                    create: {
+                        key: `page.${page.id}.themeSlug`,
+                        value: themeSlug,
+                        group: "page",
+                        isPublic: false,
+                    },
+                });
+            }
+
+            if (navigationVisible !== undefined) {
+                await tx.setting.upsert({
+                    where: { key: `page.${page.id}.navigationVisible` },
+                    update: {
+                        value: navigationVisible,
+                        group: "page",
+                        isPublic: false,
+                    },
+                    create: {
+                        key: `page.${page.id}.navigationVisible`,
+                        value: navigationVisible,
+                        group: "page",
+                        isPublic: false,
+                    },
+                });
+            }
+
+            if (pageOrder !== undefined) {
+                await tx.setting.upsert({
+                    where: { key: `page.${page.id}.pageOrder` },
+                    update: {
+                        value: pageOrder,
+                        group: "page",
+                        isPublic: false,
+                    },
+                    create: {
+                        key: `page.${page.id}.pageOrder`,
+                        value: pageOrder,
+                        group: "page",
+                        isPublic: false,
+                    },
+                });
             }
 
             return tx.page.findUniqueOrThrow({

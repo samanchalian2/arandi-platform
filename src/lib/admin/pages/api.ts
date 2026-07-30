@@ -5,6 +5,7 @@ import type {
     CmsTheme,
     PageDetailsData,
     PageListItem,
+    UpdatePagePayload,
 } from "./types";
 
 async function readEnvelope<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
@@ -78,4 +79,39 @@ export async function fetchPageDetails(identifier: string, lang: "en" | "fa"): P
         theme: themeResult,
         sections,
     };
+}
+
+async function assertUniqueSlug(id: string, slug: string): Promise<void> {
+    const pages = await readEnvelope<CmsPage[]>(`/api/cms/pages?lang=en&translations=true`);
+    const duplicate = pages.find((page) => page.slug === slug && page.id !== id);
+    if (duplicate) {
+        throw new Error("Slug already exists. Please choose another identifier.");
+    }
+}
+
+export async function updatePage(payload: UpdatePagePayload): Promise<CmsPage> {
+    await assertUniqueSlug(payload.id, payload.slug);
+
+    const data = await readEnvelope<CmsPage>(`/api/cms/pages/${payload.id}?lang=${payload.lang}`, {
+        method: "PUT",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify({
+            slug: payload.slug,
+            status: payload.status,
+            seoKeywords: payload.seoKeywords,
+            translations: {
+                en: payload.translations.en,
+                fa: payload.translations.fa,
+            },
+            settings: {
+                themeSlug: payload.themeSlug,
+                navigationVisible: payload.navigationVisible,
+                pageOrder: payload.pageOrder,
+            },
+        }),
+    });
+
+    return data;
 }

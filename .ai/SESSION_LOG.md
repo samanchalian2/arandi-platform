@@ -1,5 +1,135 @@
 # Session Log
 
+## 2026-07-30 - Phase 4.5 Section Edit Mode and Ordering
+
+Objective
+
+- Implement section edit mode and ordering workflow for admin CMS page builder progression.
+
+Implemented
+
+- Added section detail/edit route:
+	- `/admin/pages/[identifier]/sections/[id]`
+- Added section detail component flow with:
+	- read-only mode
+	- edit mode
+	- EN/FA translation tabs
+	- dirty detection
+	- unsaved warning on browser unload
+	- validation feedback and save/cancel handling
+- Added mutation layer with optimistic updates and rollback:
+	- `updateSection()`
+	- `reorderSections()`
+	- `deleteSection()`
+- Upgraded section list for drag-and-drop reorder preview and save/reset order actions.
+- Added page-scoped section detail navigation from list rows/cards.
+
+API Work
+
+- Extended `src/app/api/cms/sections/[id]/route.ts`:
+	- GET by section id
+	- PUT validation + translator field restrictions
+	- DELETE with permission enforcement
+- Added `src/app/api/cms/sections/reorder/route.ts` with PATCH reorder flow and ownership/id/order validation.
+- Updated CMS security role normalization to map admin session roles to CMS roles for permission checks.
+
+RBAC Verification
+
+- viewer update action -> 403
+- translator reorder action -> 403
+- editor delete action -> 403
+- translator structure update action -> 403
+
+Validation
+
+- `npm run build`: PASS
+- `npm run lint`: PASS with one pre-existing warning (`src/integrations/ai/gateway.ts` unused `_request`).
+
+Notes
+
+- Runtime happy-path CRUD verification remains partially blocked in this environment by CMS API dependency failures (`/api/cms/pages` returning 500).
+- Card management work intentionally not started (reserved for next phase).
+
+## 2026-07-30 - Phase 4.4 Section Management and Page Builder Foundation
+
+Objective
+
+- Implement first Page Builder layer by introducing read-only section management in Admin Panel.
+
+Implemented
+
+- Added page-scoped route:
+	- `/admin/pages/[identifier]/sections`
+- Added reusable section management component set:
+	- `AdminSectionList`
+	- `AdminSectionCard`
+	- `AdminSectionTypeBadge`
+	- `AdminDragPlaceholder`
+	- `AdminSectionEmptyState`
+	- `AdminSectionToolbar`
+	- `AdminPageSectionsManagement`
+- Added admin section data hooks with React Query:
+	- `useSections(pageId)`
+	- `useSection(id)`
+- Wired data to existing CMS API endpoint (`/api/cms/sections`) with no mock data.
+- Enhanced page details with sections panel summary:
+	- section count
+	- section preview
+	- link to page-scoped section management route
+
+Validation
+
+- `npm run build`: PASS
+- `npm run lint`: PASS with one pre-existing warning (`src/integrations/ai/gateway.ts` unused `_request`).
+
+Scope Compliance
+
+- No public website UI changes.
+- No public routing changes.
+- No AI chat changes.
+- No authentication changes.
+- No RBAC architecture changes.
+- No localization architecture changes.
+- No section editing actions (read-only phase preserved).
+
+## 2026-07-30 - Phase 4.3 Admin Page Editing (Edit Mode)
+
+Objective
+
+- Implement page edit mode on `/admin/pages/[identifier]` while preserving scoped constraints.
+
+Implemented
+
+- Added edit-mode workflow to page details UI:
+	- read-only/edit toggle
+	- EN/FA independent translation tabs
+	- editable metadata/settings fields
+	- save/cancel controls
+	- dirty-state tracking and unload warning
+- Added reusable admin form primitives and utilities for validation/saving UX.
+- Extended page details data contract to include settings values needed by edit mode.
+- Added optimistic-safe save mutation through existing admin page hook/API layer.
+
+API Changes
+
+- Extended `src/app/api/cms/pages/[identifier]/route.ts`:
+	- GET now includes page settings derived from `Setting` rows.
+	- PUT now validates edit payload fields, checks duplicate slugs, and persists settings via upserts.
+
+Validation
+
+- `npm run build`: PASS
+- `npm run lint`: PASS with one pre-existing warning (`src/integrations/ai/gateway.ts` unused `_request`).
+
+Scope Compliance
+
+- No public website changes.
+- No public routing changes.
+- No AI chat changes.
+- No Prisma schema changes.
+- No auth/RBAC model changes.
+- No localization architecture changes.
+
 ## 2026-07-30 - Phase 4.2 Admin Page Management (Read-only Integration)
 
 Objective
