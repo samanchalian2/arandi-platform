@@ -47,7 +47,17 @@ export function failure(
 
 export function asError(error: unknown): { message: string; details?: unknown } {
     if (error instanceof Error) {
-        return { message: error.message };
+        const message = error.message;
+
+        if (message.includes("Environment variable not found: DATABASE_URL")) {
+            return { message: "Database is not configured. Set DATABASE_URL and retry." };
+        }
+
+        if (message.includes("Can't reach database server")) {
+            return { message: "Database is unavailable. Check connection and retry." };
+        }
+
+        return { message };
     }
 
     return {

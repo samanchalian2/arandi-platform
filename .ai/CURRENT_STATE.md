@@ -1,5 +1,217 @@
 # Current State
 
+## Phase 4.2 Status
+
+Completed on 2026-07-30 (Admin Page Management, read-only integration).
+
+### Implemented Scope
+
+- Replaced admin pages mock data with real CMS API integration.
+- Pages management now loads read-only data from CMS endpoints (primary source: `/api/cms/pages`).
+- Added page details route:
+  - `/admin/pages/[identifier]`
+- Added read-only detail sections:
+  - General Information
+  - Translations
+  - Theme
+  - Sections
+  - SEO placeholders
+  - Navigation information (route-based read-only summary)
+
+### Pages Management Features
+
+- Professional data table (desktop) and card list (mobile).
+- Pagination.
+- Sorting.
+- Search.
+- Filter by status.
+- Filter by language availability.
+- Empty state.
+- Loading state.
+- Error state.
+- Responsive behavior.
+
+### Reusable Components Added
+
+- `AdminSearchBar`
+- `AdminFilterBar`
+- `AdminPagination`
+- `AdminStatusBadge`
+- `AdminLanguageBadge`
+- `AdminPageCard`
+- `AdminDescriptionList`
+- `AdminSkeleton`
+
+### CMS Data Hooks Added
+
+- `usePages()`
+- `usePage()`
+- Implemented with React Query provider inside admin layout scope.
+
+### Scope Compliance
+
+- No public website changes.
+- No public routing changes.
+- No AI chat changes.
+- No Prisma schema changes.
+- No CMS service changes.
+- No localization architecture changes.
+- No authentication/RBAC changes.
+- No editing/create/delete/upload actions added.
+
+### Validation
+
+- `npm run build` ✅
+- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+
+## Phase 4.1 Status
+
+Completed on 2026-07-30 (Admin Panel foundation only).
+
+### Implemented Scope
+
+- Created protected admin application area under `/admin`.
+- Added full route skeleton:
+  - `/admin`
+  - `/admin/login`
+  - `/admin/dashboard`
+  - `/admin/pages`
+  - `/admin/sections`
+  - `/admin/cards`
+  - `/admin/media`
+  - `/admin/navigation`
+  - `/admin/theme`
+  - `/admin/settings`
+  - `/admin/users`
+  - `/admin/forbidden`
+- Added reusable admin layout foundation:
+  - Sidebar
+  - Topbar/Header
+  - Breadcrumb
+  - user menu placeholder
+  - notifications placeholder
+  - responsive mobile sidebar overlay
+  - RTL/LTR support
+
+### Auth + RBAC Foundation (Mock)
+
+- Added mock session abstraction and role model:
+  - `SuperAdmin`
+  - `Admin`
+  - `Editor`
+  - `Translator`
+  - `Viewer`
+- Added auth service/guards and route-role map.
+- Added proxy-level admin protection for `/admin/*`.
+- Unauthorized role access now returns a 403 route (`/admin/forbidden`).
+
+### Dashboard Foundation
+
+- Implemented dashboard with placeholder stat cards:
+  - Pages
+  - Sections
+  - Cards
+  - Media
+  - Users
+  - Languages
+  - Theme
+  - Recent Activity
+
+### Reusable Admin Design System Components
+
+- `AdminCard`
+- `AdminTable`
+- `AdminSidebar`
+- `AdminHeader`
+- `AdminToolbar`
+- `AdminStatCard`
+- `AdminEmptyState`
+- `AdminLoading`
+- `AdminModal`
+- `AdminConfirmDialog`
+
+### Validation
+
+- `npm run build` ✅
+- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+- Runtime auth/RBAC spot-checks:
+  - unauthenticated access -> redirect to `/admin/login`
+  - `Viewer` on `/admin/theme` -> `403`
+  - `Viewer` on `/admin/pages` -> `200`
+  - `Admin` on `/admin/theme` -> `200`
+
+### Scope Compliance
+
+- No CRUD implementation.
+- No forms/editors/uploads.
+- No public website routing/content changes.
+- No AI chat changes.
+- No CMS service changes.
+- No Prisma schema changes.
+- No localization behavior changes.
+
+## Phase 3.5 Status
+
+Completed on 2026-07-30 (validation and integration QA phase).
+
+### QA Scope Executed
+
+- Endpoint families covered:
+  - Pages: GET, POST, PUT, DELETE
+  - Sections: GET, POST, PUT, DELETE
+  - Cards: GET, POST, PUT, DELETE
+  - Theme: GET, PUT
+  - Media: GET, POST, PUT, DELETE
+- Translation behavior validated for:
+  - EN
+  - FA
+  - fallback (`unknown -> en`)
+- Prisma validation focus:
+  - relations reviewed in schema
+  - onDelete behavior reviewed (Cascade/SetNull/Restrict)
+  - foreign-key relation mapping reviewed
+  - translation table constraints reviewed
+  - seed command execution checked
+- Backward compatibility smoke-tested across active website routes.
+
+### Discovered and Fixed Issues
+
+- Fixed API internal error leakage for missing/unreachable DB in `src/app/api/cms/_lib/http.ts`.
+  - Before: Prisma internal invocation details were returned to clients.
+  - After: sanitized operational messages are returned.
+- Fixed wrong error classification in page routes:
+  - `POST /api/cms/pages` invalid translation payload returned 500.
+  - Updated validation mapping in:
+    - `src/app/api/cms/pages/route.ts`
+    - `src/app/api/cms/pages/[identifier]/route.ts`
+  - Now returns `BAD_REQUEST` (400) for validation errors.
+
+### Validation Results
+
+- `npm run build` ✅
+- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
+- API permission matrix (all endpoints with `x-cms-roles: guest`) returned expected `403 FORBIDDEN`.
+- Input validation checks for malformed UUIDs across id-routes returned expected `400 BAD_REQUEST`.
+- Translation parser + mapper checks confirmed:
+  - `lang=fa -> fa`
+  - `lang=en -> en`
+  - fallback for unsupported lang -> `en`
+- Backward compatibility smoke checks passed (`/`, `/company`, `/services`, `/solutions`, `/industries`, `/projects`, `/contact` with EN/FA query variants).
+
+### Remaining Risks
+
+- Full CRUD happy-path execution against live DB is blocked until `DATABASE_URL` points to a reachable PostgreSQL instance.
+- `prisma:seed` currently fails in this environment because local PostgreSQL is not running at configured endpoint.
+
+### Admin Panel Readiness
+
+- API contract, validation behavior, error envelope, and RBAC hooks are ready for Admin Panel integration.
+- Operational prerequisite before Admin Panel build:
+  - provision reachable PostgreSQL
+  - set `DATABASE_URL`
+  - run migration + seed
+  - rerun full endpoint CRUD happy-path QA
+
 ## Phase 3.4 Status
 
 Completed on 2026-07-29 (implementation phase).

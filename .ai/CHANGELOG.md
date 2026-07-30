@@ -311,14 +311,11 @@ Date:
 
 ## Verification
 
-- npm run build ✅
-- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
 
 ---
 
 # Version 0.2.7
 
-Date:
 
 2026-07-28
 
@@ -331,28 +328,131 @@ Date:
 - Added a canonical enterprise navigation items builder in src/content/navigation.ts and reused it in Header to eliminate duplicate construction.
 - Kept provider, adapters, domain models, schemas, and overall content-system boundaries unchanged.
 
-## Verification
-
-- npm run build ✅
-- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
-
 ---
 
 # Version 0.2.8
-
 Date:
 
 2026-07-28
-
-## Updated
-
-- Completed Phase 2.4A global design system polish with no architecture changes.
-- Enhanced global CSS design tokens and reusable visual utilities for:
 	- Typography rhythm
 	- Spacing consistency
 	- Elevation/shadow system
-	- Glass surfaces
-	- Gradient surfaces
+
+	---
+
+	# Version 0.4.4
+
+	Date:
+
+	2026-07-30
+
+	## Updated
+
+	- Executed Phase 3.5 CMS API Validation & Integration QA (no UI/layout/routing/AI changes).
+	- Validated endpoint families and methods:
+	  - Pages: GET/POST/PUT/DELETE
+	  - Sections: GET/POST/PUT/DELETE
+	  - Cards: GET/POST/PUT/DELETE
+	  - Theme: GET/PUT
+	  - Media: GET/POST/PUT/DELETE
+	- Validated translation behavior for EN/FA and fallback path.
+	- Validated RBAC gates across all routes using forbidden-role matrix.
+	- Validated request schema guards on malformed UUID and bad translation payload paths.
+	- Performed backward-compatibility route smoke checks across existing website pages.
+
+	## Fixed
+
+	- Sanitized internal DB/Prisma operational errors in API responses to prevent leaking internal stack/invocation details:
+	  - `src/app/api/cms/_lib/http.ts`
+	- Corrected page validation error mapping from 500 to 400 (`BAD_REQUEST`) for invalid translation payloads:
+	  - `src/app/api/cms/pages/route.ts`
+	  - `src/app/api/cms/pages/[identifier]/route.ts`
+
+	## Validation
+
+	- npm run build ✅
+	- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+	## Risks / Blockers
+
+	- Full DB-backed CRUD happy-path validation is blocked in this environment until `DATABASE_URL` is configured to a reachable PostgreSQL instance.
+	- `npm run prisma:seed` currently fails because no PostgreSQL server is reachable at localhost:5432.
+
+	## Admin Panel Readiness
+
+	- API surface and validation contracts are ready.
+	- Admin Panel implementation remains intentionally not started.
+
+	---
+
+	# Version 0.5.0
+
+	Date:
+
+	2026-07-30
+
+	## Added
+
+	- Implemented Phase 4.1 Admin Panel foundation under `/admin`.
+	- Added complete admin route skeleton:
+		- `/admin`
+		- `/admin/login`
+		- `/admin/dashboard`
+		- `/admin/pages`
+		- `/admin/sections`
+		- `/admin/cards`
+		- `/admin/media`
+		- `/admin/navigation`
+		- `/admin/theme`
+		- `/admin/settings`
+		- `/admin/users`
+		- `/admin/forbidden`
+	- Added reusable admin design-system components:
+		- `AdminCard`
+		- `AdminTable`
+		- `AdminSidebar`
+		- `AdminHeader`
+		- `AdminToolbar`
+		- `AdminStatCard`
+		- `AdminEmptyState`
+		- `AdminLoading`
+		- `AdminModal`
+		- `AdminConfirmDialog`
+	- Added admin shell orchestration component:
+		- `AdminLayoutShell`
+
+	## Security / Auth Foundation
+
+	- Added mock authentication/session abstraction and role model.
+	- Added route-role RBAC map for all admin routes.
+	- Added proxy-based admin protection under `/admin/:path*`.
+	- Added role-aware forbidden route response behavior.
+
+	## Updated
+
+	- Replaced deprecated `middleware` convention with Next.js `proxy` convention.
+	- Fixed role-denied runtime behavior to avoid experimental `forbidden()` dependency in current Next config.
+
+	## Scope Compliance
+
+	- No public website changes.
+	- No public routing changes.
+	- No AI chat changes.
+	- No CMS service changes.
+	- No Prisma schema changes.
+	- No localization behavior changes.
+	- No CRUD/forms/editors/uploads.
+
+	## Validation
+
+	- npm run build ✅
+	- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
+
+	## Runtime Verification
+
+	- Unauthenticated `/admin/*` access redirects to `/admin/login`.
+	- Unauthorized role access returns 403 route behavior.
+	- Authorized role access returns 200 on permitted routes.
 	- Motion and transition timing
 - Improved shared UI consistency across reusable components:
 	- Button sizing, radius, hover/focus quality
@@ -418,6 +518,61 @@ Date:
 	- animated avatar states
 	- tokenized chat shell and scroll/empty-state utilities
 - Kept architecture, routing, localization architecture, provider/adapter/domain/schema, and AI integration unchanged.
+
+---
+
+# Version 0.5.1
+
+Date:
+
+2026-07-30
+
+## Updated
+
+- Implemented Phase 4.2 Admin Page Management as read-only CMS integration.
+- Replaced mock data in `/admin/pages` with live data from CMS APIs.
+- Added `/admin/pages/[identifier]` read-only detail screen.
+- Added React Query-based CMS data hooks:
+	- `usePages()`
+	- `usePage()`
+- Added read-only list features:
+	- search
+	- sorting
+	- pagination
+	- status filter
+	- language filter
+	- loading/empty/error states
+- Added responsive table/card rendering for pages management.
+
+## Added
+
+- New reusable admin components:
+	- `AdminSearchBar`
+	- `AdminFilterBar`
+	- `AdminPagination`
+	- `AdminStatusBadge`
+	- `AdminLanguageBadge`
+	- `AdminPageCard`
+	- `AdminDescriptionList`
+	- `AdminSkeleton`
+	- `AdminPagesManagement`
+	- `AdminPageDetails`
+	- `AdminQueryProvider`
+
+## Scope Compliance
+
+- No public website changes.
+- No public routing changes.
+- No AI chat changes.
+- No Prisma schema changes.
+- No CMS service changes.
+- No localization/auth/RBAC changes.
+- No CRUD actions implemented.
+
+## Validation
+
+- npm run build ✅
+- npm run lint ✅ (with one pre-existing warning in src/integrations/ai/gateway.ts)
 
 ## Verification
 

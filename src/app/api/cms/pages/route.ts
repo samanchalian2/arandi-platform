@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         return success(mapPage(created, lang, true), 201);
     } catch (error) {
         const err = asError(error);
-        if (err.message.includes("must be")) {
+        if (err.message.includes("must")) {
             return failure("BAD_REQUEST", err.message, 400);
         }
         return failure("INTERNAL_ERROR", err.message, 500, err.details);

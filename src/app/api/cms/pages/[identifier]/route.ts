@@ -121,7 +121,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         return success(mapPage(updated, lang, true));
     } catch (error) {
         const err = asError(error);
-        if (err.message.includes("must be") || err.message.includes("Expected")) {
+        if (err.message.includes("must") || err.message.includes("Expected")) {
             return failure("BAD_REQUEST", err.message, 400);
         }
 
@@ -148,7 +148,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         return success({ id, deleted: true });
     } catch (error) {
         const err = asError(error);
-        if (err.message.includes("must be")) {
+        if (err.message.includes("must")) {
             return failure("BAD_REQUEST", err.message, 400);
         }
 
