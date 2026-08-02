@@ -48,20 +48,25 @@ export function failure(
 export function asError(error: unknown): { message: string; details?: unknown } {
     if (error instanceof Error) {
         const message = error.message;
+        const isSafeRequestError = [
+            "must",
+            "Expected",
+            "Duplicate",
+            "invalid",
+            "not allowed",
+            "does not exist",
+            "mismatch",
+            "required",
+        ].some((fragment) => message.includes(fragment));
 
-        if (message.includes("Environment variable not found: DATABASE_URL")) {
-            return { message: "Database is not configured. Set DATABASE_URL and retry." };
+        if (isSafeRequestError) {
+            return { message };
         }
 
-        if (message.includes("Can't reach database server")) {
-            return { message: "Database is unavailable. Check connection and retry." };
-        }
-
-        return { message };
+        console.error("CMS API request failed.", error);
+        return { message: "Unable to complete the CMS request." };
     }
 
-    return {
-        message: "Unexpected error.",
-        details: error,
-    };
+    console.error("CMS API request failed with a non-error value.");
+    return { message: "Unable to complete the CMS request." };
 }

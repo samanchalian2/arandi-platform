@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { useSectionMutation, type SectionListItem } from "@/lib/admin/sections";
+import { isSectionReorderAvailable, reorderIds } from "@/lib/admin/sections/ordering";
 
 import { buttonVariants } from "@/components/ui/button";
 
@@ -29,33 +30,26 @@ type AdminSectionListProps = {
     canReorder: boolean;
 };
 
-function reorderIds(ids: string[], fromId: string, toId: string): string[] {
-    const fromIndex = ids.indexOf(fromId);
-    const toIndex = ids.indexOf(toId);
-
-    if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
-        return ids;
-    }
-
-    const next = [...ids];
-    const [moved] = next.splice(fromIndex, 1);
-    next.splice(toIndex, 0, moved);
-    return next;
-}
-
 export function AdminSectionList({ sections, isLoading, isError, errorMessage, pageId, pageIdentifier, lang, canReorder }: AdminSectionListProps) {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<SectionStatusFilter>("all");
-    const [draftOrderIds, setDraftOrderIds] = useState<string[]>([]);
+    const [draftOrder, setDraftOrder] = useState<{ source: string; ids: string[] } | null>(null);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [localError, setLocalError] = useState<string | null>(null);
 
     const { reorderSections, isReordering, reorderError } = useSectionMutation();
+    const canonicalItems = useMemo(() => [...sections].sort((a, b) => a.order - b.order || a.id.localeCompare(b.id)), [sections]);
+    const canonicalIds = useMemo(() => canonicalItems.map((item) => item.id), [canonicalItems]);
+    const canonicalSource = canonicalIds.join(",");
+    const filtersActive = search.trim().length > 0 || status !== "all";
+    const reorderAvailable = isSectionReorderAvailable(canReorder, search, status);
+    const validDraftIds = draftOrder?.source === canonicalSource ? draftOrder.ids : null;
+    const hasDraftOrder = Boolean(validDraftIds);
 
     const filtered = useMemo(() => {
         const query = search.trim().toLowerCase();
 
-        return sections
+        return canonicalItems
             .filter((item) => {
                 const statusMatch = status === "all" || item.status === status;
                 if (!statusMatch) {
@@ -71,18 +65,19 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
                     item.type.toLowerCase().includes(query) ||
                     item.title.toLowerCase().includes(query)
                 );
-            })
-            .sort((a, b) => a.order - b.order);
-    }, [search, sections, status]);
+            });
+    }, [canonicalItems, search, status]);
 
-    const byId = useMemo(() => new Map(filtered.map((item) => [item.id, item])), [filtered]);
-    const baseIds = useMemo(() => filtered.map((item) => item.id), [filtered]);
-    const activeIds = draftOrderIds.length > 0 ? draftOrderIds : baseIds;
-    const orderedItems = activeIds.map((id) => byId.get(id)).filter((item): item is SectionListItem => Boolean(item));
-    const hasDraftOrder = draftOrderIds.length > 0;
+    const byId = useMemo(() => new Map(canonicalItems.map((item) => [item.id, item])), [canonicalItems]);
+    const visibleIds = useMemo(() => new Set(filtered.map((item) => item.id)), [filtered]);
+    const activeIds = validDraftIds ?? canonicalIds;
+    const orderedItems = activeIds
+        .filter((id) => !filtersActive || visibleIds.has(id))
+        .map((id) => byId.get(id))
+        .filter((item): item is SectionListItem => Boolean(item));
 
     const onDragStart = (id: string) => {
-        if (!canReorder) {
+        if (!reorderAvailable) {
             return;
         }
 
@@ -91,23 +86,45 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
     };
 
     const onDropItem = (targetId: string) => {
-        if (!canReorder || !draggingId) {
+        if (!reorderAvailable || !draggingId) {
             return;
         }
 
-        const ids = hasDraftOrder ? draftOrderIds : baseIds;
-        setDraftOrderIds(reorderIds(ids, draggingId, targetId));
+        const ids = validDraftIds ?? canonicalIds;
+        setDraftOrder({
+            source: canonicalSource,
+            ids: reorderIds(ids, draggingId, targetId),
+        });
         setDraggingId(null);
     };
 
     const resetOrder = () => {
-        setDraftOrderIds([]);
+        setDraftOrder(null);
         setDraggingId(null);
         setLocalError(null);
     };
 
+    const moveItem = (id: string, direction: -1 | 1) => {
+        if (!reorderAvailable) {
+            return;
+        }
+
+        const ids = validDraftIds ?? canonicalIds;
+        const currentIndex = ids.indexOf(id);
+        const targetIndex = currentIndex + direction;
+        if (currentIndex < 0 || targetIndex < 0 || targetIndex >= ids.length) {
+            return;
+        }
+
+        setDraftOrder({
+            source: canonicalSource,
+            ids: reorderIds(ids, id, ids[targetIndex]),
+        });
+        setLocalError(null);
+    };
+
     const saveOrder = async () => {
-        if (!canReorder || !hasDraftOrder) {
+        if (!reorderAvailable || !validDraftIds) {
             return;
         }
 
@@ -115,13 +132,15 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
             await reorderSections({
                 pageId,
                 lang,
-                items: draftOrderIds.map((id, index) => ({
+                items: validDraftIds.map((id, index) => ({
                     id,
                     order: index + 1,
                 })),
             });
             resetOrder();
         } catch (error) {
+            setDraftOrder(null);
+            setDraggingId(null);
             setLocalError(error instanceof Error ? error.message : "Failed to reorder sections.");
         }
     };
@@ -141,21 +160,27 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
 
     return (
         <div className="space-y-4">
-            <AdminSectionOrderEditor canReorder={canReorder} dirty={hasDraftOrder} saving={isReordering} onSave={() => void saveOrder()} onReset={resetOrder} />
+            <AdminSectionOrderEditor canReorder={reorderAvailable} dirty={hasDraftOrder} saving={isReordering} onSave={() => void saveOrder()} onReset={resetOrder} />
 
             <div className="grid gap-3 md:grid-cols-[2fr_1fr]">
                 <AdminTextField
                     label="Search Sections"
                     placeholder="Search by key, type, or title"
                     value={search}
-                    onChange={setSearch}
+                    onChange={(value) => {
+                        resetOrder();
+                        setSearch(value);
+                    }}
                 />
                 <label className="space-y-2 text-sm font-medium">
                     <span>Status</span>
                     <select
                         className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                         value={status}
-                        onChange={(event) => setStatus(event.target.value as SectionStatusFilter)}
+                        onChange={(event) => {
+                            resetOrder();
+                            setStatus(event.target.value as SectionStatusFilter);
+                        }}
                     >
                         <option value="all">All</option>
                         <option value="enabled">Enabled</option>
@@ -164,14 +189,20 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
                 </label>
             </div>
 
+            {canReorder && filtersActive ? (
+                <p className="text-sm text-muted-foreground">
+                    Clear search and status filters to reorder the complete Section collection.
+                </p>
+            ) : null}
+
             {orderedItems.length === 0 ? <AdminSectionEmptyState hasFilters={search.length > 0 || status !== "all"} /> : null}
 
             {orderedItems.length > 0 ? (
                 <>
                     <div className="hidden md:block">
                         <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[var(--elevation-1)]">
-                            <div className="grid grid-cols-[56px_76px_1.4fr_1fr_110px_110px_120px_120px] gap-3 border-b border-border/60 bg-muted/40 px-4 py-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                                <span>Drag</span>
+                            <div className="grid grid-cols-[96px_76px_1.4fr_1fr_110px_110px_120px_120px] gap-3 border-b border-border/60 bg-muted/40 px-4 py-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                                <span>Move</span>
                                 <span>Order</span>
                                 <span>Section</span>
                                 <span>Type</span>
@@ -184,13 +215,33 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
                                 {orderedItems.map((item, index) => (
                                     <div
                                         key={item.id}
-                                        draggable={canReorder}
+                                        draggable={reorderAvailable}
                                         onDragStart={() => onDragStart(item.id)}
                                         onDragOver={(event) => event.preventDefault()}
                                         onDrop={() => onDropItem(item.id)}
-                                        className="grid grid-cols-[56px_76px_1.4fr_1fr_110px_110px_120px_120px] items-center gap-3 px-4 py-3 text-sm"
+                                        className="grid grid-cols-[96px_76px_1.4fr_1fr_110px_110px_120px_120px] items-center gap-3 px-4 py-3 text-sm"
                                     >
-                                        <span className={`select-none text-lg ${canReorder ? "cursor-grab" : "text-muted-foreground"}`}>::</span>
+                                        <div className="flex items-center gap-1">
+                                            <span className={`select-none text-lg ${reorderAvailable ? "cursor-grab" : "text-muted-foreground"}`}>::</span>
+                                            <button
+                                                type="button"
+                                                className={buttonVariants({ size: "icon-xs", variant: "ghost" })}
+                                                onClick={() => moveItem(item.id, -1)}
+                                                disabled={!reorderAvailable || index === 0}
+                                                aria-label={`Move ${item.title} up`}
+                                            >
+                                                ↑
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={buttonVariants({ size: "icon-xs", variant: "ghost" })}
+                                                onClick={() => moveItem(item.id, 1)}
+                                                disabled={!reorderAvailable || index === orderedItems.length - 1}
+                                                aria-label={`Move ${item.title} down`}
+                                            >
+                                                ↓
+                                            </button>
+                                        </div>
                                         <span>{index + 1}</span>
                                         <div>
                                             <p className="font-medium">{item.title}</p>
@@ -213,7 +264,7 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
                         {orderedItems.map((item, index) => (
                             <div
                                 key={item.id}
-                                draggable={canReorder}
+                                draggable={reorderAvailable}
                                 onDragStart={() => onDragStart(item.id)}
                                 onDragOver={(event) => event.preventDefault()}
                                 onDrop={() => onDropItem(item.id)}
@@ -230,7 +281,25 @@ export function AdminSectionList({ sections, isLoading, isError, errorMessage, p
                                     subtitle={item.subtitle}
                                 />
                                 <div className="mt-2 flex items-center justify-between">
-                                    <span className={`text-sm ${canReorder ? "cursor-grab" : "text-muted-foreground"}`}>Drag: ::</span>
+                                    <div className="flex items-center gap-1">
+                                        <span className={`text-sm ${reorderAvailable ? "cursor-grab" : "text-muted-foreground"}`}>Drag: ::</span>
+                                        <button
+                                            type="button"
+                                            className={buttonVariants({ size: "xs", variant: "outline" })}
+                                            onClick={() => moveItem(item.id, -1)}
+                                            disabled={!reorderAvailable || index === 0}
+                                        >
+                                            Move up
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={buttonVariants({ size: "xs", variant: "outline" })}
+                                            onClick={() => moveItem(item.id, 1)}
+                                            disabled={!reorderAvailable || index === orderedItems.length - 1}
+                                        >
+                                            Move down
+                                        </button>
+                                    </div>
                                     <Link href={`/admin/pages/${pageIdentifier}/sections/${item.id}?lang=${lang}`} className={buttonVariants({ size: "xs", variant: "outline" })}>
                                         Details
                                     </Link>

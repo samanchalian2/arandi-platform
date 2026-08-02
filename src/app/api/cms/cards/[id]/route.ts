@@ -1,22 +1,13 @@
+import { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
-import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
+import { getCardUpdateScopeError, isStaleCardUpdate, parseCardUpdateInput } from "../../_lib/card-input";
 import { asError, failure, success } from "../../_lib/http";
 import { mapCard } from "../../_lib/mappers";
-import { requirePermission } from "../../_lib/security";
-import {
-    isRecord,
-    parseLang,
-    parseOptionalBoolean,
-    parseOptionalNumber,
-    parseOptionalString,
-    parseOptionalStringArray,
-    parseTranslations,
-    parseUuid,
-    readJson,
-} from "../../_lib/validation";
+import { hasAnyRole, readPrincipal, requireAnyPermission, requirePermission } from "../../_lib/security";
+import { parseLang, parseUuid, readJson } from "../../_lib/validation";
 
 type Params = {
     params: Promise<{
@@ -24,8 +15,38 @@ type Params = {
     }>;
 };
 
+export async function GET(request: NextRequest, { params }: Params) {
+    const forbidden = requirePermission(request, "card.read");
+    if (forbidden) {
+        return forbidden;
+    }
+
+    try {
+        const { id: rawId } = await params;
+        const id = parseUuid(rawId, "id");
+        const lang = parseLang(request.nextUrl.searchParams.get("lang"));
+        const includeTranslations = request.nextUrl.searchParams.get("translations") !== "false";
+
+        const card = await prisma.card.findUnique({
+            where: { id },
+            include: { translations: true, media: true },
+        });
+        if (!card) {
+            return failure("NOT_FOUND", "Card not found.", 404);
+        }
+
+        return success(mapCard(card, lang, includeTranslations));
+    } catch (error) {
+        const err = asError(error);
+        if (err.message.includes("must")) {
+            return failure("BAD_REQUEST", err.message, 400);
+        }
+        return failure("INTERNAL_ERROR", "Unable to load Card.", 500);
+    }
+}
+
 export async function PUT(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "card.write");
+    const forbidden = requireAnyPermission(request, ["card.write", "card.translate"]);
     if (forbidden) {
         return forbidden;
     }
@@ -34,54 +55,81 @@ export async function PUT(request: NextRequest, { params }: Params) {
         const { id: rawId } = await params;
         const id = parseUuid(rawId, "id");
         const body = await readJson(request);
+        const input = parseCardUpdateInput(body);
+        const principal = readPrincipal(request);
+        const translatorOnly = hasAnyRole(principal, ["translator"])
+            && !hasAnyRole(principal, ["super_admin", "cms_admin", "editor"]);
 
-        const key = parseOptionalString(body.key);
-        const sectionIdRaw = parseOptionalString(body.sectionId);
-        const sectionId = sectionIdRaw ? parseUuid(sectionIdRaw, "sectionId") : undefined;
-        const variant = parseOptionalString(body.variant);
-        const order = parseOptionalNumber(body.order);
-        const active = parseOptionalBoolean(body.active);
-        const status = parseOptionalString(body.status);
-        const mediaIdRaw = parseOptionalString(body.mediaId);
-        const mediaId = mediaIdRaw ? parseUuid(mediaIdRaw, "mediaId") : undefined;
-        const tags = parseOptionalStringArray(body.tags);
-        const metrics = isRecord(body.metrics) ? body.metrics : undefined;
-        const payload = isRecord(body.payload) ? body.payload : undefined;
-        const translations = body.translations ? parseTranslations(body.translations) : undefined;
-
-        const existing = await prisma.card.findUnique({ where: { id } });
-        if (!existing) {
-            return failure("NOT_FOUND", "Card not found.", 404);
+        const scopeError = getCardUpdateScopeError(translatorOnly, input);
+        if (scopeError) {
+            return failure("FORBIDDEN", scopeError, 403);
         }
 
-        const publishState = status ?? (active === undefined ? undefined : active ? "published" : "draft");
-
         const updated = await prisma.$transaction(async (tx) => {
-            const card = await tx.card.update({
+            const existing = await tx.card.findUnique({
                 where: { id },
+                select: { id: true, updatedAt: true },
+            });
+            if (!existing) {
+                throw new CardNotFoundError();
+            }
+
+            if (isStaleCardUpdate(existing.updatedAt, input.expectedUpdatedAt)) {
+                throw new StaleCardUpdateError();
+            }
+
+            if (input.sectionId) {
+                const section = await tx.section.findUnique({
+                    where: { id: input.sectionId },
+                    select: { id: true },
+                });
+                if (!section) {
+                    throw new Error("Referenced Section does not exist.");
+                }
+            }
+
+            if (input.mediaId) {
+                const media = await tx.media.findUnique({
+                    where: { id: input.mediaId },
+                    select: { id: true },
+                });
+                if (!media) {
+                    throw new Error("Referenced Media does not exist.");
+                }
+            }
+
+            const updateResult = await tx.card.updateMany({
+                where: {
+                    id,
+                    updatedAt: input.expectedUpdatedAt ?? undefined,
+                },
                 data: {
-                    key: key ?? undefined,
-                    sectionId: sectionId ?? undefined,
-                    variant: variant ?? undefined,
-                    order: order ?? undefined,
-                    publishState: publishState ?? undefined,
-                    mediaId: mediaId ?? undefined,
-                    tags: tags ?? undefined,
-                    metrics: (metrics as Prisma.InputJsonValue | undefined) ?? undefined,
-                    payload: (payload as Prisma.InputJsonValue | undefined) ?? undefined,
+                    key: input.key,
+                    sectionId: input.sectionId,
+                    variant: input.variant,
+                    order: input.order,
+                    publishState: input.publishState,
+                    mediaId: input.mediaId,
+                    tags: input.tags,
+                    metrics: input.metrics as Prisma.InputJsonValue | undefined,
+                    payload: input.payload as Prisma.InputJsonValue | undefined,
+                    updatedAt: new Date(),
                 },
             });
+            if (updateResult.count !== 1) {
+                throw new StaleCardUpdateError();
+            }
 
-            if (translations) {
-                for (const [languageCode, translation] of Object.entries(translations)) {
-                    if (!translation?.title) {
+            if (input.translations) {
+                for (const [languageCode, translation] of Object.entries(input.translations)) {
+                    if (!translation) {
                         continue;
                     }
 
                     await tx.cardTranslation.upsert({
                         where: {
                             cardId_languageCode: {
-                                cardId: card.id,
+                                cardId: id,
                                 languageCode,
                             },
                         },
@@ -94,9 +142,9 @@ export async function PUT(request: NextRequest, { params }: Params) {
                             ctaHref: translation.ctaHref,
                         },
                         create: {
-                            cardId: card.id,
+                            cardId: id,
                             languageCode,
-                            title: translation.title,
+                            title: translation.title!,
                             subtitle: translation.subtitle,
                             description: translation.description,
                             statusBadge: translation.statusBadge,
@@ -108,20 +156,46 @@ export async function PUT(request: NextRequest, { params }: Params) {
             }
 
             return tx.card.findUniqueOrThrow({
-                where: { id: card.id },
+                where: { id },
                 include: { translations: true, media: true },
             });
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
         });
 
         const lang = parseLang(request.nextUrl.searchParams.get("lang"));
         return success(mapCard(updated, lang, true));
     } catch (error) {
-        const err = asError(error);
-        if (err.message.includes("must") || err.message.includes("Expected")) {
-            return failure("BAD_REQUEST", err.message, 400);
+        if (error instanceof CardNotFoundError) {
+            return failure("NOT_FOUND", "Card not found.", 404);
+        }
+        if (error instanceof StaleCardUpdateError) {
+            return failure("CONFLICT", "The Card changed since it was loaded. Reload and try again.", 409);
+        }
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") {
+                return failure("CONFLICT", "Card key already exists.", 409);
+            }
+            if (error.code === "P2003") {
+                return failure("BAD_REQUEST", "Referenced Section or Media is invalid.", 400);
+            }
+            if (error.code === "P2025") {
+                return failure("NOT_FOUND", "Card not found.", 404);
+            }
+            if (error.code === "P2034") {
+                return failure("CONFLICT", "The Card changed during the update. Reload and try again.", 409);
+            }
         }
 
-        return failure("INTERNAL_ERROR", err.message, 500, err.details);
+        const err = asError(error);
+        if (
+            err.message.includes("must")
+            || err.message.includes("Duplicate")
+            || err.message.includes("does not exist")
+        ) {
+            return failure("BAD_REQUEST", err.message, 400);
+        }
+        return failure("INTERNAL_ERROR", "Unable to update Card.", 500);
     }
 }
 
@@ -135,19 +209,20 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         const { id: rawId } = await params;
         const id = parseUuid(rawId, "id");
 
-        const existing = await prisma.card.findUnique({ where: { id } });
-        if (!existing) {
+        const deleted = await prisma.card.deleteMany({ where: { id } });
+        if (deleted.count === 0) {
             return failure("NOT_FOUND", "Card not found.", 404);
         }
 
-        await prisma.card.delete({ where: { id } });
         return success({ id, deleted: true });
     } catch (error) {
         const err = asError(error);
         if (err.message.includes("must")) {
             return failure("BAD_REQUEST", err.message, 400);
         }
-
-        return failure("INTERNAL_ERROR", err.message, 500, err.details);
+        return failure("INTERNAL_ERROR", "Unable to delete Card.", 500);
     }
 }
+
+class CardNotFoundError extends Error {}
+class StaleCardUpdateError extends Error {}

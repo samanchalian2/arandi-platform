@@ -18,35 +18,28 @@ export function hasRequiredRole(current: AdminRole[], required: AdminRole[]): bo
 }
 
 export function getRequiredRolesForPath(pathname: string): AdminRole[] | null {
-    if (pathname === "/admin") {
+    const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+
+    if (normalizedPath === "/admin") {
         return ADMIN_ROUTE_ROLES.root;
     }
-    if (pathname === "/admin/dashboard") {
-        return ADMIN_ROUTE_ROLES.dashboard;
-    }
-    if (pathname === "/admin/pages") {
-        return ADMIN_ROUTE_ROLES.pages;
-    }
-    if (pathname === "/admin/sections") {
-        return ADMIN_ROUTE_ROLES.sections;
-    }
-    if (pathname === "/admin/cards") {
-        return ADMIN_ROUTE_ROLES.cards;
-    }
-    if (pathname === "/admin/media") {
-        return ADMIN_ROUTE_ROLES.media;
-    }
-    if (pathname === "/admin/navigation") {
-        return ADMIN_ROUTE_ROLES.navigation;
-    }
-    if (pathname === "/admin/theme") {
-        return ADMIN_ROUTE_ROLES.theme;
-    }
-    if (pathname === "/admin/settings") {
-        return ADMIN_ROUTE_ROLES.settings;
-    }
-    if (pathname === "/admin/users") {
-        return ADMIN_ROUTE_ROLES.users;
+
+    const routePolicies: Array<[prefix: string, roles: AdminRole[]]> = [
+        ["/admin/dashboard", ADMIN_ROUTE_ROLES.dashboard],
+        ["/admin/pages", ADMIN_ROUTE_ROLES.pages],
+        ["/admin/sections", ADMIN_ROUTE_ROLES.sections],
+        ["/admin/cards", ADMIN_ROUTE_ROLES.cards],
+        ["/admin/media", ADMIN_ROUTE_ROLES.media],
+        ["/admin/navigation", ADMIN_ROUTE_ROLES.navigation],
+        ["/admin/theme", ADMIN_ROUTE_ROLES.theme],
+        ["/admin/settings", ADMIN_ROUTE_ROLES.settings],
+        ["/admin/users", ADMIN_ROUTE_ROLES.users],
+    ];
+
+    for (const [prefix, roles] of routePolicies) {
+        if (normalizedPath === prefix || normalizedPath.startsWith(`${prefix}/`)) {
+            return roles;
+        }
     }
 
     return null;

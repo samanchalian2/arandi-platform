@@ -4,6 +4,88 @@ All important project changes are recorded here.
 
 ---
 
+# Version 0.4.8
+
+Date:
+
+2026-08-01
+
+## Added
+
+- Completed Phase 4.6 Admin Card Builder.
+- Added nested Card list and detail routes under Page/Section ownership.
+- Added the typed `src/lib/admin/cards` API, query, mutation, ordering, and ownership layers.
+- Added reusable Card list, item, toolbar, badge, empty, detail, edit, and order components.
+- Added Section Card count, previews, empty state, and management navigation.
+
+## Behavior
+
+- Added role-accurate Viewer, Translator, Editor, Admin, and SuperAdmin Card controls.
+- Added independent EN/FA updates, `expectedUpdatedAt` conflicts, explicit media detach, and validated JSON editing.
+- Added complete-collection, filter-safe, contiguous optimistic Card ordering with accessible move controls and rollback.
+- Added Server Component Page -> Section -> Card ownership checks.
+- Sanitized Card route internal failures and validated Card list `sectionId`.
+- Renamed the Section detail dynamic folder parameter to `[sectionId]` to remove a nested Next.js route conflict without changing URLs.
+
+## Verification
+
+- Focused tests: 17/17 passed.
+- `npm run lint`: passed with one pre-existing warning.
+- `npm run build`: passed.
+- Runtime unauthenticated Card API and nested-route guards returned `401` and login redirect respectively.
+- `npm audit`: 6 dependency vulnerabilities (2 moderate, 4 high); no unsafe automated fix was applied.
+- DB-backed CRUD/reorder and visual/mobile browser QA remain unexecuted because DATABASE_URL is unavailable.
+
+## Scope
+
+- Prisma schema, public website code, public routing, AI, localization, and unrelated Admin domains were unchanged.
+- Admin Card changes are not consumed by the public website.
+
+---
+
+# Version 0.4.7
+
+Date:
+
+2026-08-01
+
+## Security
+
+- Completed Phase 4.5.1 CMS security and RBAC hardening.
+- Removed trust in client-supplied identity/role headers.
+- Denied unauthenticated CMS requests with `401` and permission failures with `403`.
+- Restricted mock role login/session behavior to non-production with explicit `CMS_ENABLE_DEV_MOCK_AUTH=true`.
+- Made Admin route-role matching prefix-aware and retained Server Component guards on nested routes.
+
+## Ordering
+
+- Corrected Section reorder to reject filtered, partial, duplicate, non-contiguous, invalid, and cross-page collections.
+- Added serializable atomic Section reorder and canonical complete-list responses.
+- Added accessible move controls and deterministic optimistic rollback/reconciliation.
+- Added atomic complete-collection Card reorder scoped to one Section.
+
+## Card API
+
+- Added `GET /api/cms/cards/[id]`.
+- Added `PATCH /api/cms/cards/reorder`.
+- Hardened Card update validation, relation checks, duplicate-key mapping, translation requirements, and media detach semantics.
+- Added Translator translation-only Card updates without granting structural `card.write`.
+- Added `expectedUpdatedAt` stale-write protection with `409 CONFLICT`.
+
+## Verification
+
+- Focused tests: 11/11 passed.
+- `npm run lint`: passed with one pre-existing warning.
+- `npm run build`: passed.
+- `npm audit`: 6 dependency vulnerabilities reported (2 moderate, 4 high); no forced dependency changes applied.
+
+## Scope
+
+- Public website code and behavior were unchanged.
+- Admin data remains Prisma-backed; public rendering remains on the local content provider pending an approved consumption bridge.
+
+---
+
 # Version 0.4.6
 
 Date:

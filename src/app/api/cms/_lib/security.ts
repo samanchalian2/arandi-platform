@@ -1,6 +1,11 @@
 import type { NextRequest } from "next/server";
 
-import { ADMIN_SESSION_COOKIE } from "@/lib/admin/auth/types";
+import {
+    ADMIN_ROLES,
+    ADMIN_SESSION_COOKIE,
+    isDevelopmentMockAuthEnabled,
+    type AdminRole,
+} from "@/lib/admin/auth/types";
 
 import { failure } from "./http";
 
@@ -13,6 +18,7 @@ export type CmsPermission =
     | "section.delete"
     | "card.read"
     | "card.write"
+    | "card.translate"
     | "card.delete"
     | "theme.read"
     | "theme.write"
@@ -21,8 +27,9 @@ export type CmsPermission =
     | "media.delete";
 
 export type CmsPrincipal = {
-    userId?: string;
+    userId: string;
     roles: string[];
+    source: "development_mock";
 };
 
 const rolePermissions: Record<string, CmsPermission[]> = {
@@ -58,7 +65,7 @@ const rolePermissions: Record<string, CmsPermission[]> = {
         "media.write",
     ],
     editor: ["page.read", "page.write", "section.read", "section.write", "card.read", "card.write", "media.read"],
-    translator: ["page.read", "section.read", "section.write", "card.read", "theme.read", "media.read"],
+    translator: ["page.read", "section.read", "section.write", "card.read", "card.translate", "theme.read", "media.read"],
     viewer: ["page.read", "section.read", "card.read", "theme.read", "media.read"],
 };
 
@@ -74,42 +81,57 @@ function normalizeRoles(rawRoles: string[]): string[] {
     return rawRoles.map((role) => adminToCmsRole[role] ?? role);
 }
 
-export function readPrincipal(request: NextRequest): CmsPrincipal {
-    const userId = request.headers.get("x-cms-user-id") ?? undefined;
-    const rawHeaderRoles = request.headers.get("x-cms-roles") ?? "";
-    const rolesFromHeader = rawHeaderRoles
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean);
+function isAdminRole(value: string): value is AdminRole {
+    return ADMIN_ROLES.includes(value as AdminRole);
+}
 
-    if (rolesFromHeader.length > 0) {
-        return { userId, roles: normalizeRoles(rolesFromHeader) };
+export function readPrincipal(request: NextRequest): CmsPrincipal | null {
+    if (!isDevelopmentMockAuthEnabled()) {
+        return null;
     }
 
     const adminRole = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-    const roles = adminRole ? normalizeRoles([adminRole]) : [];
+    if (!adminRole || !isAdminRole(adminRole)) {
+        return null;
+    }
 
-    return { userId, roles };
+    return {
+        userId: `mock-${adminRole.toLowerCase()}`,
+        roles: normalizeRoles([adminRole]),
+        source: "development_mock",
+    };
 }
 
 function canAccess(principal: CmsPrincipal, permission: CmsPermission): boolean {
-    if (principal.roles.length === 0) {
-        // Backward-compatible permissive mode until auth is implemented.
-        return true;
-    }
-
     return principal.roles.some((role) => (rolePermissions[role] ?? []).includes(permission));
 }
 
 export function requirePermission(request: NextRequest, permission: CmsPermission) {
     const principal = readPrincipal(request);
+    if (!principal) {
+        return failure("UNAUTHORIZED", "Authentication required.", 401);
+    }
+
     if (!canAccess(principal, permission)) {
-        return failure("FORBIDDEN", "Insufficient permission.", 403, { permission });
+        return failure("FORBIDDEN", "Insufficient permission.", 403);
     }
 
     return null;
 }
 
-export function hasAnyRole(principal: CmsPrincipal, roles: string[]): boolean {
-    return principal.roles.some((role) => roles.includes(role));
+export function requireAnyPermission(request: NextRequest, permissions: CmsPermission[]) {
+    const principal = readPrincipal(request);
+    if (!principal) {
+        return failure("UNAUTHORIZED", "Authentication required.", 401);
+    }
+
+    if (!permissions.some((permission) => canAccess(principal, permission))) {
+        return failure("FORBIDDEN", "Insufficient permission.", 403);
+    }
+
+    return null;
+}
+
+export function hasAnyRole(principal: CmsPrincipal | null, roles: string[]): boolean {
+    return principal?.roles.some((role) => roles.includes(role)) ?? false;
 }

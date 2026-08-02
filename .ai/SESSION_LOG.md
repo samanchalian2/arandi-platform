@@ -1,5 +1,84 @@
 # Session Log
 
+## 2026-08-01 - Phase 4.6 Admin Card Builder
+
+Objective
+
+- Implement real Section-scoped Admin Card list/detail/edit/reorder/delete workflows on the hardened Phase 4.5.1 APIs.
+
+Implemented
+
+- Added protected Page/Section-owned Card list and Page/Section/Card-owned detail routes.
+- Added typed Card API clients, React Query hooks/mutations, cache updates, optimistic reorder, and rollback.
+- Added Card list/detail/edit/order components with responsive layouts, search and filters, EN/FA tabs, role-aware controls, loading/error/empty states, JSON validation, conservative media references, and controlled dirty-navigation warnings.
+- Added Translator-only translation UI, Editor no-delete UI, and Admin/SuperAdmin delete confirmation.
+- Added `expectedUpdatedAt` to every save and a distinct stale-conflict reload flow without automatic retry.
+- Added Section Card counts, previews, empty state, and management links.
+- Added Card list UUID validation and sanitized internal Card API failures.
+- Renamed the Section route parameter folder from `[id]` to `[sectionId]` to resolve the Next.js nested dynamic-path conflict while preserving URL behavior.
+- Kept Prisma schema and public website code unchanged.
+
+Validation
+
+- Focused automated tests: 17/17 PASS.
+- `npm run lint`: PASS with only the pre-existing unused `_request` warning.
+- `npm run build`: PASS; nested Card routes are present in the build manifest.
+- `npm audit`: 6 vulnerabilities: 2 moderate and 4 high.
+  - Direct: `next`, affected through transitive `postcss` and `sharp`; audit proposes an unsafe Next 9 major downgrade, which was not applied.
+  - Transitive: `@hono/node-server`, `@modelcontextprotocol/sdk`, `brace-expansion`, `postcss`, and `sharp`.
+  - Recommendation: upgrade only to approved patched dependency releases when the current Next.js line exposes a safe compatible resolution; do not use `npm audit fix --force`.
+- Runtime probes on the production build:
+  - `/` -> 200
+  - unauthenticated `/api/cms/cards` -> 401
+  - unauthenticated nested Card route -> 307 to `/admin/login`
+
+Limitations
+
+- No DATABASE_URL or local PostgreSQL configuration was available. DB-backed list/edit/save/reorder/delete happy paths were not executed at runtime.
+- Browser visual QA, Translator interactive QA, stale-conflict interaction, and mobile overflow checks were not executed because real Card data could not be loaded.
+- Dirty reload/tab-close and controlled Back/edit-exit actions are protected. General browser back/forward and unrelated Admin sidebar navigation are not globally intercepted because the current App Router has no safe general blocker.
+- Admin Prisma data is not consumed by public pages, which continue to use the local content provider.
+
+Readiness
+
+- The implementation, focused tests, lint, build, and security guard probes pass.
+- Phase 4.7 Media Library Foundation is the next task; it was not started.
+
+## 2026-08-01 - Phase 4.5.1 CMS Hardening
+
+Objective
+
+- Secure the CMS boundary, correct Section ordering defects, and prepare safe Card API contracts for Phase 4.6.
+
+Implemented
+
+- Enforced trusted-principal `401`/permission `403` behavior across CMS routes.
+- Disabled header-based identity and gated non-production mock sessions behind `CMS_ENABLE_DEV_MOCK_AUTH=true`.
+- Made Admin route-role policy prefix-aware and verified nested screens use Server Component guards.
+- Corrected Section reorder completeness, ownership, contiguity, atomicity, client filter behavior, rollback, and keyboard accessibility.
+- Added controlled unsaved-change confirmation for Back to Sections and edit-mode exit while retaining unload protection.
+- Added Card detail GET and complete atomic Card reorder PATCH.
+- Hardened Card PUT validation, relation checks, Prisma error mapping, explicit media detach, Translator-only translation updates, and `expectedUpdatedAt` conflicts.
+- Kept Prisma schema and public website code unchanged.
+
+Validation
+
+- Focused automated tests: 11/11 PASS.
+- `npm run lint`: PASS with the pre-existing unused `_request` warning.
+- `npm run build`: PASS.
+- `npm audit`: 6 vulnerabilities (2 moderate, 4 high); no `--force` action taken.
+
+Remaining Limitations
+
+- Safe global interception of browser back/forward and unrelated App Router sidebar navigation is not implemented; controlled actions and unload are protected.
+- Production has no real authentication provider yet, so mock identities remain unavailable there and CMS requests without a future trusted principal are denied.
+- Admin Prisma edits are not consumed by the public website, which still uses the local content provider.
+
+Readiness
+
+- Blocking Phase 4.5.1 acceptance criteria passed.
+- Phase 4.6 is the next approved task and was not started in this session.
+
 ## 2026-07-30 - Phase 4.5 Section Edit Mode and Ordering
 
 Objective

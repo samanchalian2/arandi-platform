@@ -1,5 +1,113 @@
 # Current State
 
+## Phase 4.6 Status
+
+Completed on 2026-08-01 (Admin Card Builder).
+
+### Admin Card Builder
+
+- Added protected nested routes:
+  - `/admin/pages/[identifier]/sections/[sectionId]/cards`
+  - `/admin/pages/[identifier]/sections/[sectionId]/cards/[id]`
+- Server Components verify the trusted Admin session and Page -> Section -> Card ownership before rendering.
+- Added the typed `src/lib/admin/cards` React Query layer for list, detail, update, reorder, and delete.
+- Added responsive Card list/detail/edit components with search, publish-state/language/media filters, EN/FA tabs, loading/error/empty states, and Section Card previews.
+- Renamed the Section detail folder parameter from `[id]` to `[sectionId]` without changing its URL shape, preventing a Next.js dynamic-segment conflict.
+
+### RBAC and Editing
+
+- Viewer: read only.
+- Translator: EN/FA translation fields only.
+- Editor: structure, translations, and reorder; no delete.
+- Admin/SuperAdmin: structure, translations, reorder, and delete.
+- API routes remain the final authorization boundary; the UI mirrors but does not replace API enforcement.
+- JSON `metrics` and `payload` are object-validated before save; invalid JSON is never submitted.
+- Existing media is displayed, a validated UUID can be retained/entered, and empty media input sends explicit `mediaId: null`.
+
+### Concurrency and Ordering
+
+- Every Card update sends the latest `expectedUpdatedAt`.
+- `409 CONFLICT` is shown as a stale-record state with an explicit reload action; stale mutations are not retried.
+- EN and FA changes are sent independently, so editing one language does not overwrite the other.
+- Reorder is available only to Editor/Admin/SuperAdmin on the complete unfiltered Section collection.
+- Search or any filter disables reorder and clears local reorder drafts.
+- Orders are normalized to contiguous `1..n`; move-up/down controls are keyboard accessible.
+- Reorder uses optimistic cache updates, exact rollback on failure, explicit Save Order, and server reconciliation.
+
+### Verification
+
+- Focused automated tests: 17/17 passed.
+- `npm run lint`: passed with the pre-existing warning in `src/integrations/ai/gateway.ts`.
+- `npm run build`: passed and includes both nested Card routes.
+- Production runtime probes:
+  - public root: `200`
+  - unauthenticated Card API: `401`
+  - unauthenticated nested Card route: `307` to Admin login
+- PostgreSQL/DATABASE_URL was unavailable, so DB-backed happy-path CRUD/reorder and browser visual/mobile QA were not executed.
+- `npm audit`: 6 vulnerabilities (2 moderate, 4 high). `next` is direct; `@hono/node-server`, `@modelcontextprotocol/sdk`, `brace-expansion`, `postcss`, and `sharp` are transitive. No forced or unsafe downgrade was applied.
+
+### CMS/Public Consumption Boundary
+
+- Admin CMS Card data is persisted through Prisma.
+- Public pages still use the local content provider and were not changed.
+- Admin Card changes are not rendered on the public website.
+- A separately approved consumption bridge is still required.
+
+## Phase 4.5.1 Status
+
+Completed on 2026-08-01 (CMS Security, RBAC, Ordering, and Card API Hardening).
+
+### Security and RBAC
+
+- CMS APIs now return `401 UNAUTHORIZED` when no trusted principal is available and `403 FORBIDDEN` for authenticated principals without permission.
+- Client-provided CMS/admin identity headers are not trusted.
+- Mock role sessions are restricted to non-production environments, disabled by default, and require `CMS_ENABLE_DEV_MOCK_AUTH=true`.
+- Production cannot use the mock login/session flow.
+- Nested Admin route policies are prefix-aware, and nested page/section screens enforce roles in their Server Components.
+- Card RBAC:
+  - Viewer: read only.
+  - Translator: read and translation-only update.
+  - Editor: read, structural/translation update, and reorder; no delete.
+  - Admin/SuperAdmin: read, update, reorder, and delete.
+
+### Ordering Corrections
+
+- Section reorder now requires the complete page collection with unique UUIDs and contiguous `1..n` order values.
+- Section ownership/existence validation and all updates run in a serializable transaction.
+- Filtered/search results cannot be reordered.
+- Reorder draft state is reconciled after server/filter/search/mutation changes.
+- Keyboard move-up/move-down controls complement drag-and-drop.
+- Card reorder now provides the same complete-collection, ownership, contiguous-order, atomicity, and role guarantees within a Section.
+
+### Card API
+
+- Added `GET /api/cms/cards/[id]` with UUID validation, translation selection, current media, and standard response envelopes.
+- Added `PATCH /api/cms/cards/reorder`.
+- Hardened `PUT /api/cms/cards/[id]` validation for model-backed structural, JSON, relation, publish-state, and translation fields.
+- `mediaId: null` explicitly detaches media; omitted `mediaId` leaves it unchanged.
+- Duplicate keys return `409`; invalid references/input return `400`; missing Cards return `404`.
+- Optional `expectedUpdatedAt` protects Card updates from stale overwrite with a stable `409 CONFLICT`.
+
+### Unsaved Changes
+
+- Browser reload/tab close, edit-mode exit, and the controlled Back to Sections action warn before discarding dirty edits.
+- Next.js does not provide a safe general blocker for every App Router navigation; browser back/forward and unrelated Admin sidebar links remain a documented limitation rather than using brittle global interception.
+
+### Verification
+
+- Focused automated tests: 11/11 passed.
+- `npm run lint`: passed with the pre-existing warning in `src/integrations/ai/gateway.ts`.
+- `npm run build`: passed.
+- `npm audit`: 6 vulnerabilities (2 moderate, 4 high), all dependency-related; no forced remediation was applied.
+
+### CMS/Public Consumption Boundary
+
+- Admin CMS data is persisted through Prisma.
+- The public website still consumes the existing local content provider.
+- Admin edits do not automatically affect public website rendering.
+- A future approved consumption-bridge phase is required before CMS edits can become public website content.
+- No public website code or behavior changed in Phase 4.5.1.
+
 ## Phase 4.5 Status
 
 Completed on 2026-07-30 (Section Edit Mode and Ordering).

@@ -2,7 +2,12 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { getRequiredRolesForPath, hasRequiredRole } from "@/lib/admin/auth/rbac";
-import { ADMIN_ROLES, ADMIN_SESSION_COOKIE, type AdminRole } from "@/lib/admin/auth/types";
+import {
+    ADMIN_ROLES,
+    ADMIN_SESSION_COOKIE,
+    isDevelopmentMockAuthEnabled,
+    type AdminRole,
+} from "@/lib/admin/auth/types";
 
 function isAdminRole(value: string): value is AdminRole {
     return ADMIN_ROLES.includes(value as AdminRole);
@@ -12,6 +17,7 @@ export function proxy(request: NextRequest) {
     const { pathname, searchParams } = request.nextUrl;
     const roleParam = searchParams.get("mockRole");
     const logout = searchParams.get("logout") === "true";
+    const mockAuthEnabled = isDevelopmentMockAuthEnabled();
 
     if (pathname === "/admin/login" && logout) {
         const response = NextResponse.redirect(new URL("/admin/login", request.url));
@@ -19,7 +25,7 @@ export function proxy(request: NextRequest) {
         return response;
     }
 
-    if (pathname === "/admin/login" && roleParam && isAdminRole(roleParam)) {
+    if (pathname === "/admin/login" && mockAuthEnabled && roleParam && isAdminRole(roleParam)) {
         const response = NextResponse.redirect(new URL("/admin/dashboard", request.url));
         response.cookies.set(ADMIN_SESSION_COOKIE, roleParam, {
             httpOnly: true,
@@ -35,7 +41,7 @@ export function proxy(request: NextRequest) {
     }
 
     const roleCookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-    if (!roleCookie || !isAdminRole(roleCookie)) {
+    if (!mockAuthEnabled || !roleCookie || !isAdminRole(roleCookie)) {
         const loginUrl = new URL("/admin/login", request.url);
         loginUrl.searchParams.set("next", pathname);
         return NextResponse.redirect(loginUrl);

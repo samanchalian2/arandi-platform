@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
 
     try {
         const searchParams = request.nextUrl.searchParams;
-        const sectionId = searchParams.get("sectionId") ?? undefined;
+        const rawSectionId = searchParams.get("sectionId");
+        const sectionId = rawSectionId ? parseUuid(rawSectionId, "sectionId") : undefined;
         const active = searchParams.get("active");
         const ordering = parseOrdering(searchParams.get("ordering"), "asc");
         const lang = parseLang(searchParams.get("lang"));
@@ -53,7 +54,10 @@ export async function GET(request: NextRequest) {
         return success(cards.map((card) => mapCard(card, lang, includeTranslations)));
     } catch (error) {
         const err = asError(error);
-        return failure("INTERNAL_ERROR", err.message, 500, err.details);
+        if (err.message.includes("must")) {
+            return failure("BAD_REQUEST", err.message, 400);
+        }
+        return failure("INTERNAL_ERROR", "Unable to load Cards.", 500);
     }
 }
 
@@ -130,6 +134,6 @@ export async function POST(request: NextRequest) {
         if (err.message.includes("must") || err.message.includes("Expected")) {
             return failure("BAD_REQUEST", err.message, 400);
         }
-        return failure("INTERNAL_ERROR", err.message, 500, err.details);
+        return failure("INTERNAL_ERROR", "Unable to create Card.", 500);
     }
 }

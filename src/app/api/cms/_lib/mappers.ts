@@ -115,6 +115,7 @@ export function mapCard(
         order: card.order,
         active: card.publishState === "published",
         status: card.publishState,
+        publishState: card.publishState,
         image: card.media
             ? {
                 id: card.media.id,

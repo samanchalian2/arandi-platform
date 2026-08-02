@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { buttonVariants } from "@/components/ui/button";
+import { useCards } from "@/lib/admin/cards";
 import { useSection, useSectionMutation, type SectionDetails as SectionDetailsType, SECTION_TYPES } from "@/lib/admin/sections";
 
 import { AdminDescriptionList } from "./AdminDescriptionList";
@@ -17,6 +17,7 @@ import { AdminSectionTypeBadge } from "./AdminSectionTypeBadge";
 import { AdminStatusBadge } from "./AdminStatusBadge";
 import { AdminTable } from "./AdminTable";
 import { AdminDeleteConfirmDialog } from "./AdminDeleteConfirmDialog";
+import { AdminCardItem } from "./AdminCardItem";
 
 type AdminSectionDetailsProps = {
     identifier: string;
@@ -113,6 +114,7 @@ export function AdminSectionDetails({ identifier, id, currentRole }: AdminSectio
     const lang = searchParams.get("lang") === "fa" ? "fa" : "en";
 
     const { section, isLoading, isError, errorMessage } = useSection(id, lang);
+    const { items: cards, cardCount, isLoading: cardsLoading, isError: cardsError } = useCards(section?.id ?? null, lang);
     const { updateSection, deleteSection, isUpdating, isDeleting, updateError, deleteError } = useSectionMutation();
 
     const canEditStructure = currentRole === "SuperAdmin" || currentRole === "Admin" || currentRole === "Editor";
@@ -158,6 +160,14 @@ export function AdminSectionDetails({ identifier, id, currentRole }: AdminSectio
     }
 
     const backHref = `/admin/pages/${identifier}/sections?lang=${lang}`;
+
+    const navigateBack = () => {
+        if (isEditing && dirty && !window.confirm("Discard unsaved changes and return to Sections?")) {
+            return;
+        }
+
+        router.push(backHref);
+    };
 
     const toggleEdit = () => {
         if (isEditing) {
@@ -249,9 +259,9 @@ export function AdminSectionDetails({ identifier, id, currentRole }: AdminSectio
     return (
         <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-                <Link href={backHref} className={buttonVariants({ size: "sm", variant: "outline" })}>
+                <button type="button" onClick={navigateBack} className={buttonVariants({ size: "sm", variant: "outline" })}>
                     Back to Sections
-                </Link>
+                </button>
                 <div className="flex items-center gap-2">
                     {canDelete ? (
                         <button
@@ -325,6 +335,35 @@ export function AdminSectionDetails({ identifier, id, currentRole }: AdminSectio
                         ]}
                     />
                 </div>
+            </AdminFormSection>
+
+            <AdminFormSection title="Cards" description={`${cardCount} Card${cardCount === 1 ? "" : "s"} in this Section.`}>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm text-muted-foreground">
+                        {cardsLoading ? "Loading Card previews..." : cardsError ? "Card previews are unavailable." : "Showing the first three Cards in canonical order."}
+                    </p>
+                    <button
+                        type="button"
+                        className={buttonVariants({ size: "sm", variant: "outline" })}
+                        onClick={() => router.push(`/admin/pages/${identifier}/sections/${section.id}/cards?lang=${lang}`)}
+                    >
+                        Manage Cards
+                    </button>
+                </div>
+                {!cardsLoading && !cardsError && cards.length === 0 ? (
+                    <AdminEmptyState title="No Cards" description="This Section does not contain any Cards yet." />
+                ) : null}
+                {cards.length > 0 ? (
+                    <div className="grid min-w-0 gap-3 lg:grid-cols-2">
+                        {cards.slice(0, 3).map((card) => (
+                            <AdminCardItem
+                                key={card.id}
+                                card={card}
+                                href={`/admin/pages/${identifier}/sections/${section.id}/cards/${card.id}?lang=${lang}`}
+                            />
+                        ))}
+                    </div>
+                ) : null}
             </AdminFormSection>
 
             <AdminDeleteConfirmDialog

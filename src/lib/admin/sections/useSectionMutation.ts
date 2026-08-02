@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { deleteSectionRequest, reorderSectionsRequest, updateSectionRequest } from "./api";
+import { applyOptimisticSectionOrder } from "./ordering";
 import type {
     DeleteSectionPayload,
     ReorderSectionsPayload,
@@ -114,15 +115,9 @@ export function useSectionMutation(): UseSectionMutationResult {
             const previous = queryClient.getQueryData<SectionListItem[]>(["admin-sections", payload.pageId, payload.lang]);
 
             if (previous) {
-                const orderById = new Map(payload.items.map((item) => [item.id, item.order]));
                 queryClient.setQueryData<SectionListItem[]>(
                     ["admin-sections", payload.pageId, payload.lang],
-                    previous
-                        .map((item) => ({
-                            ...item,
-                            order: orderById.get(item.id) ?? item.order,
-                        }))
-                        .sort((a, b) => a.order - b.order),
+                    applyOptimisticSectionOrder(previous, payload.items),
                 );
             }
 
