@@ -22,15 +22,21 @@ type EnterprisePageSection = {
 
 type EnterprisePageProps = {
     lang: "en" | "fa";
+    contentSource?: "local" | "prisma";
     breadcrumbLabel: string;
     hero: ComponentProps<typeof PageHero>;
     sections: EnterprisePageSection[];
     cta: ComponentProps<typeof PageCTA>;
 };
 
-export function EnterprisePage({ lang, breadcrumbLabel, hero, sections, cta }: EnterprisePageProps) {
+export function EnterprisePage({ lang, contentSource, breadcrumbLabel, hero, sections, cta }: EnterprisePageProps) {
     return (
-        <div className="flex flex-1 flex-col" dir={lang === "fa" ? "rtl" : "ltr"} lang={lang}>
+        <div
+            className="flex flex-1 flex-col"
+            data-content-source={contentSource}
+            dir={lang === "fa" ? "rtl" : "ltr"}
+            lang={lang}
+        >
             <PageBreadcrumb lang={lang} currentLabel={breadcrumbLabel} />
 
             <PageHero {...hero} />

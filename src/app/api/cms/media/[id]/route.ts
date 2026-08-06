@@ -1,17 +1,13 @@
 import type { NextRequest } from "next/server";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { stageStoredMediaDeletion } from "@/lib/media/storage";
 
 import { asError, failure, success } from "../../_lib/http";
+import { parseMediaUpdateInput } from "../../_lib/media-input";
 import { requirePermission } from "../../_lib/security";
-import {
-    isRecord,
-    parseOptionalNumber,
-    parseOptionalString,
-    parseUuid,
-    readJson,
-} from "../../_lib/validation";
+import { parseUuid, readJson } from "../../_lib/validation";
 
 type Params = {
     params: Promise<{
@@ -20,7 +16,7 @@ type Params = {
 };
 
 export async function PUT(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "media.write");
+    const forbidden = await requirePermission(request, "media.write");
     if (forbidden) {
         return forbidden;
     }
@@ -30,32 +26,39 @@ export async function PUT(request: NextRequest, { params }: Params) {
         const id = parseUuid(rawId, "id");
         const body = await readJson(request);
 
-        const title = parseOptionalString(body.title);
-        const alt = parseOptionalString(body.alt);
-        const caption = parseOptionalString(body.caption);
-        const url = parseOptionalString(body.url);
-        const type = parseOptionalString(body.type);
-        const width = parseOptionalNumber(body.width);
-        const height = parseOptionalNumber(body.height);
-        const metadata = isRecord(body.metadata) ? body.metadata : undefined;
+        const input = parseMediaUpdateInput(body);
 
-        const existing = await prisma.media.findUnique({ where: { id } });
-        if (!existing) {
-            return failure("NOT_FOUND", "Media not found.", 404);
-        }
+        const updated = await prisma.$transaction(async (tx) => {
+            const existing = await tx.media.findUnique({
+                where: { id },
+                select: { id: true, updatedAt: true },
+            });
+            if (!existing) throw new MediaNotFoundError();
+            if (input.expectedUpdatedAt && existing.updatedAt.getTime() !== input.expectedUpdatedAt.getTime()) {
+                throw new StaleMediaUpdateError();
+            }
 
-        const updated = await prisma.media.update({
-            where: { id },
-            data: {
-                title: title ?? undefined,
-                alt: alt ?? undefined,
-                caption: caption ?? undefined,
-                url: url ?? undefined,
-                type: type ?? undefined,
-                width: width ?? undefined,
-                height: height ?? undefined,
-                metadata: (metadata as Prisma.InputJsonValue | undefined) ?? undefined,
-            },
+            const result = await tx.media.updateMany({
+                where: {
+                    id,
+                    updatedAt: input.expectedUpdatedAt ?? undefined,
+                },
+                data: {
+                    title: input.title,
+                    alt: input.alt,
+                    caption: input.caption,
+                    url: input.url,
+                    type: input.type,
+                    width: input.width,
+                    height: input.height,
+                    metadata: input.metadata as Prisma.InputJsonValue | undefined,
+                    updatedAt: new Date(),
+                },
+            });
+            if (result.count !== 1) throw new StaleMediaUpdateError();
+            return tx.media.findUniqueOrThrow({ where: { id } });
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
         });
 
         return success({
@@ -68,9 +71,24 @@ export async function PUT(request: NextRequest, { params }: Params) {
             width: updated.width,
             height: updated.height,
             metadata: updated.metadata,
+            uploadReady: {
+                supported: true,
+                strategy: "filesystem",
+            },
+            createdAt: updated.createdAt,
             updatedAt: updated.updatedAt,
         });
     } catch (error) {
+        if (error instanceof MediaNotFoundError) {
+            return failure("NOT_FOUND", "Media not found.", 404);
+        }
+        if (error instanceof StaleMediaUpdateError) {
+            return failure("CONFLICT", "The Media item changed since it was loaded. Reload and try again.", 409);
+        }
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") return failure("CONFLICT", "Media url already exists.", 409);
+            if (error.code === "P2034") return failure("CONFLICT", "The Media item changed during update.", 409);
+        }
         const err = asError(error);
         if (err.message.includes("must") || err.message.includes("Expected")) {
             return failure("BAD_REQUEST", err.message, 400);
@@ -81,7 +99,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "media.delete");
+    const forbidden = await requirePermission(request, "media.delete");
     if (forbidden) {
         return forbidden;
     }
@@ -90,13 +108,27 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         const { id: rawId } = await params;
         const id = parseUuid(rawId, "id");
 
-        const existing = await prisma.media.findUnique({ where: { id } });
+        const existing = await prisma.media.findUnique({
+            where: { id },
+            include: { _count: { select: { cards: true } } },
+        });
         if (!existing) {
             return failure("NOT_FOUND", "Media not found.", 404);
         }
 
-        await prisma.media.delete({ where: { id } });
-        return success({ id, deleted: true });
+        if (existing._count.cards > 0) {
+            return failure("CONFLICT", "Media is attached to one or more Cards and cannot be deleted.", 409);
+        }
+
+        const stagedFile = await stageStoredMediaDeletion(existing.url);
+        try {
+            await prisma.media.delete({ where: { id } });
+            await stagedFile?.commit();
+            return success({ id, deleted: true });
+        } catch (error) {
+            await stagedFile?.rollback();
+            throw error;
+        }
     } catch (error) {
         const err = asError(error);
         if (err.message.includes("must")) {
@@ -106,3 +138,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         return failure("INTERNAL_ERROR", err.message, 500, err.details);
     }
 }
+
+class MediaNotFoundError extends Error {}
+class StaleMediaUpdateError extends Error {}

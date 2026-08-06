@@ -5,6 +5,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
+import { AdminSignOutButton } from "./AdminSignOutButton";
+
 const NAV_ITEMS = [
     { href: "/admin/dashboard", label: "Dashboard" },
     { href: "/admin/pages", label: "Pages" },
@@ -15,28 +17,23 @@ const NAV_ITEMS = [
     { href: "/admin/theme", label: "Theme" },
     { href: "/admin/settings", label: "Settings" },
     { href: "/admin/users", label: "Users" },
+    { href: "/admin/contact-submissions", label: "Contact requests" },
 ] as const;
 
 type AdminSidebarProps = {
     mobileOpen: boolean;
     onNavigate?: () => void;
+    isMock: boolean;
 };
 
-export function AdminSidebar({ mobileOpen, onNavigate }: AdminSidebarProps) {
+export function AdminSidebar({ mobileOpen, onNavigate, isMock }: AdminSidebarProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const lang = searchParams.get("lang") === "fa" ? "fa" : "en";
     const isRtl = lang === "fa";
 
-    return (
-        <aside
-            className={cn(
-                "fixed inset-y-0 z-40 w-72 border-border/70 bg-sidebar shadow-[var(--elevation-2)] transition-transform duration-[var(--duration-slow)] ease-[var(--ease-emphasized)] md:static md:z-auto md:w-72 md:translate-x-0 md:shadow-none",
-                isRtl ? "right-0 border-l" : "left-0 border-r",
-                mobileOpen ? "translate-x-0" : isRtl ? "translate-x-full" : "-translate-x-full",
-            )}
-            aria-label="Admin sidebar"
-        >
+    const content = (
+        <>
             <div className="flex h-16 items-center border-b border-border/60 px-4">
                 <p className="font-semibold tracking-tight">Arandi Admin</p>
             </div>
@@ -62,13 +59,39 @@ export function AdminSidebar({ mobileOpen, onNavigate }: AdminSidebarProps) {
                 })}
             </nav>
             <div className="mt-auto border-t border-border/60 p-3">
-                <Link
-                    href={`/admin/login?logout=true&lang=${lang}`}
+                <AdminSignOutButton
+                    isMock={isMock}
+                    lang={lang}
                     className="block rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-                >
-                    Sign out (mock)
-                </Link>
+                />
             </div>
-        </aside>
+        </>
+    );
+
+    return (
+        <>
+            <aside
+                className={cn(
+                    "hidden w-72 shrink-0 border-border/70 bg-sidebar md:block",
+                    isRtl ? "border-l" : "border-r",
+                )}
+                aria-label="Admin sidebar"
+            >
+                {content}
+            </aside>
+            {mobileOpen ? (
+                <aside
+                    className={cn(
+                        "fixed inset-y-0 z-40 w-72 border-border/70 bg-sidebar shadow-[var(--elevation-2)] md:hidden",
+                        isRtl ? "right-0 border-l" : "left-0 border-r",
+                    )}
+                    aria-label="Admin mobile sidebar"
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    {content}
+                </aside>
+            ) : null}
+        </>
     );
 }

@@ -11,6 +11,7 @@ import {
     AdminLoading,
     AdminPagination,
     AdminPageCard,
+    AdminPageCreateDialog,
     AdminSearchBar,
     AdminStatusBadge,
     AdminTable,
@@ -20,7 +21,7 @@ import { usePages, type LanguageFilter, type PageSortField } from "@/lib/admin/p
 
 const PAGE_SIZE = 10;
 
-export function AdminPagesManagement() {
+export function AdminPagesManagement({ canCreate }: { canCreate: boolean }) {
     const searchParams = useSearchParams();
     const lang = searchParams.get("lang") === "fa" ? "fa" : "en";
 
@@ -30,6 +31,7 @@ export function AdminPagesManagement() {
     const [sortBy, setSortBy] = useState<PageSortField>("updatedAt");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
     const [page, setPage] = useState(1);
+    const [createOpen, setCreateOpen] = useState(false);
 
     const result = usePages({
         lang,
@@ -62,6 +64,11 @@ export function AdminPagesManagement() {
 
     return (
         <div className="space-y-4">
+            {canCreate ? (
+                <div className="flex justify-end">
+                    <Button onClick={() => setCreateOpen(true)}>Create Page</Button>
+                </div>
+            ) : null}
             <AdminSearchBar
                 value={search}
                 onChange={(value) => {
@@ -145,6 +152,12 @@ export function AdminPagesManagement() {
                     </Button>
                 </div>
             ) : null}
+
+            <AdminPageCreateDialog
+                open={createOpen}
+                onClose={() => setCreateOpen(false)}
+                onCreated={result.refetch}
+            />
         </div>
     );
 }

@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
 import { asError, failure, success } from "../../_lib/http";
 import { mapSection } from "../../_lib/mappers";
@@ -23,7 +24,20 @@ type Params = {
     }>;
 };
 
-const ALLOWED_SECTION_TYPES = ["hero", "features", "text", "cards", "gallery", "cta", "contact", "custom"];
+const ALLOWED_SECTION_TYPES = [
+    "hero",
+    "features",
+    "content",
+    "richtext",
+    "metrics",
+    "contactform",
+    "text",
+    "cards",
+    "gallery",
+    "cta",
+    "contact",
+    "custom",
+];
 
 function assertMaxLength(value: string | undefined, fieldName: string, max: number) {
     if (value && value.length > max) {
@@ -37,17 +51,17 @@ function assertSectionType(type: string | undefined) {
     }
 
     if (!ALLOWED_SECTION_TYPES.includes(type.toLowerCase())) {
-        throw new Error("type must be one of hero, features, text, cards, gallery, cta, contact, custom.");
+        throw new Error("type must be an approved constrained Section type.");
     }
 }
 
-function isTranslatorOnlyRole(request: NextRequest): boolean {
-    const principal = readPrincipal(request);
+async function isTranslatorOnlyRole(request: NextRequest): Promise<boolean> {
+    const principal = await readPrincipal(request);
     return hasAnyRole(principal, ["translator"]) && !hasAnyRole(principal, ["super_admin", "cms_admin", "editor"]);
 }
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "section.read");
+    const forbidden = await requirePermission(request, "section.read");
     if (forbidden) {
         return forbidden;
     }
@@ -79,7 +93,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 export async function PUT(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "section.write");
+    const forbidden = await requirePermission(request, "section.write");
     if (forbidden) {
         return forbidden;
     }
@@ -118,7 +132,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
             }
         }
 
-        const translatorOnly = isTranslatorOnlyRole(request);
+        const translatorOnly = await isTranslatorOnlyRole(request);
         if (translatorOnly && (key !== undefined || type !== undefined || order !== undefined || enabled !== undefined || style !== undefined || payload !== undefined || pageId !== undefined)) {
             return failure("FORBIDDEN", "Translator role can only update translation fields.", 403);
         }
@@ -179,6 +193,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         });
 
         const lang = parseLang(request.nextUrl.searchParams.get("lang"));
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(mapSection(updated, lang, true));
     } catch (error) {
         const err = asError(error);
@@ -190,7 +205,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "section.delete");
+    const forbidden = await requirePermission(request, "section.delete");
     if (forbidden) {
         return forbidden;
     }
@@ -205,6 +220,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         }
 
         await prisma.section.delete({ where: { id } });
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success({ id, deleted: true });
     } catch (error) {
         const err = asError(error);

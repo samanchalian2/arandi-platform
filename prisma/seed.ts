@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import type { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 import { getDomainContentModel } from "../src/content/domain";
 import { getEnterpriseContent } from "../src/content/enterprise";
@@ -275,6 +274,453 @@ async function seedPagesAndSections() {
     }
 }
 
+type EnterpriseCollectionKey = "services" | "solutions" | "industries" | "projects";
+type FixedEnterprisePageKey = "company" | "contact";
+
+function enterprisePagePayload(
+    key: EnterpriseCollectionKey,
+    language: "en" | "fa",
+): Record<string, unknown> {
+    switch (key) {
+        case "services": {
+            const page = getEnterpriseContent(language).pages.services;
+            return {
+                breadcrumbLabel: page.breadcrumbLabel,
+                hero: page.hero,
+                section: page.section,
+                cta: page.cta,
+            };
+        }
+        case "solutions": {
+            const page = getEnterpriseContent(language).pages.solutions;
+            return {
+                breadcrumbLabel: page.breadcrumbLabel,
+                hero: page.hero,
+                catalog: {
+                    eyebrow: page.catalog.eyebrow,
+                    title: page.catalog.title,
+                    description: page.catalog.description,
+                },
+                delivery: page.delivery,
+                cta: page.cta,
+            };
+        }
+        case "industries": {
+            const page = getEnterpriseContent(language).pages.industries;
+            return {
+                breadcrumbLabel: page.breadcrumbLabel,
+                hero: page.hero,
+                section: {
+                    eyebrow: page.section.eyebrow,
+                    title: page.section.title,
+                    description: page.section.description,
+                },
+                cta: page.cta,
+            };
+        }
+        case "projects": {
+            const page = getEnterpriseContent(language).pages.projects;
+            return {
+                breadcrumbLabel: page.breadcrumbLabel,
+                hero: page.hero,
+                section: {
+                    eyebrow: page.section.eyebrow,
+                    title: page.section.title,
+                    description: page.section.description,
+                },
+                cta: page.cta,
+            };
+        }
+    }
+}
+
+type SeedEnterpriseCard = {
+    id: string;
+    title: string;
+    description: string;
+    secondary: string | null;
+    badge: string | null;
+};
+
+function enterpriseCards(
+    key: EnterpriseCollectionKey,
+    language: "en" | "fa",
+): SeedEnterpriseCard[] {
+    switch (key) {
+        case "services": {
+            const page = getEnterpriseContent(language).pages.services;
+            return page.cards.map((card) => ({
+                id: card.id,
+                title: card.title,
+                description: card.summary,
+                secondary: null,
+                badge: card.label,
+            }));
+        }
+        case "solutions": {
+            const page = getEnterpriseContent(language).pages.solutions;
+            return page.catalog.cards.map((card) => ({
+                id: card.id,
+                title: card.title,
+                description: card.summary,
+                secondary: card.outcome,
+                badge: null,
+            }));
+        }
+        case "industries": {
+            const page = getEnterpriseContent(language).pages.industries;
+            return page.section.cards.map((card) => ({
+                id: card.id,
+                title: card.title,
+                description: card.summary,
+                secondary: null,
+                badge: null,
+            }));
+        }
+        case "projects": {
+            const page = getEnterpriseContent(language).pages.projects;
+            return page.section.cards.map((card) => ({
+                id: card.id,
+                title: card.title,
+                description: card.summary,
+                secondary: card.impact,
+                badge: null,
+            }));
+        }
+    }
+}
+
+async function seedEnterpriseCollectionPages() {
+    const keys: EnterpriseCollectionKey[] = ["services", "solutions", "industries", "projects"];
+    const variants: Record<EnterpriseCollectionKey, string> = {
+        services: "serviceCard",
+        solutions: "solutionCard",
+        industries: "industryCard",
+        projects: "projectCard",
+    };
+    const pageTypes: Record<EnterpriseCollectionKey, string> = {
+        services: "service",
+        solutions: "solution",
+        industries: "industry",
+        projects: "project",
+    };
+
+    for (const key of keys) {
+        const existing = await prisma.page.findUnique({ where: { slug: key }, select: { id: true } });
+        if (existing) continue;
+
+        const enPage = getEnterpriseContent("en").pages[key];
+        const faPage = getEnterpriseContent("fa").pages[key];
+        const enCards = enterpriseCards(key, "en");
+        const faCards = new Map(enterpriseCards(key, "fa").map((card) => [card.id, card]));
+
+        await prisma.$transaction(async (tx) => {
+            const page = await tx.page.create({
+                data: {
+                    slug: key,
+                    route: `/${key}`,
+                    pageType: pageTypes[key],
+                    publishState: "published",
+                    seoKeywords: [key, "enterprise"],
+                    translations: {
+                        create: [
+                            {
+                                languageCode: "en",
+                                title: enPage.breadcrumbLabel,
+                                seoTitle: enPage.metadata.title,
+                                seoDescription: enPage.metadata.description,
+                            },
+                            {
+                                languageCode: "fa",
+                                title: faPage.breadcrumbLabel,
+                                seoTitle: faPage.metadata.title,
+                                seoDescription: faPage.metadata.description,
+                            },
+                        ],
+                    },
+                },
+            });
+
+            const section = await tx.section.create({
+                data: {
+                    pageId: page.id,
+                    key: `${key}-catalog`,
+                    sectionType: "cards",
+                    order: 1,
+                    enabled: true,
+                    style: toJsonValue({ variant: key }),
+                    payload: toJsonValue({ schema: "enterprise-collection", version: 1 }),
+                    translations: {
+                        create: [
+                            {
+                                languageCode: "en",
+                                title: enPage.breadcrumbLabel,
+                                description: enPage.metadata.description,
+                                data: toJsonValue(enterprisePagePayload(key, "en")),
+                            },
+                            {
+                                languageCode: "fa",
+                                title: faPage.breadcrumbLabel,
+                                description: faPage.metadata.description,
+                                data: toJsonValue(enterprisePagePayload(key, "fa")),
+                            },
+                        ],
+                    },
+                },
+            });
+
+            for (const [index, enCard] of enCards.entries()) {
+                const faCard = faCards.get(enCard.id);
+                if (!faCard) throw new Error(`Missing Persian ${key} Card ${enCard.id}.`);
+                await tx.card.create({
+                    data: {
+                        key: `enterprise:${key}:${enCard.id}`,
+                        sectionId: section.id,
+                        variant: variants[key],
+                        order: index + 1,
+                        publishState: "published",
+                        tags: [key],
+                        metrics: toJsonValue({}),
+                        payload: toJsonValue({
+                            sourceKey: enCard.id,
+                            schemaVersion: 1,
+                        }),
+                        translations: {
+                            create: [
+                                {
+                                    languageCode: "en",
+                                    title: enCard.title,
+                                    description: enCard.description,
+                                    subtitle: enCard.secondary,
+                                    statusBadge: enCard.badge,
+                                },
+                                {
+                                    languageCode: "fa",
+                                    title: faCard.title,
+                                    description: faCard.description,
+                                    subtitle: faCard.secondary,
+                                    statusBadge: faCard.badge,
+                                },
+                            ],
+                        },
+                    },
+                });
+            }
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        });
+    }
+}
+
+async function seedFixedEnterprisePages() {
+    const keys: FixedEnterprisePageKey[] = ["company", "contact"];
+    for (const key of keys) {
+        const existing = await prisma.page.findUnique({ where: { slug: key }, select: { id: true } });
+        if (existing) continue;
+
+        const enPage = getEnterpriseContent("en").pages[key];
+        const faPage = getEnterpriseContent("fa").pages[key];
+        const { metadata: _enMetadata, ...enPayload } = enPage;
+        const { metadata: _faMetadata, ...faPayload } = faPage;
+        void _enMetadata;
+        void _faMetadata;
+
+        await prisma.$transaction(async (tx) => {
+            const page = await tx.page.create({
+                data: {
+                    slug: key,
+                    route: `/${key}`,
+                    pageType: key,
+                    publishState: "published",
+                    seoKeywords: [key, "enterprise"],
+                    translations: {
+                        create: [
+                            {
+                                languageCode: "en",
+                                title: enPage.breadcrumbLabel,
+                                seoTitle: enPage.metadata.title,
+                                seoDescription: enPage.metadata.description,
+                            },
+                            {
+                                languageCode: "fa",
+                                title: faPage.breadcrumbLabel,
+                                seoTitle: faPage.metadata.title,
+                                seoDescription: faPage.metadata.description,
+                            },
+                        ],
+                    },
+                },
+            });
+
+            await tx.section.create({
+                data: {
+                    pageId: page.id,
+                    key: `${key}-content`,
+                    sectionType: key,
+                    order: 1,
+                    enabled: true,
+                    style: toJsonValue({ variant: key }),
+                    payload: toJsonValue({ schema: "enterprise-fixed-page", version: 1 }),
+                    translations: {
+                        create: [
+                            {
+                                languageCode: "en",
+                                title: enPage.breadcrumbLabel,
+                                description: enPage.metadata.description,
+                                data: toJsonValue(enPayload),
+                            },
+                            {
+                                languageCode: "fa",
+                                title: faPage.breadcrumbLabel,
+                                description: faPage.metadata.description,
+                                data: toJsonValue(faPayload),
+                            },
+                        ],
+                    },
+                },
+            });
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        });
+    }
+}
+
+type SeedPublicDocument = {
+    pageType: "article" | "knowledge" | "legal";
+    slug: string;
+    route: string;
+    keywords: string[];
+    en: { title: string; seoTitle: string; seoDescription: string; bodyTitle: string; body: string };
+    fa: { title: string; seoTitle: string; seoDescription: string; bodyTitle: string; body: string };
+};
+
+async function seedPublicDocuments() {
+    const documents: SeedPublicDocument[] = [
+        {
+            pageType: "article",
+            slug: "building-an-ai-ready-enterprise",
+            route: "/articles/building-an-ai-ready-enterprise",
+            keywords: ["artificial intelligence", "enterprise", "data"],
+            en: {
+                title: "Building an AI-ready enterprise",
+                seoTitle: "Building an AI-ready enterprise | Arandi Bonyan",
+                seoDescription: "A practical overview of the foundations organizations need before deploying reliable enterprise artificial intelligence.",
+                bodyTitle: "From isolated experiments to dependable capability",
+                body: "Successful enterprise AI begins with a clear business problem, accountable ownership, and trustworthy data. Model selection matters, but it cannot compensate for fragmented processes or undefined outcomes.\n\nOrganizations should establish governed data access, measurable success criteria, security review, and human oversight before scaling a pilot. These foundations make AI systems easier to evaluate, operate, and improve.\n\nA staged delivery model reduces risk: validate the use case, test with representative data, monitor quality and cost, and expand only when the evidence supports it.",
+            },
+            fa: {
+                title: "ساخت سازمان آماده برای هوش مصنوعی",
+                seoTitle: "ساخت سازمان آماده برای هوش مصنوعی | آرن‌دی بنیان",
+                seoDescription: "مروری کاربردی بر زیرساخت‌ها و حاکمیتی که سازمان‌ها پیش از استقرار قابل اتکای هوش مصنوعی به آن نیاز دارند.",
+                bodyTitle: "از آزمایش‌های پراکنده تا یک قابلیت قابل اتکا",
+                body: "هوش مصنوعی سازمانی موفق با یک مسئله روشن کسب‌وکار، مالکیت پاسخ‌گو و داده قابل اعتماد آغاز می‌شود. انتخاب مدل مهم است، اما نمی‌تواند فرایندهای گسسته یا نتیجه‌های تعریف‌نشده را جبران کند.\n\nسازمان باید پیش از توسعه پایلوت، دسترسی حاکمیت‌شده به داده، معیارهای قابل اندازه‌گیری، بازبینی امنیتی و نظارت انسانی را برقرار کند. این پایه‌ها ارزیابی، بهره‌برداری و بهبود سامانه‌های هوشمند را ساده‌تر می‌کنند.\n\nتحویل مرحله‌ای ریسک را کاهش می‌دهد: کاربرد را اعتبارسنجی کنید، با داده نماینده آزمایش کنید، کیفیت و هزینه را پایش کنید و تنها زمانی توسعه دهید که شواهد آن را تأیید می‌کنند.",
+            },
+        },
+        {
+            pageType: "knowledge",
+            slug: "responsible-ai-foundations",
+            route: "/knowledge/responsible-ai-foundations",
+            keywords: ["responsible ai", "governance", "security"],
+            en: {
+                title: "Responsible AI foundations",
+                seoTitle: "Responsible AI foundations | Arandi Bonyan",
+                seoDescription: "An approved knowledge note covering governance, privacy, security, evaluation, and human oversight for enterprise AI.",
+                bodyTitle: "Controls that should exist before production",
+                body: "Responsible AI is an operating discipline, not a one-time checklist. Every production use case needs a named owner, documented purpose, permitted data boundary, and an escalation path.\n\nEvaluation must cover factual quality, harmful behavior, privacy, security, latency, and cost using representative scenarios. Results should be recorded and repeated when the model, prompt, data source, or surrounding workflow changes.\n\nHuman review remains necessary wherever an automated response can materially affect people, money, access, safety, or legal obligations.",
+            },
+            fa: {
+                title: "پایه‌های هوش مصنوعی مسئولانه",
+                seoTitle: "پایه‌های هوش مصنوعی مسئولانه | آرن‌دی بنیان",
+                seoDescription: "یادداشت دانشی تأییدشده درباره حاکمیت، حریم خصوصی، امنیت، ارزیابی و نظارت انسانی در هوش مصنوعی سازمانی.",
+                bodyTitle: "کنترل‌هایی که پیش از تولید باید برقرار باشند",
+                body: "هوش مصنوعی مسئولانه یک انضباط عملیاتی است، نه یک چک‌لیست یک‌باره. هر کاربرد تولیدی به مالک مشخص، هدف مستند، مرز مجاز داده و مسیر ارجاع نیاز دارد.\n\nارزیابی باید کیفیت واقعی، رفتار آسیب‌زا، حریم خصوصی، امنیت، تأخیر و هزینه را با سناریوهای نماینده پوشش دهد. نتایج باید ثبت شوند و با تغییر مدل، پرامپت، منبع داده یا فرایند پیرامونی دوباره ارزیابی شوند.\n\nهرجا پاسخ خودکار بتواند بر افراد، پول، دسترسی، ایمنی یا تعهدات حقوقی اثر معنادار بگذارد، بازبینی انسانی همچنان ضروری است.",
+            },
+        },
+        {
+            pageType: "legal",
+            slug: "privacy",
+            route: "/legal/privacy",
+            keywords: ["privacy", "data protection"],
+            en: {
+                title: "Privacy notice",
+                seoTitle: "Privacy notice | Arandi Bonyan",
+                seoDescription: "The Arandi Bonyan website privacy notice describing limited data collection, purpose, protection, and contact rights.",
+                bodyTitle: "How website information is handled",
+                body: "We collect only the information needed to respond to requests, operate the website, protect its security, and meet applicable obligations. We do not sell personal information.\n\nAccess to submitted information is limited to authorized personnel and service providers that need it for an approved purpose. Reasonable technical and organizational safeguards are used to reduce unauthorized access, loss, or misuse.\n\nYou may contact us to ask about information you submitted through this website. This notice may be updated when website capabilities or applicable requirements change.",
+            },
+            fa: {
+                title: "اطلاعیه حریم خصوصی",
+                seoTitle: "اطلاعیه حریم خصوصی | آرن‌دی بنیان",
+                seoDescription: "اطلاعیه حریم خصوصی وب‌سایت آرن‌دی بنیان درباره جمع‌آوری محدود داده، هدف استفاده، حفاظت و حقوق تماس.",
+                bodyTitle: "نحوه پردازش اطلاعات وب‌سایت",
+                body: "ما فقط اطلاعات لازم برای پاسخ به درخواست‌ها، بهره‌برداری از وب‌سایت، حفاظت امنیتی و انجام الزامات قابل اجرا را جمع‌آوری می‌کنیم. اطلاعات شخصی فروخته نمی‌شود.\n\nدسترسی به اطلاعات ارسالی به کارکنان و ارائه‌دهندگان مجازی محدود است که برای یک هدف تأییدشده به آن نیاز دارند. برای کاهش دسترسی غیرمجاز، از دست رفتن یا سوءاستفاده، تدابیر فنی و سازمانی متناسب اعمال می‌شود.\n\nبرای پرسش درباره اطلاعاتی که از طریق این وب‌سایت ارسال کرده‌اید می‌توانید با ما تماس بگیرید. این اطلاعیه ممکن است هم‌زمان با تغییر قابلیت‌های سایت یا الزامات مربوط به‌روزرسانی شود.",
+            },
+        },
+    ];
+
+    for (const document of documents) {
+        if (await prisma.page.findUnique({ where: { slug: document.slug }, select: { id: true } })) {
+            continue;
+        }
+        await prisma.$transaction(async (tx) => {
+            const page = await tx.page.create({
+                data: {
+                    slug: document.slug,
+                    route: document.route,
+                    pageType: document.pageType,
+                    publishState: "published",
+                    seoKeywords: document.keywords,
+                    translations: {
+                        create: (["en", "fa"] as const).map((languageCode) => ({
+                            languageCode,
+                            title: document[languageCode].title,
+                            seoTitle: document[languageCode].seoTitle,
+                            seoDescription: document[languageCode].seoDescription,
+                        })),
+                    },
+                },
+            });
+            const sections = [
+                {
+                    key: "hero",
+                    sectionType: "hero",
+                    en: { title: document.en.title, description: document.en.seoDescription },
+                    fa: { title: document.fa.title, description: document.fa.seoDescription },
+                },
+                {
+                    key: `${document.pageType}-body`,
+                    sectionType: "richText",
+                    en: { title: document.en.bodyTitle, description: document.en.body },
+                    fa: { title: document.fa.bodyTitle, description: document.fa.body },
+                },
+            ];
+            for (const [index, section] of sections.entries()) {
+                await tx.section.create({
+                    data: {
+                        pageId: page.id,
+                        key: section.key,
+                        sectionType: section.sectionType,
+                        order: index + 1,
+                        enabled: true,
+                        style: toJsonValue({ variant: document.pageType }),
+                        payload: toJsonValue({ template: document.pageType, version: 1 }),
+                        translations: {
+                            create: (["en", "fa"] as const).map((languageCode) => ({
+                                languageCode,
+                                title: section[languageCode].title,
+                                description: section[languageCode].description,
+                                data: toJsonValue({}),
+                            })),
+                        },
+                    },
+                });
+            }
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        });
+    }
+}
+
 async function seedCards() {
     const enModel = getDomainContentModel("en");
     const faModel = getDomainContentModel("fa");
@@ -293,7 +739,7 @@ async function seedCards() {
         },
     });
 
-    for (const enService of enModel.services) {
+    for (const [index, enService] of enModel.services.entries()) {
         const faService = findServiceBySlug(faModel.services, enService.slug);
         if (!faService) {
             continue;
@@ -304,7 +750,7 @@ async function seedCards() {
             update: {
                 sectionId: featuresSection?.id,
                 variant: "serviceCard",
-                order: 0,
+                order: index + 1,
                 publishState: enService.status,
                 tags: ["service"],
                 metrics: toJsonValue({}),
@@ -317,7 +763,7 @@ async function seedCards() {
                 key: `service:${enService.slug}`,
                 sectionId: featuresSection?.id,
                 variant: "serviceCard",
-                order: 0,
+                order: index + 1,
                 publishState: enService.status,
                 tags: ["service"],
                 metrics: toJsonValue({}),
@@ -460,6 +906,9 @@ async function seedNavigation() {
 }
 
 async function seedMediaAndSettings() {
+    const enModel = getDomainContentModel("en");
+    const faModel = getDomainContentModel("fa");
+
     await prisma.media.upsert({
         where: { url: "/logo.svg" },
         update: {
@@ -483,18 +932,59 @@ async function seedMediaAndSettings() {
 
     const settings = [
         { key: "theme.default", value: { slug: "default" }, group: "theme", isPublic: true },
-        { key: "site.company", value: { name: "Arandi Bonyan" }, group: "company", isPublic: true },
+        {
+            key: "site.company",
+            value: {
+                en: {
+                    name: enModel.company.legalName,
+                    shortName: enModel.company.shortName,
+                    assistantName: enModel.company.assistant.name,
+                    assistantLabel: enModel.company.assistant.label,
+                    footerTagline: enModel.pages[0]?.footerTagline ?? "",
+                },
+                fa: {
+                    name: faModel.company.legalName,
+                    shortName: faModel.company.shortName,
+                    assistantName: faModel.company.assistant.name,
+                    assistantLabel: faModel.company.assistant.label,
+                    footerTagline: faModel.pages[0]?.footerTagline ?? "",
+                },
+            },
+            group: "company",
+            isPublic: true,
+        },
         { key: "site.social", value: { linkedin: "", x: "" }, group: "social", isPublic: true },
         { key: "site.seo", value: { title: "Arandi Bonyan" }, group: "seo", isPublic: true },
-        { key: "site.contact", value: { email: "hello@arandibonyan.com" }, group: "contact", isPublic: true },
+        {
+            key: "site.contact",
+            value: {
+                en: {
+                    email: enModel.contact.primaryEmail,
+                    phone: enModel.contact.primaryPhone,
+                    address: enModel.contact.address,
+                },
+                fa: {
+                    email: faModel.contact.primaryEmail,
+                    phone: faModel.contact.primaryPhone,
+                    address: faModel.contact.address,
+                },
+            },
+            group: "contact",
+            isPublic: true,
+        },
         { key: "site.logo", value: { mediaUrl: "/logo.svg" }, group: "branding", isPublic: true },
+        {
+            key: "ai.runtime",
+            value: { provider: "openai", model: "gpt-5.6-sol" },
+            group: "ai",
+            isPublic: false,
+        },
     ];
 
     for (const setting of settings) {
         await prisma.setting.upsert({
             where: { key: setting.key },
             update: {
-                value: toJsonValue(setting.value),
                 group: setting.group,
                 isPublic: setting.isPublic,
             },
@@ -508,13 +998,97 @@ async function seedMediaAndSettings() {
     }
 }
 
+async function seedRoles() {
+    const roles = [
+        {
+            key: "SuperAdmin",
+            name: "Super Admin",
+            permissions: [
+                "page.read", "page.write", "page.delete",
+                "section.read", "section.write", "section.delete",
+                "card.read", "card.write", "card.translate", "card.delete",
+                "media.read", "media.write", "media.delete",
+                "theme.read", "theme.write",
+                "user.read", "user.write", "security_event.read", "session.revoke",
+                "navigation.read", "navigation.write", "navigation.translate", "navigation.delete",
+                "setting.read", "setting.write",
+            ],
+        },
+        {
+            key: "Admin",
+            name: "Admin",
+            permissions: [
+                "page.read", "page.write", "page.delete",
+                "section.read", "section.write", "section.delete",
+                "card.read", "card.write", "card.translate", "card.delete",
+                "media.read", "media.write",
+                "theme.read", "theme.write",
+                "user.read", "security_event.read",
+                "navigation.read", "navigation.write", "navigation.translate", "navigation.delete",
+                "setting.read", "setting.write",
+            ],
+        },
+        {
+            key: "Editor",
+            name: "Editor",
+            permissions: [
+                "page.read", "page.write",
+                "section.read", "section.write",
+                "card.read", "card.write",
+                "media.read", "theme.read",
+                "navigation.read", "navigation.write",
+            ],
+        },
+        {
+            key: "Translator",
+            name: "Translator",
+            permissions: [
+                "page.read",
+                "section.read", "section.write",
+                "card.read", "card.translate",
+                "media.read", "theme.read",
+                "navigation.read", "navigation.translate",
+            ],
+        },
+        {
+            key: "Viewer",
+            name: "Viewer",
+            permissions: ["page.read", "section.read", "card.read", "media.read", "theme.read"],
+        },
+        {
+            key: "Customer",
+            name: "Customer",
+            permissions: ["account.read", "account.write", "service_request.create", "service_request.read"],
+        },
+    ];
+
+    for (const role of roles) {
+        await prisma.role.upsert({
+            where: { key: role.key },
+            update: {
+                name: role.name,
+                permissions: role.permissions,
+                isSystem: true,
+            },
+            create: {
+                ...role,
+                isSystem: true,
+            },
+        });
+    }
+}
+
 async function main() {
     await seedLanguages();
     await seedTheme();
     await seedPagesAndSections();
+    await seedEnterpriseCollectionPages();
+    await seedFixedEnterprisePages();
+    await seedPublicDocuments();
     await seedCards();
     await seedNavigation();
     await seedMediaAndSettings();
+    await seedRoles();
 }
 
 main()

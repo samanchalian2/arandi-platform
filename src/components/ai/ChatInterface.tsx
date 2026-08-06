@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bot, MessageSquareText } from "lucide-react";
 
-import { AIAvatar } from "@/components/ai/AIAvatar";
 import { ChatInput } from "@/components/ai/ChatInput";
 import { ChatMessage, type ChatCitation } from "@/components/ai/ChatMessage";
 import { Container } from "@/components/layout/Container";
@@ -53,6 +52,9 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
   ]);
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const requestController = useRef<AbortController | null>(null);
+
+  useEffect(() => () => requestController.current?.abort(), []);
 
   const hasMessages = messages.length > 0;
   const lastAssistantMessage = [...messages].reverse().find((item) => item.role === "assistant");
@@ -64,38 +66,108 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
     return content.assistantHint;
   }, [content.assistantHint, content.placeholder, messages.length]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const trimmed = draft.trim();
     if (!trimmed || isLoading) {
       return;
     }
 
-    setMessages((current) => [
-      ...current,
-      { id: `user-${Date.now()}`, role: "user", content: trimmed, timestamp: "Now", state: "ready" },
-      {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        content: content.assistantReply,
-        timestamp: "Preparing",
-        state: "thinking",
-        citations: [],
-        suggestions: [],
-      },
-    ]);
+    const requestId = Date.now();
+    const userMessage: Message = {
+      id: `user-${requestId}`,
+      role: "user",
+      content: trimmed,
+      timestamp: "Now",
+      state: "ready",
+    };
+    const assistantId = `assistant-${requestId}`;
+    const history = [...messages.filter((message) => message.id !== "assistant-initial"), userMessage]
+      .slice(-8)
+      .map(({ role, content: messageContent }) => ({ role, content: messageContent }));
+    setMessages((current) => [...current, userMessage, {
+      id: assistantId,
+      role: "assistant",
+      content: "",
+      timestamp: "Preparing",
+      state: "thinking",
+      citations: [],
+      suggestions: [],
+    }]);
     setDraft("");
     setIsLoading(true);
+    const controller = new AbortController();
+    requestController.current = controller;
 
-    window.setTimeout(() => {
-      setMessages((current) =>
-        current.map((item, index) =>
-          index === current.length - 1 && item.role === "assistant"
-            ? { ...item, state: "ready", timestamp: "Now" }
-            : item,
-        ),
-      );
+    const updateAssistant = (update: (message: Message) => Message) => {
+      setMessages((current) => current.map((message) =>
+        message.id === assistantId ? update(message) : message));
+    };
+
+    try {
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale: lang, messages: history }),
+        signal: controller.signal,
+      });
+      if (!response.ok || !response.body) throw new Error("Chat request failed.");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let providerError: string | null = null;
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done });
+        const lines = buffer.split(/\r?\n/);
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const frame = JSON.parse(line) as {
+            type?: string;
+            delta?: unknown;
+            message?: unknown;
+            citation?: ChatCitation;
+          };
+          if (frame.type === "delta" && typeof frame.delta === "string") {
+            updateAssistant((message) => ({
+              ...message,
+              content: message.content + frame.delta,
+              state: "streaming",
+            }));
+          } else if (
+            frame.type === "citation"
+            && frame.citation
+            && typeof frame.citation.id === "string"
+            && typeof frame.citation.label === "string"
+            && typeof frame.citation.href === "string"
+            && /^\/[a-z0-9][a-z0-9/?=&_-]*$/i.test(frame.citation.href)
+          ) {
+            updateAssistant((message) => ({
+              ...message,
+              citations: [...(message.citations ?? []), frame.citation as ChatCitation],
+            }));
+          } else if (frame.type === "error") {
+            providerError = typeof frame.message === "string" ? frame.message : "Chat unavailable.";
+          }
+        }
+        if (done) break;
+      }
+      if (providerError) throw new Error(providerError);
+      updateAssistant((message) => ({ ...message, state: "ready", timestamp: "Now" }));
+    } catch (error) {
+      const cancelled = error instanceof DOMException && error.name === "AbortError";
+      updateAssistant((message) => ({
+        ...message,
+        content: message.content || (cancelled
+          ? (lang === "fa" ? "پاسخ متوقف شد." : "Response stopped.")
+          : (lang === "fa" ? "دستیار هوشمند موقتاً در دسترس نیست." : "The AI assistant is temporarily unavailable.")),
+        state: "ready",
+        timestamp: "Now",
+      }));
+    } finally {
+      if (requestController.current === controller) requestController.current = null;
       setIsLoading(false);
-    }, 700);
+    }
   };
 
   const suggestionChips = lastAssistantMessage?.suggestions ?? [];
@@ -145,14 +217,6 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
                     citations={message.citations}
                   />
                 ))}
-                {isLoading ? (
-                  <div className="flex justify-start gap-3">
-                    <AIAvatar state="thinking" animated />
-                    <div className="ds-thinking-pulse rounded-2xl border border-border/70 bg-background/92 px-4 py-3 text-sm text-muted-foreground shadow-[var(--elevation-1)]">
-                      {content.loadingText}
-                    </div>
-                  </div>
-                ) : null}
               </div>
             )}
 
@@ -163,6 +227,7 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
                 isLoading={isLoading}
                 disabled={false}
                 onSend={handleSend}
+                onCancel={() => requestController.current?.abort()}
                 label={content.inputLabel}
                 placeholder={content.inputPlaceholder}
                 ariaLabel={content.inputAriaLabel}

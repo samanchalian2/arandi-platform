@@ -4,6 +4,361 @@ All important project changes are recorded here.
 
 ---
 
+# Version 0.5.9
+
+Date:
+
+2026-08-03
+
+## Phase 10 Quality and Production-like Staging
+
+- Upgraded the verified runtime to Next.js 16.2.12 and React 19.2.8 and remediated all reported full/production dependency advisories.
+- Added bilingual canonical/alternate/Open Graph metadata, Organization JSON-LD, Published-only sitemap, robots policy, health probes, security headers, standalone output, skip navigation, and repeatable production QA.
+- Added bounded streaming JSON parsing and production-origin validation for reverse-proxied mutations; minimized CMS error logging.
+- Added release/rollback, health, backup, isolated restore, systemd, Nginx, TLS-staging, SSH, journald, and CI operational assets.
+- Activated PostgreSQL loopback access, least-privilege application connectivity, ClamAV, Nginx Media serving, key-only SSH, checksummed backups, restore verification, health timers, bounded journal retention, and a hardened systemd application service on the approved VPS.
+- Preserved the existing WordPress public server block; no public cutover was performed.
+
+## Verification
+
+- 44/44 focused tests, strict typecheck, zero-warning lint, AI verifier, five-current-migration Prisma status, and the 56-page production build pass.
+- Full and production-only `npm audit` report zero vulnerabilities.
+- Active release: `20260803T093000Z-phase10-r6`.
+- Production-like EN/FA QA passed 24 route/viewport combinations at 390/768/1280 px with zero Axe violations, no browser errors/overflow, valid SEO signals, and measured performance budgets.
+- Nginx Media returned `200`; ClamAV found zero infections; checksum and isolated database restore passed; rollback and roll-forward passed.
+- systemd security exposure is `3.0 OK`; SSH password authentication is disabled after separate key-login validation.
+- Staging TLS negotiated TLS 1.3 and returned HSTS over loopback, but the certificate is self-signed and no production TLS claim is made.
+
+## Remaining Gates
+
+- Public DNS/trusted renewable certificate and final Nginx cutover.
+- Approved OpenAI/SMTP/SMS.ir credentials and real provider checks.
+- External alerting, encrypted off-host backup, observed GitHub CI, and stakeholder content acceptance.
+
+---
+
+# Version 0.5.8
+
+Date:
+
+2026-08-03
+
+## Phase 9 AI and Knowledge Application Layer
+
+- Replaced the placeholder AI gateway with a server-only OpenAI Responses API streaming gateway.
+- Added a bounded Published-only Prisma context projection with term ranking, exact locale selection, safe citations, and explicit unsupported-query behavior.
+- Added `/api/ai/chat` with same-origin/JSON enforcement, body/history/message bounds, HMAC client identifiers, ten-per-minute in-process throttling, timeout, cancellation, and generic failures.
+- Connected the existing bilingual ChatInterface to NDJSON streaming with incremental output, citations, stop control, and localized errors.
+- Added private Admin-governed `ai.runtime` provider/model selection; credentials remain environment-only.
+- Applied the fifth migration to create the private default runtime selection.
+- Added focused AI tests and a deterministic PostgreSQL/provider-stub verifier.
+
+## Verification
+
+- 42/42 tests, strict typecheck, and zero-warning lint passed.
+- Prisma schema/status passed with all five migrations applied.
+- Live PostgreSQL verifier found two Published citations, invoked the Stub once for grounded content, and skipped it for no-answer.
+- Production build passed with 54 route entries.
+- Production Persian browser QA passed provider-unavailable behavior and 390px RTL layout without overflow.
+- `OPENAI_API_KEY` is not configured; no real OpenAI request or model-quality claim is made.
+
+---
+
+# Version 0.5.7
+
+Date:
+
+2026-08-03
+
+## Phase 8 Secured Contact Submission
+
+- Added the `ContactSubmission` Prisma model and fourth applied migration.
+- Added same-origin, JSON-only, 8 KB-bounded Contact API with strict validation and required consent.
+- Added honeypot handling, HMAC client hashes, replay deduplication, cooldown, and hourly throttling.
+- Added independent received/delivery states and fail-closed email gateway behavior.
+- Converted the public Contact form into an accessible pending/success/error client workflow.
+- Added a minimized Admin/SuperAdmin Contact requests view.
+
+## Verification
+
+- Focused tests increased to 35/35 and passed; typecheck and zero-warning lint passed.
+- Live PostgreSQL verifier passed origin, validation, consent, honeypot, hashing, replay, throttling, unavailable delivery, and cleanup.
+- Fourth migration is applied and Prisma schema/status are valid/up to date.
+- Production build passed with 53 route entries.
+- 390px Persian browser submission returned a tracking reference, cleared fields, retained one `main`, and had no overflow.
+- Stored browser record had both client hashes, one unavailable delivery attempt, and no raw client identifiers; it was deleted after verification.
+- SMTP was not configured and no delivery claim is made.
+
+---
+
+# Version 0.5.6
+
+Date:
+
+2026-08-03
+
+## Phase 8 Published Details, Documents, Search, and 404
+
+- Added Published-only bilingual Article, Knowledge, and Legal list/detail routes.
+- Added constrained plain-text rich content rendering; raw HTML and unknown Section types fail closed.
+- Seeded one create-if-absent bilingual Article, Knowledge document, and Privacy notice.
+- Added Services, Solutions, Industries, and Projects detail routes from existing Published Cards.
+- Added Published-content search with bounded queries, minimized results, Header discovery, and locale-query preservation.
+- Added a bilingual custom 404 and aligned the Admin Section-type allowlist with constrained Page templates.
+
+## Verification
+
+- 34/34 tests, typecheck, lint, Prisma validation, focused document verifier, and production build passed.
+- Production build exposes 51 static/dynamic route entries including all new route families.
+- Controlled Article Draft rendered 404 with no source marker; Published restoration returned Prisma content.
+- EN/FA production QA passed document and organization detail routes with correct direction, one `main`, one `h1`, no UUID leakage, and no overflow.
+- 390px mobile and 768px tablet QA passed Article, Search, and Service detail pages.
+- Repeat seed preserved document timestamps; final baseline is Page 10, Section 15, Card 23, User 0, SecurityEvent 0.
+
+---
+
+# Version 0.5.5
+
+Date:
+
+2026-08-03
+
+## Phase 7 Company and Contact Published Bridge
+
+- Added create-if-absent bilingual Published Page/Section structures for Company and Contact.
+- Added bounded Prisma mappers that reconstruct the exact existing Company and Contact output contracts.
+- Moved contact coordinates to a validated, allowlisted public `site.contact` Setting boundary.
+- Changed seed Setting updates to preserve later Admin-edited values.
+- Switched Company/Contact rendering and metadata to fail-closed Published Prisma reads.
+- Kept the Contact form presentation-only; no submission, persistence, or delivery claim was added.
+- Added a self-cleaning fixed-page parity and publication-filter verifier.
+
+## Verification
+
+- 34/34 tests, typecheck, lint, and the 47-route production build passed.
+- Exact Company/Contact EN/FA parity, Draft Page exclusion, disabled Section exclusion, and contact Setting validation passed.
+- Browser QA passed both routes in both languages with Prisma source, correct LTR/RTL, one `main`, and no overflow.
+- Persian Contact at 390px passed with one form and five fields.
+- Final database baseline is Page 7, Section 9, Card 23, Media 1, User 0, SecurityEvent 0.
+
+---
+
+# Version 0.5.4
+
+Date:
+
+2026-08-03
+
+## Phase 7 Enterprise Collection Published Bridge
+
+- Added bilingual Published Page/Section/Card seed structures for Services, Solutions, Industries, and Projects.
+- Made enterprise seed import create-if-absent so repeat seed runs preserve later Admin edits.
+- Added bounded server-only Prisma mappers with exact existing public output shapes.
+- Switched all four routes and localized metadata to Published Prisma reads with production fail-closed behavior.
+- Added page-specific cache tags and retained immediate CMS mutation invalidation.
+- Added a self-cleaning PostgreSQL verifier for exact EN/FA parity, Draft Pages, disabled Sections, and Draft Cards.
+- Corrected the Industries page type to the canonical `industry` value.
+
+## Verification
+
+- 34/34 tests, typecheck, lint, and the 47-route production build passed.
+- Prisma validate/status passed with all three migrations applied.
+- Enterprise output parity and publication-filter verifier passed with full restoration.
+- Database baseline is Page 5, Section 7, Card 23, Media 1, User 0, SecurityEvent 0; all five Pages are Published.
+- Production browser QA passed Services, Solutions, Industries, and Projects in EN/LTR and FA/RTL with Prisma source, one `main`, no 404, and no horizontal overflow.
+- Controlled Services Draft DOM rendered 404 with no source marker; Published restoration returned the Prisma-backed page.
+- Persian Solutions at 390px passed without horizontal overflow.
+
+---
+
+# Version 0.5.3
+
+Date:
+
+2026-08-03
+
+## Phase 7 Published Home and Shared Chrome Bridge
+
+- Added a server-only Published Prisma adapter for Home, bilingual Navigation, and public company/footer settings.
+- Preserved existing Home component contracts while mapping hero, chat, features, and service Cards from Page -> Section -> Card.
+- Added exact-locale filtering, enabled/Published filters, bounded field validation, deterministic Card order, and a safe public source marker.
+- Added one-hour Next.js ORM caching plus bounded immediate revalidation from Page, Section, Card, Navigation, and Settings mutations.
+- Separated shared chrome queries from Home publication so unrelated public routes remain available when Home is Draft.
+- Restricted local fallback to an explicit development-only source selection; production fails closed.
+
+## Verification
+
+- 34/34 tests, typecheck, lint, and production build passed; build remains 47 routes.
+- Prisma validate/status passed with all three migrations applied.
+- EN/LTR and FA/RTL production DOM returned `data-content-source="prisma"`.
+- Draft isolation DOM returned 404 with no Home/source marker while Services remained available.
+- Published restoration returned Home to Prisma output; desktop/mobile had one `main` and no overflow.
+- Page, Navigation, and Theme/Settings live verifiers passed and restored all baseline data.
+
+---
+
+# Version 0.5.2
+
+Date:
+
+2026-08-03
+
+## Phase 6 Constrained Page Templates
+
+- Added nine allowlisted Page templates over the existing Page -> Section -> Card -> Media model.
+- Added permission-aware responsive Page creation with required English/Persian content and SEO fields.
+- Made Page plus starter-Section creation serializable and transactional; new Pages are always Draft.
+- Added canonical slug/route validation and deployed database-level unique Page routes.
+- Hardened Page updates to preserve canonical identifiers and return deterministic uniqueness conflicts.
+- Added a Published-only server query boundary that also filters disabled Sections and Draft Cards for the upcoming public bridge.
+- Added a self-cleaning PostgreSQL verifier covering RBAC, CSRF, validation rollback, Draft isolation, uniqueness, deletion, and baseline restoration.
+
+## Verification
+
+- Focused tests: 34/34 passed.
+- Typecheck, lint, and production build passed; build exposes 47 routes.
+- Prisma schema is valid and all three migrations are applied.
+- Page-template runtime verification passed and restored baseline Page/Section counts.
+- Desktop Editor and mobile creation-modal QA passed; Translator creation controls remain absent.
+- Dependency audit remains 6 upstream/transitive findings; the unsafe suggested Next.js downgrade was not applied.
+
+---
+
+# Version 0.5.1
+
+Date:
+
+2026-08-02
+
+## Phase 5 Identity Foundation
+
+- Added migration-backed User, Role, UserRole, UserCredential, AuthSession, OtpChallenge, PasswordRecoveryToken, SecurityEvent, and ServiceRequest models.
+- Applied migration `20260802120000_identity_foundation` and seeded six system roles while preserving existing CMS data.
+- Added Iranian phone/email normalization, Argon2id password hashing, opaque token generation/hashing, HMAC OTP hashing, expiry helpers, and CSRF primitives.
+- Added database session creation, resolution, permission loading, revocation, and hashed client-context support.
+- Connected Admin Server Component guards and CMS API authorization to trusted database sessions.
+- Kept Proxy limited to optimistic token-shape checks and preserved the gated development mock path.
+- Added fail-closed SMS and email gateway boundaries.
+- Added production password login with generic failures, Argon2 verification, IP throttling, transactional failure counters, timed lockout, and security events.
+- Added secure session/CSRF cookie issuance and CSRF-protected database-session logout.
+- Added the responsive production Admin login form and safe internal return-path handling.
+- Added a one-time environment-driven SuperAdmin bootstrap command that refuses after the first SuperAdmin exists.
+- Added non-enumerating OTP request/verify flows with committed attempt caps, cooldown/rate limits, atomic single-use consumption, and secure cookie issuance.
+- Added single-use email recovery flows with password replacement, other-link consumption, full session revocation, and token removal from browser history.
+- Added responsive recovery and customer account login UI.
+- Added the Customer portal and owner-scoped, CSRF-protected service-request create/list workflow.
+- Added a self-cleaning live PostgreSQL verifier for authentication and customer boundaries.
+- Replaced the Users placeholder with Prisma-backed User filtering, SuperAdmin-only create/edit/suspend/revoke actions, and minimized security-event visibility.
+- Added persistent identity permissions, CSRF enforcement, mock-session write denial, last-SuperAdmin/self-demotion protection, and audited mutations.
+- Added `npm run admin:verify` and corrected verifier cleanup so SecurityEvent rows are removed before temporary User deletion.
+- Replaced Navigation, Theme, and Settings placeholders with Prisma-backed workflows and responsive Admin UI.
+- Added bilingual Navigation CRUD/translation, complete atomic reorder, constrained Theme token parsing, governed public Settings, and `/api/public/settings`.
+- Added database-session CSRF enforcement to every CMS mutation and shared client-side CSRF header injection.
+- Added Navigation and Theme/Settings live verifiers that restore original ordering/values and remove all temporary records.
+
+## Verification
+
+- Focused tests expanded to 28/28.
+- Typecheck, lint, and production build passed with no warnings/errors.
+- Prisma validate and live migration status passed with two applied migrations.
+- Existing CMS seed counts remained intact; six roles and zero default users were verified.
+- Runtime database-session checks: SuperAdmin read `200`, Viewer write `403`, revoked session `401`.
+- Runtime password flow verified five-attempt lockout, locked correct-password rejection, successful cookie issuance, CSRF logout, and session revocation.
+- Production login UI passed desktop/mobile checks with one `main` landmark and no horizontal overflow.
+- Live OTP/recovery checks passed attempt persistence, single-use/replay rejection, unknown-account non-delivery, and session revocation.
+- Live customer checks passed missing-CSRF denial, owner-scoped create/list, response minimization, and cleanup.
+- Recovery and customer login passed 1280px/390px browser QA without horizontal overflow.
+- Admin identity runtime checks passed SuperAdmin/Admin/Viewer, CSRF, suspension/revoke, self-demotion, audit-minimization, and zero-artifact cleanup.
+- Users/security UI passed 1280px/390px browser QA with one `main` and no document overflow.
+- Focused tests expanded to 33/33 and production build expanded to 47 routes.
+- Navigation, Theme, and Settings passed desktop/mobile browser QA without document overflow.
+
+---
+
+# Version 0.5.0
+
+Date:
+
+2026-08-02
+
+## Phase 4.7 Media Library
+
+- Added managed-filesystem image upload with JPEG/PNG/WebP signature validation, size/dimension/pixel limits, quarantine, optional ClamAV scanning, Sharp sanitisation, and UUID filenames.
+- Added development Media serving at immutable `/media/*` URLs; production serving remains behind the approved Nginx boundary.
+- Added Admin/SuperAdmin upload and metadata-edit UI plus SuperAdmin-only deletion.
+- Added staged file deletion/rollback and retained Card-reference deletion protection.
+- Added Media client mutation APIs and React Query invalidation.
+- Upgraded direct Sharp to 0.35.3.
+
+## Accessibility and Runtime
+
+- Added shared Admin modal semantics, accessible labels/descriptions, initial focus, Tab containment, Escape close, scroll locking, and focus return.
+- Corrected Base UI link-button semantics and Next.js 16 smooth-scroll declaration.
+- Verified Media at desktop, tablet, and mobile widths with EN/LTR and FA/RTL direction behavior.
+
+## Verification
+
+- Focused tests: 21/21 passed.
+- Typecheck and lint: passed.
+- Production build: passed with no warnings/errors.
+- Prisma schema: valid and approved database up to date.
+- Real upload/read/update/delete/file-cleanup cycle passed.
+- Viewer upload and Admin delete were rejected with `403`.
+- Dependency audit remains 6 findings (2 moderate, 4 high) in transitive/framework dependencies; unsafe Next downgrade was not applied.
+
+---
+
+# Version 0.4.9
+
+- Activated the approved PostgreSQL environment with restricted network and `pg_hba.conf` access.
+- Applied the baseline migration and verified Prisma reports the schema up to date.
+- Ran seed successfully and verified Page/Section/Card/Media records.
+
+Date:
+
+2026-08-02
+
+## Stabilized
+
+- Completed a repository-wide post-Phase 4.6 architecture, security, QA, Prisma, and UI audit.
+- Made the focused test suite reliable on the current Windows/Node environment and expanded it to 20 tests.
+- Added a standalone typecheck command and restored zero-warning lint.
+- Separated Admin UI from the public Header/Footer chrome.
+- Corrected mobile navigation accessibility for both public and Admin shells.
+
+## Security
+
+- Hardened Card creation validation and relation/error handling.
+- Hardened Media URL, MIME, dimension, text, metadata, duplicate, concurrency, and deletion rules.
+- Prevented deletion of Media referenced by Cards.
+- Added baseline response security headers.
+
+## Prisma
+
+- Added `prisma.config.ts`.
+- Removed deprecated `package.json#prisma` configuration.
+- Added the baseline PostgreSQL migration and migration lock.
+- Schema validation passes; live migration/seed remains blocked by unavailable PostgreSQL connectivity.
+
+## Phase 4.7 Foundation
+
+- Connected the Admin Media shell to real CMS Media list data.
+- Added responsive search, type filtering, sorting, pagination, and load/error/empty states.
+- Upload remains disabled pending an approved storage/security policy.
+
+## Verification
+
+- Focused tests: 20/20 passed.
+- Typecheck: passed.
+- Lint: passed with zero warnings/errors.
+- Production build: passed.
+- Prisma schema validation: passed.
+- Runtime guards and security headers: passed.
+- Admin responsive/accessibility QA passed at desktop and 390px.
+- `npm install` audit reports 6 dependency vulnerabilities (2 moderate, 4 high); no forced fix applied.
+
+---
+
 # Version 0.4.8
 
 Date:

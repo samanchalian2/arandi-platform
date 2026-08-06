@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
 import { getCardUpdateScopeError, isStaleCardUpdate, parseCardUpdateInput } from "../../_lib/card-input";
 import { asError, failure, success } from "../../_lib/http";
@@ -16,7 +17,7 @@ type Params = {
 };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "card.read");
+    const forbidden = await requirePermission(request, "card.read");
     if (forbidden) {
         return forbidden;
     }
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 export async function PUT(request: NextRequest, { params }: Params) {
-    const forbidden = requireAnyPermission(request, ["card.write", "card.translate"]);
+    const forbidden = await requireAnyPermission(request, ["card.write", "card.translate"]);
     if (forbidden) {
         return forbidden;
     }
@@ -56,7 +57,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         const id = parseUuid(rawId, "id");
         const body = await readJson(request);
         const input = parseCardUpdateInput(body);
-        const principal = readPrincipal(request);
+        const principal = await readPrincipal(request);
         const translatorOnly = hasAnyRole(principal, ["translator"])
             && !hasAnyRole(principal, ["super_admin", "cms_admin", "editor"]);
 
@@ -164,6 +165,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         });
 
         const lang = parseLang(request.nextUrl.searchParams.get("lang"));
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(mapCard(updated, lang, true));
     } catch (error) {
         if (error instanceof CardNotFoundError) {
@@ -200,7 +202,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "card.delete");
+    const forbidden = await requirePermission(request, "card.delete");
     if (forbidden) {
         return forbidden;
     }
@@ -214,6 +216,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
             return failure("NOT_FOUND", "Card not found.", 404);
         }
 
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success({ id, deleted: true });
     } catch (error) {
         const err = asError(error);

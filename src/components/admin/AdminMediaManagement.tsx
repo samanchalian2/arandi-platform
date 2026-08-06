@@ -1,16 +1,25 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
+    deleteMedia,
+    updateMedia,
+    uploadMedia,
     useMedia,
+    type MediaItem,
+    type MediaMetadataInput,
     type MediaSortField,
     type MediaTypeFilter,
 } from "@/lib/admin/media";
 
+import { AdminDeleteConfirmDialog } from "./AdminDeleteConfirmDialog";
 import { AdminEmptyState } from "./AdminEmptyState";
 import { AdminLoading } from "./AdminLoading";
+import { AdminMediaEditor } from "./AdminMediaEditor";
 import { AdminMediaItem } from "./AdminMediaItem";
 import { AdminMediaToolbar } from "./AdminMediaToolbar";
 import { AdminMediaTypeBadge } from "./AdminMediaTypeBadge";
@@ -20,17 +29,77 @@ import { AdminTable } from "./AdminTable";
 
 const PAGE_SIZE = 12;
 
-export function AdminMediaManagement() {
+type AdminMediaManagementProps = {
+    canWrite: boolean;
+    canDelete: boolean;
+};
+
+export function AdminMediaManagement({ canWrite, canDelete }: AdminMediaManagementProps) {
     const [search, setSearch] = useState("");
     const [type, setType] = useState<MediaTypeFilter>("all");
     const [sortBy, setSortBy] = useState<MediaSortField>("updatedAt");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
     const [page, setPage] = useState(1);
+    const [editorOpen, setEditorOpen] = useState(false);
+    const [selected, setSelected] = useState<MediaItem | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
+    const queryClient = useQueryClient();
 
     const result = useMedia({ search, type, sortBy, sortDirection, page, pageSize: PAGE_SIZE });
-    const rows = useMemo(
-        () =>
-            result.items.map((item) => ({
+    const refresh = async () => {
+        await queryClient.invalidateQueries({ queryKey: ["admin-media"] });
+    };
+    const uploadMutation = useMutation({
+        mutationFn: ({ file, input }: { file: File; input: MediaMetadataInput }) => uploadMedia(file, input),
+        onSuccess: async () => {
+            setEditorOpen(false);
+            await refresh();
+        },
+    });
+    const updateMutation = useMutation({
+        mutationFn: ({ item, input }: { item: MediaItem; input: MediaMetadataInput }) => updateMedia(item, input),
+        onSuccess: async () => {
+            setEditorOpen(false);
+            setSelected(null);
+            await refresh();
+        },
+    });
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => deleteMedia(id),
+        onSuccess: async () => {
+            setDeleteTarget(null);
+            await refresh();
+        },
+    });
+    const openEditor = (item?: MediaItem) => {
+        setSelected(item ?? null);
+        uploadMutation.reset();
+        updateMutation.reset();
+        setEditorOpen(true);
+    };
+    const actionsFor = (item: MediaItem) => (
+        <div className="flex items-center gap-1">
+            {canWrite ? (
+                <Button variant="ghost" size="icon-sm" onClick={() => openEditor(item)} aria-label={`Edit ${item.title}`}>
+                    <Pencil />
+                </Button>
+            ) : null}
+            {canDelete ? (
+                <Button
+                    variant="destructive"
+                    size="icon-sm"
+                    onClick={() => {
+                        deleteMutation.reset();
+                        setDeleteTarget(item);
+                    }}
+                    aria-label={`Delete ${item.title}`}
+                >
+                    <Trash2 />
+                </Button>
+            ) : null}
+        </div>
+    );
+    const rows = result.items.map((item) => ({
                 title: item.title,
                 type: <AdminMediaTypeBadge type={item.type} />,
                 dimensions: item.width && item.height ? `${item.width} × ${item.height}` : "—",
@@ -41,12 +110,19 @@ export function AdminMediaManagement() {
                         Open
                     </a>
                 ),
-            })),
-        [result.items],
-    );
+                actions: actionsFor(item),
+            }));
 
     return (
         <div className="space-y-4">
+            {canWrite ? (
+                <div className="flex justify-end">
+                    <Button size="sm" onClick={() => openEditor()}>
+                        <Plus />
+                        Upload image
+                    </Button>
+                </div>
+            ) : null}
             <AdminSearchBar
                 value={search}
                 placeholder="Search by title, URL, type, or alternative text..."
@@ -89,12 +165,20 @@ export function AdminMediaManagement() {
                                 { key: "alt", label: "Alternative text" },
                                 { key: "updatedAt", label: "Updated" },
                                 { key: "source", label: "Source" },
+                                ...(canWrite || canDelete ? [{ key: "actions", label: "Actions" }] : []),
                             ]}
                             rows={rows}
                         />
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2 md:hidden">
-                        {result.items.map((item) => <AdminMediaItem key={item.id} item={item} />)}
+                        {result.items.map((item) => (
+                            <div key={item.id} className="space-y-2">
+                                <AdminMediaItem item={item} />
+                                {canWrite || canDelete ? (
+                                    <div className="flex justify-end">{actionsFor(item)}</div>
+                                ) : null}
+                            </div>
+                        ))}
                     </div>
                     <AdminPagination
                         page={page}
@@ -111,6 +195,49 @@ export function AdminMediaManagement() {
                         Refresh
                     </Button>
                 </div>
+            ) : null}
+
+            {editorOpen ? (
+                <AdminMediaEditor
+                    open
+                    item={selected}
+                    saving={uploadMutation.isPending || updateMutation.isPending}
+                    error={
+                        uploadMutation.error instanceof Error
+                            ? uploadMutation.error.message
+                            : updateMutation.error instanceof Error
+                                ? updateMutation.error.message
+                                : null
+                    }
+                    onCancel={() => {
+                        if (!uploadMutation.isPending && !updateMutation.isPending) {
+                            setEditorOpen(false);
+                            setSelected(null);
+                        }
+                    }}
+                    onSubmit={(input, file) => {
+                        if (selected) {
+                            updateMutation.mutate({ item: selected, input });
+                        } else if (file) {
+                            uploadMutation.mutate({ file, input });
+                        }
+                    }}
+                />
+            ) : null}
+            <AdminDeleteConfirmDialog
+                open={Boolean(deleteTarget)}
+                title="Delete media"
+                description={`Delete “${deleteTarget?.title ?? ""}” permanently? Attached media cannot be deleted.`}
+                deleting={deleteMutation.isPending}
+                onCancel={() => {
+                    if (!deleteMutation.isPending) setDeleteTarget(null);
+                }}
+                onConfirm={() => {
+                    if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+                }}
+            />
+            {deleteMutation.error instanceof Error ? (
+                <p role="alert" className="text-sm text-destructive">{deleteMutation.error.message}</p>
             ) : null}
         </div>
     );

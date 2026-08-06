@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
 
+import { readBoundedJson } from "@/lib/http/boundedJson";
+
 export type JsonRecord = Record<string, unknown>;
 
 export const CMS_LANGS = ["en", "fa"] as const;
@@ -9,8 +11,8 @@ export function isRecord(value: unknown): value is JsonRecord {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-export async function readJson(request: NextRequest): Promise<JsonRecord> {
-    const body = await request.json();
+export async function readJson(request: NextRequest, maxBytes = 65_536): Promise<JsonRecord> {
+    const body = await readBoundedJson(request, maxBytes);
     if (!isRecord(body)) {
         throw new Error("Request body must be a JSON object.");
     }

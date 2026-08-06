@@ -1,35 +1,34 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { EnterprisePage, PageGrid } from "@/components/page";
-import { contentProvider, getEnterpriseContent } from "@/content";
-import { buildEnterprisePageMetadata, resolveLanguage } from "@/lib/pageMetadata";
+import { ContactSubmissionForm } from "@/components/contact";
+import { buildLocalizedMetadata, resolveLanguage } from "@/lib/pageMetadata";
+import { getPublicContactDetails, getPublicFixedPage } from "@/lib/public-content";
 
 type PageProps = {
     searchParams?: Promise<{ lang?: string }> | { lang?: string };
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-    return buildEnterprisePageMetadata({
-        searchParams,
-        getLocalizedMetadata: (lang) => {
-            const metadata = getEnterpriseContent(lang).pages.contact.metadata;
-            return {
-                title: metadata.title,
-                description: metadata.description,
-            };
-        },
-    });
+    const lang = await resolveLanguage(searchParams);
+    const page = await getPublicFixedPage("contact", lang).catch(() => null);
+    return page
+        ? buildLocalizedMetadata({ path: "/contact", lang, title: page.metadata.title, description: page.metadata.description })
+        : { title: "Content unavailable", robots: { index: false, follow: false } };
 }
 
 export default async function ContactPage({ searchParams }: PageProps) {
     const lang = await resolveLanguage(searchParams);
-    const domainContent = contentProvider.getDomainContent(lang);
-    const contact = domainContent.contact;
-    const contactPageContent = getEnterpriseContent(lang).pages.contact;
+    const [contactPageContent, contact] = await Promise.all([
+        getPublicFixedPage("contact", lang),
+        getPublicContactDetails(lang),
+    ]).catch(() => notFound());
 
     return (
         <EnterprisePage
             lang={lang}
+            contentSource="prisma"
             breadcrumbLabel={contactPageContent.breadcrumbLabel}
             hero={{
                 badge: contactPageContent.hero.badge,
@@ -82,35 +81,7 @@ export default async function ContactPage({ searchParams }: PageProps) {
                     eyebrow: contactPageContent.form.eyebrow,
                     title: contactPageContent.form.title,
                     description: contactPageContent.form.description,
-                    content: (
-                        <form className="rounded-[1.5rem] border border-border/70 bg-card p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)] md:p-8">
-                            <PageGrid columns={2}>
-                                <div className="space-y-2">
-                                    <label htmlFor="fullName" className="text-sm font-medium text-foreground">{contactPageContent.form.labels.fullName}</label>
-                                    <input id="fullName" name="fullName" type="text" className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40" placeholder={contactPageContent.form.placeholders.fullName} />
-                                </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="workEmail" className="text-sm font-medium text-foreground">{contactPageContent.form.labels.workEmail}</label>
-                                    <input id="workEmail" name="workEmail" type="email" className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40" placeholder={contactPageContent.form.placeholders.workEmail} />
-                                </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="organization" className="text-sm font-medium text-foreground">{contactPageContent.form.labels.organization}</label>
-                                    <input id="organization" name="organization" type="text" className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40" placeholder={contactPageContent.form.placeholders.organization} />
-                                </div>
-                                <div className="space-y-2">
-                                    <label htmlFor="topic" className="text-sm font-medium text-foreground">{contactPageContent.form.labels.topic}</label>
-                                    <input id="topic" name="topic" type="text" className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40" placeholder={contactPageContent.form.placeholders.topic} />
-                                </div>
-                            </PageGrid>
-                            <div className="mt-6 space-y-2">
-                                <label htmlFor="message" className="text-sm font-medium text-foreground">{contactPageContent.form.labels.message}</label>
-                                <textarea id="message" name="message" rows={5} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40" placeholder={contactPageContent.form.placeholders.message} />
-                            </div>
-                            <div className="mt-6 rounded-lg border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground">
-                                {contactPageContent.form.note}
-                            </div>
-                        </form>
-                    ),
+                    content: <ContactSubmissionForm lang={lang} content={contactPageContent.form} />,
                 },
             ]}
             cta={{

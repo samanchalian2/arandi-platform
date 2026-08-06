@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   Globe2,
   Menu,
+  Search,
   Sparkles,
   X,
 } from "lucide-react";
@@ -12,7 +13,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 
 import { Container } from "@/components/layout/Container";
-import { buildEnterpriseNavigationItems, getLocalizedHomeLabel, getNavigationContent } from "@/content/navigation";
+import { buildEnterpriseNavigationItems } from "@/content/navigation";
 import { cn } from "@/lib/utils";
 
 type NavigationContent = {
@@ -63,16 +64,20 @@ export function Header({ content, company, lang }: HeaderProps) {
   const isMounted = useIsMounted();
   const searchParams = useSearchParams();
   const currentLang = normalizeLanguage(searchParams.get("lang"), lang);
-  const localizedContent = currentLang === lang ? content : getNavigationContent(currentLang);
-  const localizedHomeLabel = getLocalizedHomeLabel(currentLang);
-  const brandDisplayName = currentLang === "fa" ? "آرن دی بنیان" : company.shortName;
+  const localizedContent = content;
+  const localizedHomeLabel = currentLang === "fa" ? "خانه" : "Home";
+  const brandDisplayName = company.shortName;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuPanelRef = useRef<HTMLDivElement>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   const navigationItems = buildEnterpriseNavigationItems(localizedContent.enterpriseLinks, currentLang);
-  const buildLanguageHref = (nextLang: "en" | "fa") => `${pathname || "/"}?lang=${nextLang}`;
+  const buildLanguageHref = (nextLang: "en" | "fa") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lang", nextLang);
+    return `${pathname || "/"}?${params.toString()}`;
+  };
   const isRtl = currentLang === "fa";
 
   useEffect(() => {
@@ -219,6 +224,16 @@ export function Header({ content, company, lang }: HeaderProps) {
               {item.label}
             </Link>
           ))}
+          <Link
+            href={`/articles?lang=${currentLang}`}
+            aria-current={pathname === "/articles" || pathname.startsWith("/articles/") ? "page" : undefined}
+            className={cn(
+              "ds-focus-visible rounded-full px-3.5 py-2.5 transition-all duration-[var(--duration-base)] ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:bg-muted/78 hover:text-foreground",
+              (pathname === "/articles" || pathname.startsWith("/articles/")) && "bg-muted text-foreground shadow-[var(--elevation-1)]",
+            )}
+          >
+            {currentLang === "fa" ? "مقالات" : "Articles"}
+          </Link>
         </nav>
 
         <div
@@ -227,6 +242,13 @@ export function Header({ content, company, lang }: HeaderProps) {
             isRtl ? "col-start-3 row-start-1 justify-self-start" : "col-start-3 row-start-1 justify-self-end",
           )}
         >
+          <Link
+            href={`/search?lang=${currentLang}`}
+            className="ds-focus-visible inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/75 bg-background/82 text-foreground shadow-[var(--elevation-1)] transition-colors hover:bg-muted"
+            aria-label={currentLang === "fa" ? "جست‌وجو" : "Search"}
+          >
+            <Search className="size-4" />
+          </Link>
           <div className="ds-glass ds-subtle-ring flex shrink-0 items-center rounded-full border border-border/70 p-1 text-xs font-semibold text-muted-foreground">
             <Link
               href={buildLanguageHref("en")}
@@ -269,18 +291,14 @@ export function Header({ content, company, lang }: HeaderProps) {
           </button>
         </div>
       </Container>
-      {isMounted ? createPortal(
+      {isMounted && isMobileMenuOpen ? createPortal(
         <div
-          className={cn(
-            "fixed inset-x-0 bottom-0 top-[var(--header-height)] z-[70] overflow-hidden xl:hidden",
-            isMobileMenuOpen ? "pointer-events-auto" : "pointer-events-none",
-          )}
-          aria-hidden={!isMobileMenuOpen}
+          className="fixed inset-x-0 bottom-0 top-[var(--header-height)] z-[70] overflow-hidden xl:hidden"
         >
           <div
             className={cn(
               "absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(8,25,47,0.28),rgba(8,25,47,0.5))] backdrop-blur-[2px] transition-opacity duration-[var(--duration-slow)] ease-[var(--ease-emphasized)]",
-              isMobileMenuOpen ? "opacity-100" : "opacity-0",
+              "opacity-100",
             )}
             onClick={closeMobileMenu}
           />
@@ -300,7 +318,7 @@ export function Header({ content, company, lang }: HeaderProps) {
               // physical edge (positive for en/right, negative for fa/left) so it
               // ends up fully off-screen rather than sliding back into view.
               "end-0 border-s",
-              isMobileMenuOpen ? "translate-x-0" : isRtl ? "-translate-x-full" : "translate-x-full",
+              "translate-x-0",
             )}
           >
             <div className="mb-5 flex items-center justify-between">
@@ -342,6 +360,19 @@ export function Header({ content, company, lang }: HeaderProps) {
                   <span className={cn("block truncate", isRtl ? "text-right" : "text-left")}>{item.label}</span>
                 </Link>
               ))}
+              <Link
+                href={`/articles?lang=${currentLang}`}
+                aria-current={pathname === "/articles" || pathname.startsWith("/articles/") ? "page" : undefined}
+                className={cn(
+                  "ds-focus-visible rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold transition-all duration-[var(--duration-base)] ease-[var(--ease-standard)] hover:border-border/75 hover:bg-muted/72 hover:text-foreground",
+                  (pathname === "/articles" || pathname.startsWith("/articles/")) && "border-primary/25 bg-primary/10 text-foreground shadow-[var(--elevation-1)]",
+                )}
+                onClick={closeMobileMenu}
+              >
+                <span className={cn("block truncate", isRtl ? "text-right" : "text-left")}>
+                  {currentLang === "fa" ? "مقالات" : "Articles"}
+                </span>
+              </Link>
             </nav>
 
             <div className="mt-6 rounded-2xl border border-border/70 bg-background/55 p-4">

@@ -1,0 +1,45 @@
+[Unit]
+Description=Arandi Platform
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=arandi
+Group=arandi
+WorkingDirectory=/srv/arandi-platform/current
+EnvironmentFile=/etc/arandi-platform/app.env
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=60s
+TimeoutStopSec=30s
+KillSignal=SIGTERM
+UMask=0027
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectHostname=true
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+RemoveIPC=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+ReadWritePaths=/srv/arandi-platform/shared/media /srv/arandi-platform/shared/cache
+
+[Install]
+WantedBy=multi-user.target

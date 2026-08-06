@@ -1,6 +1,6 @@
 import type { Language } from "./company";
 
-type EnterpriseContentModel = {
+export type EnterpriseContentModel = {
     navigation: {
         home: string;
         company: string;

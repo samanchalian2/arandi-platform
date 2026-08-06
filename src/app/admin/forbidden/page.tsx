@@ -12,10 +12,10 @@ export default function AdminForbiddenPage() {
           Your current role is not allowed to view this admin route.
         </p>
         <div className="mt-5 flex justify-center gap-2">
-          <Button render={<Link href="/admin/dashboard" />} variant="outline">
+          <Button render={<Link href="/admin/dashboard" />} nativeButton={false} variant="outline">
             Back to dashboard
           </Button>
-          <Button render={<Link href="/admin/login?logout=true" />} variant="default">
+          <Button render={<Link href="/admin/login?logout=true" />} nativeButton={false} variant="default">
             Switch mock role
           </Button>
         </div>

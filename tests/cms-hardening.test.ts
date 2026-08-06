@@ -1,14 +1,47 @@
 import assert from "node:assert/strict";
+import { access, mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import test from "node:test";
 
 import { NextRequest } from "next/server";
+import sharp from "sharp";
 
 import {
     getCardUpdateScopeError,
     isStaleCardUpdate,
+    parseCardCreateInput,
     parseCardUpdateInput,
 } from "../src/app/api/cms/_lib/card-input";
 import { asError } from "../src/app/api/cms/_lib/http";
+import {
+    parseMediaCreateInput,
+    parseMediaUpdateInput,
+} from "../src/app/api/cms/_lib/media-input";
+import {
+    parseNavigationHref,
+    parseNavigationKey,
+    parseNavigationTranslations,
+} from "../src/app/api/cms/_lib/navigation-input";
+import {
+    parseComponentOverrides,
+    parseThemeSlug,
+    parseThemeTokenRecord,
+} from "../src/app/api/cms/_lib/theme-input";
+import {
+    isSecretBearingSettingKey,
+    parseEditableSettingKey,
+    parseSettingValue,
+} from "../src/app/api/cms/_lib/setting-input";
+import {
+    parsePageCreateInput,
+    parsePageRoute,
+    parsePageSlug,
+} from "../src/app/api/cms/_lib/page-create-input";
+import {
+    PAGE_TEMPLATES,
+    PAGE_TEMPLATE_KEYS,
+} from "../src/lib/admin/pages/templates";
 import { mapCard } from "../src/app/api/cms/_lib/mappers";
 import {
     assertCompleteOwnedCollection,
@@ -22,7 +55,8 @@ import {
 } from "../src/app/api/cms/_lib/security";
 import { parseUuid } from "../src/app/api/cms/_lib/validation";
 import { GET as getCard, PUT as updateCard } from "../src/app/api/cms/cards/[id]/route";
-import { validateCardDraft, type CardEditDraft } from "../src/components/admin/AdminCardDetails";
+import { validateCardDraft } from "../src/components/admin/AdminCardDetails";
+import type { CardEditDraft } from "../src/components/admin/AdminCardEditForm";
 import {
     fetchCardById,
     fetchCards,
@@ -48,6 +82,11 @@ import {
 } from "../src/lib/admin/sections/ordering";
 import type { SectionListItem } from "../src/lib/admin/sections/types";
 import { prisma } from "../src/lib/prisma";
+import {
+    removeStoredMediaFile,
+    stageStoredMediaDeletion,
+    storeImageUpload,
+} from "../src/lib/media/storage";
 
 const CARD_ID = "11111111-1111-4111-8111-111111111111";
 const SECOND_CARD_ID = "22222222-2222-4222-8222-222222222222";
@@ -139,7 +178,7 @@ function request(
 }
 
 function enableDevelopmentMockAuth(): void {
-    process.env.NODE_ENV = "test";
+    Reflect.set(process.env, "NODE_ENV", "test");
     process.env.CMS_ENABLE_DEV_MOCK_AUTH = "true";
 }
 
@@ -185,11 +224,11 @@ const cardRecord = {
 } satisfies Parameters<typeof mapCard>[0];
 
 test("production anonymous and spoofed role headers are unauthorized", { concurrency: false }, async () => {
-    process.env.NODE_ENV = "production";
+    Reflect.set(process.env, "NODE_ENV", "production");
     process.env.CMS_ENABLE_DEV_MOCK_AUTH = "true";
 
     const anonymous = request();
-    const anonymousResult = requirePermission(anonymous, "card.read");
+    const anonymousResult = await requirePermission(anonymous, "card.read");
     assert.equal(anonymousResult?.status, 401);
     assert.equal((await anonymousResult?.json()).error.code, "UNAUTHORIZED");
 
@@ -199,15 +238,15 @@ test("production anonymous and spoofed role headers are unauthorized", { concurr
             "x-cms-user-id": "spoofed",
         },
     });
-    assert.equal(requirePermission(spoofed, "card.delete")?.status, 401);
-    assert.equal(readPrincipal(spoofed), null);
+    assert.equal((await requirePermission(spoofed, "card.delete"))?.status, 401);
+    assert.equal(await readPrincipal(spoofed), null);
 });
 
-test("Viewer writes are forbidden and Translator gets translation-only Card scope", { concurrency: false }, () => {
+test("Viewer writes are forbidden and Translator gets translation-only Card scope", { concurrency: false }, async () => {
     enableDevelopmentMockAuth();
 
-    assert.equal(requirePermission(request("Viewer"), "card.write")?.status, 403);
-    assert.equal(requireAnyPermission(request("Translator"), ["card.write", "card.translate"]), null);
+    assert.equal((await requirePermission(request("Viewer"), "card.write"))?.status, 403);
+    assert.equal(await requireAnyPermission(request("Translator"), ["card.write", "card.translate"]), null);
 
     const structural = parseCardUpdateInput({ key: "changed" });
     assert.equal(
@@ -223,16 +262,16 @@ test("Viewer writes are forbidden and Translator gets translation-only Card scop
     assert.equal(getCardUpdateScopeError(true, translationOnly), null);
 });
 
-test("Section reorder role policy allows Editor and rejects Translator", { concurrency: false }, () => {
+test("Section reorder role policy allows Editor and rejects Translator", { concurrency: false }, async () => {
     enableDevelopmentMockAuth();
 
     const editor = request("Editor");
-    assert.equal(requirePermission(editor, "section.write"), null);
-    assert.equal(hasAnyRole(readPrincipal(editor), ["super_admin", "cms_admin", "editor"]), true);
+    assert.equal(await requirePermission(editor, "section.write"), null);
+    assert.equal(hasAnyRole(await readPrincipal(editor), ["super_admin", "cms_admin", "editor"]), true);
 
     const translator = request("Translator");
-    assert.equal(requirePermission(translator, "section.write"), null);
-    assert.equal(hasAnyRole(readPrincipal(translator), ["super_admin", "cms_admin", "editor"]), false);
+    assert.equal(await requirePermission(translator, "section.write"), null);
+    assert.equal(hasAnyRole(await readPrincipal(translator), ["super_admin", "cms_admin", "editor"]), false);
 });
 
 test("filtered Section lists cannot reorder and canonical keyboard moves keep the full collection", () => {
@@ -536,4 +575,215 @@ test("Card reorder is complete, contiguous, filter-safe, keyboard-accessible, an
     assert.equal(isCardReorderDisabled("query", false), true);
     assert.equal(isCardReorderDisabled("", true), true);
     assert.equal(isCardReorderDisabled("", false), false);
+});
+
+test("Card create validation enforces safe structure, references, and translations", () => {
+    const input = parseCardCreateInput({
+        key: "service:new",
+        sectionId: SECTION_ID,
+        mediaId: MEDIA_ID,
+        order: 1,
+        tags: ["service"],
+        metrics: {},
+        payload: {},
+        translations: { en: { title: "New Card" } },
+    });
+    assert.equal(input.sectionId, SECTION_ID);
+    assert.equal(input.mediaId, MEDIA_ID);
+    assert.equal(input.translations.en?.title, "New Card");
+
+    assert.throws(
+        () => parseCardCreateInput({ key: "bad", translations: { en: { title: "" } } }),
+        /non-empty string/,
+    );
+    assert.throws(
+        () => parseCardCreateInput({ key: "bad", order: -1, translations: { en: { title: "Title" } } }),
+        /non-negative integer/,
+    );
+});
+
+test("Media input accepts safe relative/https references and nullable metadata fields", () => {
+    const created = parseMediaCreateInput({
+        title: "Hero",
+        url: "/media/hero.webp",
+        type: "image/webp",
+        width: 1600,
+        height: 900,
+        metadata: { source: "approved-library" },
+    });
+    assert.equal(created.url, "/media/hero.webp");
+    assert.equal(created.type, "image/webp");
+
+    const updated = parseMediaUpdateInput({
+        alt: null,
+        caption: "",
+        width: null,
+        expectedUpdatedAt: UPDATED_AT.toISOString(),
+    });
+    assert.equal(updated.alt, null);
+    assert.equal(updated.caption, null);
+    assert.equal(updated.width, null);
+    assert.equal(updated.expectedUpdatedAt?.toISOString(), UPDATED_AT.toISOString());
+});
+
+test("Media input rejects unsafe protocols, credentials, invalid MIME types, and dimensions", () => {
+    assert.throws(
+        () => parseMediaCreateInput({ title: "Bad", url: "javascript:alert(1)", type: "image/png" }),
+        /http or https/,
+    );
+    assert.throws(
+        () => parseMediaCreateInput({ title: "Bad", url: "https://user:pass@example.com/a.png", type: "image/png" }),
+        /credentials/,
+    );
+    assert.throws(
+        () => parseMediaCreateInput({ title: "Bad", url: "/a", type: "not-a-mime" }),
+        /valid MIME/,
+    );
+    assert.throws(
+        () => parseMediaCreateInput({ title: "Bad", url: "/a", type: "image/png", width: -1 }),
+        /positive integer/,
+    );
+    assert.throws(
+        () => parseMediaUpdateInput({ metadata: [] }),
+        /JSON object/,
+    );
+});
+
+test("Media filesystem storage validates bytes, sanitises images, and supports staged deletion", async () => {
+    const previousRoot = process.env.MEDIA_STORAGE_ROOT;
+    const previousBase = process.env.MEDIA_PUBLIC_BASE_URL;
+    const root = await mkdtemp(path.join(tmpdir(), "arandi-media-"));
+    process.env.MEDIA_STORAGE_ROOT = root;
+    process.env.MEDIA_PUBLIC_BASE_URL = "/media";
+
+    try {
+        const png = await sharp({
+            create: {
+                width: 1,
+                height: 1,
+                channels: 4,
+                background: { r: 0, g: 120, b: 255, alpha: 1 },
+            },
+        }).png().toBuffer();
+        const stored = await storeImageUpload(
+            new File([Uint8Array.from(png)], "../unsafe name.png", { type: "text/plain" }),
+        );
+        assert.equal(stored.mimeType, "image/png");
+        assert.equal(stored.width, 1);
+        assert.equal(stored.height, 1);
+        assert.match(stored.url, /^\/media\/[0-9a-f-]+\.png$/);
+        assert.equal(stored.originalName, "unsafe name.png");
+
+        const storedPath = path.join(root, path.basename(stored.url));
+        await access(storedPath);
+        const staged = await stageStoredMediaDeletion(stored.url);
+        assert.ok(staged);
+        await assert.rejects(access(storedPath));
+        await staged.rollback();
+        await access(storedPath);
+        await removeStoredMediaFile(stored.url);
+        await assert.rejects(access(storedPath));
+
+        await assert.rejects(
+            storeImageUpload(new File(["<svg></svg>"], "bad.svg", { type: "image/png" })),
+            /Only JPEG, PNG, and WebP/,
+        );
+    } finally {
+        if (previousRoot === undefined) delete process.env.MEDIA_STORAGE_ROOT;
+        else process.env.MEDIA_STORAGE_ROOT = previousRoot;
+        if (previousBase === undefined) delete process.env.MEDIA_PUBLIC_BASE_URL;
+        else process.env.MEDIA_PUBLIC_BASE_URL = previousBase;
+        await rm(root, { recursive: true, force: true });
+    }
+});
+
+test("Navigation input enforces safe keys, destinations, and bilingual labels", () => {
+    assert.equal(parseNavigationKey("services_main"), "services_main");
+    assert.equal(parseNavigationHref("/services?topic=ai", false), "/services?topic=ai");
+    assert.equal(
+        parseNavigationHref("https://example.com/path", true),
+        "https://example.com/path",
+    );
+    assert.deepEqual(
+        parseNavigationTranslations({
+            en: { label: "Services" },
+            fa: { label: "خدمات" },
+        }, true),
+        { en: "Services", fa: "خدمات" },
+    );
+    assert.throws(() => parseNavigationKey("../unsafe"), /safe lowercase/);
+    assert.throws(() => parseNavigationHref("//evil.example", false), /root-relative/);
+    assert.throws(() => parseNavigationHref("http://example.com", true), /HTTPS/);
+    assert.throws(
+        () => parseNavigationTranslations({ en: { label: "Only English" } }, true),
+        /fa navigation label/,
+    );
+});
+
+test("Theme token input blocks active CSS constructs and malformed keys", () => {
+    assert.equal(parseThemeSlug("enterprise-default"), "enterprise-default");
+    assert.deepEqual(
+        parseThemeTokenRecord({ "--primary": "var(--brand-primary)", accent: "#135fad" }, "colors"),
+        { "--primary": "var(--brand-primary)", accent: "#135fad" },
+    );
+    assert.deepEqual(
+        parseComponentOverrides({ Button: { radius: "0.75rem" } }),
+        { Button: { radius: "0.75rem" } },
+    );
+    assert.throws(() => parseThemeTokenRecord({ accent: "url(https://evil.example)" }, "colors"), /unsafe/);
+    assert.throws(() => parseThemeTokenRecord({ "bad key": "#fff" }, "colors"), /invalid token key/);
+});
+
+test("Settings allowlist rejects secret-bearing keys and nested secret fields", () => {
+    assert.equal(parseEditableSettingKey("site.company"), "site.company");
+    assert.equal(isSecretBearingSettingKey("smtp.password"), true);
+    assert.deepEqual(parseSettingValue({ name: "Arandi", links: ["one", "two"] }), {
+        name: "Arandi",
+        links: ["one", "two"],
+    });
+    assert.throws(() => parseEditableSettingKey("site.smtp"), /not editable/);
+    assert.throws(() => parseSettingValue({ apiKey: "never" }), /forbidden field/);
+    assert.throws(() => parseSettingValue({ nested: { password: "never" } }), /forbidden field/);
+});
+
+test("Page creation catalog is allowlisted, bilingual, and Draft-only", () => {
+    assert.deepEqual(PAGE_TEMPLATES.map(({ key }) => key), [...PAGE_TEMPLATE_KEYS]);
+    for (const template of PAGE_TEMPLATES) {
+        assert.equal(new Set(template.sections.map(({ key }) => key)).size, template.sections.length);
+    }
+    const input = parsePageCreateInput({
+        slug: "enterprise-ai",
+        route: "/services/enterprise-ai",
+        template: "service",
+        status: "draft",
+        seoKeywords: ["AI", "enterprise", "AI"],
+        translations: {
+            en: {
+                title: "Enterprise AI",
+                seoTitle: "Enterprise AI services",
+                seoDescription: "A sufficiently detailed English description for the service.",
+            },
+            fa: {
+                title: "هوش مصنوعی سازمانی",
+                seoTitle: "خدمات هوش مصنوعی سازمانی",
+                seoDescription: "توضیح کامل و معتبر فارسی برای صفحه خدمات سازمانی.",
+            },
+        },
+    });
+    assert.equal(input.template, "service");
+    assert.deepEqual(input.seoKeywords, ["AI", "enterprise"]);
+    assert.equal(parsePageSlug("valid-page"), "valid-page");
+    assert.equal(parsePageRoute("/legal/privacy"), "/legal/privacy");
+    assert.throws(() => parsePageSlug("../unsafe"), /safe lowercase/);
+    assert.throws(() => parsePageRoute("//unsafe"), /canonical/);
+    assert.throws(() => parsePageCreateInput({
+        ...input,
+        status: "published",
+    } as unknown as Record<string, unknown>), /must start as draft/);
+    assert.throws(() => parsePageCreateInput({
+        slug: "missing-fa",
+        route: "/missing-fa",
+        template: "article",
+        translations: { en: input.translations.en },
+    }), /translations.fa/);
 });

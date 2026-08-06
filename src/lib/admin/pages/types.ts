@@ -115,3 +115,14 @@ export type UpdatePagePayload = {
         fa: EditableTranslation;
     };
 };
+
+export type CreatePagePayload = {
+    slug: string;
+    route: string;
+    template: string;
+    seoKeywords: string[];
+    translations: {
+        en: EditableTranslation;
+        fa: EditableTranslation;
+    };
+};

@@ -3,7 +3,7 @@ import type { ChatContent } from "../chat";
 import type { FeatureContent } from "../features";
 import type { HeroContent } from "../hero";
 
-export type CmsSource = "local" | "payload" | "strapi" | "directus" | "rest" | "graphql";
+export type CmsSource = "local" | "prisma" | "payload" | "strapi" | "directus" | "rest" | "graphql";
 
 export type SectionVisibility = {
   enabled: boolean;

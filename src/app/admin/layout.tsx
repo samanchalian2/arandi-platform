@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             <AdminLayoutShell
                 displayName={session?.displayName ?? "Guest"}
                 roleLabel={session ? getRoleBadge(session.roles) : "Unauthenticated"}
+                isMock={session?.isMock ?? false}
             >
                 {children}
             </AdminLayoutShell>

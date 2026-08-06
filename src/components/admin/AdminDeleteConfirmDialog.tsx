@@ -24,7 +24,7 @@ export function AdminDeleteConfirmDialog({
     onCancel,
 }: AdminDeleteConfirmDialogProps) {
     return (
-        <AdminModal open={open} title={title} description={description}>
+        <AdminModal open={open} title={title} description={description} onClose={onCancel}>
             <div className="mt-4 flex items-center justify-end gap-2">
                 <Button variant="outline" size="sm" onClick={onCancel} disabled={deleting}>
                     {cancelLabel}

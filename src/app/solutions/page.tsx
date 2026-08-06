@@ -1,33 +1,31 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { EnterprisePage, PageGrid } from "@/components/page";
-import { getEnterpriseContent } from "@/content";
-import { buildEnterprisePageMetadata, resolveLanguage } from "@/lib/pageMetadata";
+import { buildLocalizedMetadata, resolveLanguage } from "@/lib/pageMetadata";
+import { getPublicEnterprisePage } from "@/lib/public-content";
 
 type PageProps = {
     searchParams?: Promise<{ lang?: string }> | { lang?: string };
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-    return buildEnterprisePageMetadata({
-        searchParams,
-        getLocalizedMetadata: (lang) => {
-            const metadata = getEnterpriseContent(lang).pages.solutions.metadata;
-            return {
-                title: metadata.title,
-                description: metadata.description,
-            };
-        },
-    });
+    const lang = await resolveLanguage(searchParams);
+    const page = await getPublicEnterprisePage("solutions", lang).catch(() => null);
+    return page
+        ? buildLocalizedMetadata({ path: "/solutions", lang, title: page.metadata.title, description: page.metadata.description })
+        : { title: "Content unavailable", robots: { index: false, follow: false } };
 }
 
 export default async function SolutionsPage({ searchParams }: PageProps) {
     const lang = await resolveLanguage(searchParams);
-    const solutionsPageContent = getEnterpriseContent(lang).pages.solutions;
+    const solutionsPageContent = await getPublicEnterprisePage("solutions", lang).catch(() => notFound());
 
     return (
         <EnterprisePage
             lang={lang}
+            contentSource="prisma"
             breadcrumbLabel={solutionsPageContent.breadcrumbLabel}
             hero={{
                 badge: solutionsPageContent.hero.badge,
@@ -49,6 +47,9 @@ export default async function SolutionsPage({ searchParams }: PageProps) {
                                     <h3 className="text-xl font-semibold text-foreground">{solution.title}</h3>
                                     <p className="mt-3 text-sm leading-7 text-muted-foreground">{solution.summary}</p>
                                     <p className="mt-6 text-sm font-medium text-primary">{solution.outcome}</p>
+                                    <Link className="mt-5 inline-flex font-semibold text-primary hover:underline" href={`/solutions/${solution.id}?lang=${lang}`}>
+                                        {lang === "fa" ? "جزئیات راهکار" : "Solution details"}
+                                    </Link>
                                 </article>
                             ))}
                         </PageGrid>

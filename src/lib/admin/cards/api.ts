@@ -7,9 +7,10 @@ import type {
     UpdateCardPayload,
 } from "./types";
 import { CmsApiError, mapRawCard } from "./types";
+import { cmsFetch } from "@/lib/admin/cms-fetch";
 
 export async function readCardEnvelope<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-    const response = await fetch(input, { ...init, cache: "no-store" });
+    const response = await cmsFetch(input, { ...init, cache: "no-store" });
     let envelope: ApiEnvelope<T>;
 
     try {

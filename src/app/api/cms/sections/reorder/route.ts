@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
 import { asError, failure, success } from "../../_lib/http";
 import { mapSection } from "../../_lib/mappers";
@@ -9,8 +10,8 @@ import { assertCompleteOwnedCollection, parseReorderItems } from "../../_lib/reo
 import { hasAnyRole, readPrincipal, requirePermission } from "../../_lib/security";
 import { parseLang, parseOptionalString, parseUuid, readJson } from "../../_lib/validation";
 
-function ensureReorderRole(request: NextRequest) {
-    const principal = readPrincipal(request);
+async function ensureReorderRole(request: NextRequest) {
+    const principal = await readPrincipal(request);
     const allowed = hasAnyRole(principal, ["super_admin", "cms_admin", "editor"]);
 
     if (!allowed) {
@@ -21,12 +22,12 @@ function ensureReorderRole(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-    const forbidden = requirePermission(request, "section.write");
+    const forbidden = await requirePermission(request, "section.write");
     if (forbidden) {
         return forbidden;
     }
 
-    const reorderRoleError = ensureReorderRole(request);
+    const reorderRoleError = await ensureReorderRole(request);
     if (reorderRoleError) {
         return reorderRoleError;
     }
@@ -87,6 +88,7 @@ export async function PATCH(request: NextRequest) {
             isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
         });
 
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(updated.map((section) => mapSection(section, lang, true)));
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {

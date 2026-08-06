@@ -47,3 +47,9 @@ export type UseMediaResult = {
     errorMessage: string | null;
     refetch: () => Promise<void>;
 };
+
+export type MediaMetadataInput = {
+    title: string;
+    alt: string;
+    caption: string;
+};

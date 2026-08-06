@@ -1,27 +1,18 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
+import { parseCardCreateInput } from "../_lib/card-input";
 import { asError, failure, success } from "../_lib/http";
 import { mapCard } from "../_lib/mappers";
 import { parseOrdering } from "../_lib/queries";
 import { requirePermission } from "../_lib/security";
-import {
-    isRecord,
-    parseLang,
-    parseOptionalBoolean,
-    parseOptionalNumber,
-    parseOptionalString,
-    parseOptionalStringArray,
-    parseString,
-    parseTranslations,
-    parseUuid,
-    readJson,
-} from "../_lib/validation";
+import { parseLang, parseUuid, readJson } from "../_lib/validation";
 
 export async function GET(request: NextRequest) {
-    const forbidden = requirePermission(request, "card.read");
+    const forbidden = await requirePermission(request, "card.read");
     if (forbidden) {
         return forbidden;
     }
@@ -62,56 +53,58 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const forbidden = requirePermission(request, "card.write");
+    const forbidden = await requirePermission(request, "card.write");
     if (forbidden) {
         return forbidden;
     }
 
     try {
         const body = await readJson(request);
-        const key = parseString(body.key, "key");
-        const sectionIdRaw = parseOptionalString(body.sectionId);
-        const sectionId = sectionIdRaw ? parseUuid(sectionIdRaw, "sectionId") : undefined;
-        const variant = parseOptionalString(body.variant) ?? "genericCard";
-        const order = parseOptionalNumber(body.order) ?? 0;
-        const active = parseOptionalBoolean(body.active) ?? true;
-        const mediaIdRaw = parseOptionalString(body.mediaId);
-        const mediaId = mediaIdRaw ? parseUuid(mediaIdRaw, "mediaId") : undefined;
-        const tags = parseOptionalStringArray(body.tags) ?? [];
-        const metrics = isRecord(body.metrics) ? body.metrics : {};
-        const payload = isRecord(body.payload) ? body.payload : {};
-        const translations = parseTranslations(body.translations);
+        const input = parseCardCreateInput(body);
 
-        const existing = await prisma.card.findUnique({ where: { key } });
+        const existing = await prisma.card.findUnique({ where: { key: input.key } });
         if (existing) {
             return failure("CONFLICT", "Card key already exists.", 409);
         }
 
         const created = await prisma.$transaction(async (tx) => {
+            if (input.sectionId) {
+                const section = await tx.section.findUnique({
+                    where: { id: input.sectionId },
+                    select: { id: true },
+                });
+                if (!section) throw new Error("Referenced Section does not exist.");
+            }
+            if (input.mediaId) {
+                const media = await tx.media.findUnique({
+                    where: { id: input.mediaId },
+                    select: { id: true },
+                });
+                if (!media) throw new Error("Referenced Media does not exist.");
+            }
+
             const card = await tx.card.create({
                 data: {
-                    key,
-                    sectionId,
-                    variant,
-                    order,
-                    publishState: active ? "published" : "draft",
-                    mediaId,
-                    tags,
-                    metrics: metrics as Prisma.InputJsonValue,
-                    payload: payload as Prisma.InputJsonValue,
+                    key: input.key,
+                    sectionId: input.sectionId,
+                    variant: input.variant,
+                    order: input.order,
+                    publishState: input.publishState,
+                    mediaId: input.mediaId,
+                    tags: input.tags,
+                    metrics: input.metrics as Prisma.InputJsonValue,
+                    payload: input.payload as Prisma.InputJsonValue,
                 },
             });
 
-            for (const [languageCode, translation] of Object.entries(translations)) {
-                if (!translation?.title) {
-                    continue;
-                }
+            for (const [languageCode, translation] of Object.entries(input.translations)) {
+                if (!translation) continue;
 
                 await tx.cardTranslation.create({
                     data: {
                         cardId: card.id,
                         languageCode,
-                        title: translation.title,
+                        title: translation.title!,
                         subtitle: translation.subtitle,
                         description: translation.description,
                         statusBadge: translation.statusBadge,
@@ -128,10 +121,15 @@ export async function POST(request: NextRequest) {
         });
 
         const lang = parseLang(request.nextUrl.searchParams.get("lang"));
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(mapCard(created, lang, true), 201);
     } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") return failure("CONFLICT", "Card key already exists.", 409);
+            if (error.code === "P2003") return failure("BAD_REQUEST", "Referenced Section or Media is invalid.", 400);
+        }
         const err = asError(error);
-        if (err.message.includes("must") || err.message.includes("Expected")) {
+        if (err.message.includes("must") || err.message.includes("Expected") || err.message.includes("does not exist")) {
             return failure("BAD_REQUEST", err.message, 400);
         }
         return failure("INTERNAL_ERROR", "Unable to create Card.", 500);

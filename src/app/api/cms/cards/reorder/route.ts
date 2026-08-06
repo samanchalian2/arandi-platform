@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
 import { asError, failure, success } from "../../_lib/http";
 import { mapCard } from "../../_lib/mappers";
@@ -10,12 +11,12 @@ import { hasAnyRole, readPrincipal, requirePermission } from "../../_lib/securit
 import { parseLang, parseUuid, readJson } from "../../_lib/validation";
 
 export async function PATCH(request: NextRequest) {
-    const forbidden = requirePermission(request, "card.write");
+    const forbidden = await requirePermission(request, "card.write");
     if (forbidden) {
         return forbidden;
     }
 
-    const principal = readPrincipal(request);
+    const principal = await readPrincipal(request);
     if (!hasAnyRole(principal, ["super_admin", "cms_admin", "editor"])) {
         return failure("FORBIDDEN", "Insufficient permission to reorder Cards.", 403);
     }
@@ -75,6 +76,7 @@ export async function PATCH(request: NextRequest) {
             isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
         });
 
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(updated.map((card) => mapCard(card, lang, true)));
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {

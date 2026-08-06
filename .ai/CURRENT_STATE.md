@@ -1,1290 +1,304 @@
 # Current State
 
-## Phase 4.6 Status
-
-Completed on 2026-08-01 (Admin Card Builder).
-
-### Admin Card Builder
-
-- Added protected nested routes:
-  - `/admin/pages/[identifier]/sections/[sectionId]/cards`
-  - `/admin/pages/[identifier]/sections/[sectionId]/cards/[id]`
-- Server Components verify the trusted Admin session and Page -> Section -> Card ownership before rendering.
-- Added the typed `src/lib/admin/cards` React Query layer for list, detail, update, reorder, and delete.
-- Added responsive Card list/detail/edit components with search, publish-state/language/media filters, EN/FA tabs, loading/error/empty states, and Section Card previews.
-- Renamed the Section detail folder parameter from `[id]` to `[sectionId]` without changing its URL shape, preventing a Next.js dynamic-segment conflict.
-
-### RBAC and Editing
-
-- Viewer: read only.
-- Translator: EN/FA translation fields only.
-- Editor: structure, translations, and reorder; no delete.
-- Admin/SuperAdmin: structure, translations, reorder, and delete.
-- API routes remain the final authorization boundary; the UI mirrors but does not replace API enforcement.
-- JSON `metrics` and `payload` are object-validated before save; invalid JSON is never submitted.
-- Existing media is displayed, a validated UUID can be retained/entered, and empty media input sends explicit `mediaId: null`.
-
-### Concurrency and Ordering
-
-- Every Card update sends the latest `expectedUpdatedAt`.
-- `409 CONFLICT` is shown as a stale-record state with an explicit reload action; stale mutations are not retried.
-- EN and FA changes are sent independently, so editing one language does not overwrite the other.
-- Reorder is available only to Editor/Admin/SuperAdmin on the complete unfiltered Section collection.
-- Search or any filter disables reorder and clears local reorder drafts.
-- Orders are normalized to contiguous `1..n`; move-up/down controls are keyboard accessible.
-- Reorder uses optimistic cache updates, exact rollback on failure, explicit Save Order, and server reconciliation.
-
-### Verification
-
-- Focused automated tests: 17/17 passed.
-- `npm run lint`: passed with the pre-existing warning in `src/integrations/ai/gateway.ts`.
-- `npm run build`: passed and includes both nested Card routes.
-- Production runtime probes:
-  - public root: `200`
-  - unauthenticated Card API: `401`
-  - unauthenticated nested Card route: `307` to Admin login
-- PostgreSQL/DATABASE_URL was unavailable, so DB-backed happy-path CRUD/reorder and browser visual/mobile QA were not executed.
-- `npm audit`: 6 vulnerabilities (2 moderate, 4 high). `next` is direct; `@hono/node-server`, `@modelcontextprotocol/sdk`, `brace-expansion`, `postcss`, and `sharp` are transitive. No forced or unsafe downgrade was applied.
-
-### CMS/Public Consumption Boundary
-
-- Admin CMS Card data is persisted through Prisma.
-- Public pages still use the local content provider and were not changed.
-- Admin Card changes are not rendered on the public website.
-- A separately approved consumption bridge is still required.
-
-## Phase 4.5.1 Status
-
-Completed on 2026-08-01 (CMS Security, RBAC, Ordering, and Card API Hardening).
-
-### Security and RBAC
-
-- CMS APIs now return `401 UNAUTHORIZED` when no trusted principal is available and `403 FORBIDDEN` for authenticated principals without permission.
-- Client-provided CMS/admin identity headers are not trusted.
-- Mock role sessions are restricted to non-production environments, disabled by default, and require `CMS_ENABLE_DEV_MOCK_AUTH=true`.
-- Production cannot use the mock login/session flow.
-- Nested Admin route policies are prefix-aware, and nested page/section screens enforce roles in their Server Components.
-- Card RBAC:
-  - Viewer: read only.
-  - Translator: read and translation-only update.
-  - Editor: read, structural/translation update, and reorder; no delete.
-  - Admin/SuperAdmin: read, update, reorder, and delete.
-
-### Ordering Corrections
-
-- Section reorder now requires the complete page collection with unique UUIDs and contiguous `1..n` order values.
-- Section ownership/existence validation and all updates run in a serializable transaction.
-- Filtered/search results cannot be reordered.
-- Reorder draft state is reconciled after server/filter/search/mutation changes.
-- Keyboard move-up/move-down controls complement drag-and-drop.
-- Card reorder now provides the same complete-collection, ownership, contiguous-order, atomicity, and role guarantees within a Section.
-
-### Card API
-
-- Added `GET /api/cms/cards/[id]` with UUID validation, translation selection, current media, and standard response envelopes.
-- Added `PATCH /api/cms/cards/reorder`.
-- Hardened `PUT /api/cms/cards/[id]` validation for model-backed structural, JSON, relation, publish-state, and translation fields.
-- `mediaId: null` explicitly detaches media; omitted `mediaId` leaves it unchanged.
-- Duplicate keys return `409`; invalid references/input return `400`; missing Cards return `404`.
-- Optional `expectedUpdatedAt` protects Card updates from stale overwrite with a stable `409 CONFLICT`.
-
-### Unsaved Changes
-
-- Browser reload/tab close, edit-mode exit, and the controlled Back to Sections action warn before discarding dirty edits.
-- Next.js does not provide a safe general blocker for every App Router navigation; browser back/forward and unrelated Admin sidebar links remain a documented limitation rather than using brittle global interception.
-
-### Verification
-
-- Focused automated tests: 11/11 passed.
-- `npm run lint`: passed with the pre-existing warning in `src/integrations/ai/gateway.ts`.
-- `npm run build`: passed.
-- `npm audit`: 6 vulnerabilities (2 moderate, 4 high), all dependency-related; no forced remediation was applied.
-
-### CMS/Public Consumption Boundary
-
-- Admin CMS data is persisted through Prisma.
-- The public website still consumes the existing local content provider.
-- Admin edits do not automatically affect public website rendering.
-- A future approved consumption-bridge phase is required before CMS edits can become public website content.
-- No public website code or behavior changed in Phase 4.5.1.
-
-## Phase 4.5 Status
-
-Completed on 2026-07-30 (Section Edit Mode and Ordering).
-
-### Implemented Scope
-
-- Added section detail/edit route:
-  - `/admin/pages/[identifier]/sections/[id]`
-- Added section detail/edit UX with:
-  - read-only mode
-  - edit mode
-  - EN/FA translation tabs
-  - dirty-state detection
-  - unsaved-changes browser unload warning
-  - client-side validation feedback
-
-### API Enhancements
-
-- Extended `GET /api/cms/sections/[id]` for section detail fetch.
-- Extended `PUT /api/cms/sections/[id]` with:
-  - section settings update support
-  - translation update support
-  - enabled state update support
-  - order update support
-  - translator-only field restriction (translation fields only)
-- Added `PATCH /api/cms/sections/reorder` with validation for:
-  - section ownership
-  - duplicate orders
-  - duplicate/invalid ids
-- Kept `DELETE /api/cms/sections/[id]` and enforced RBAC scope.
-
-### React Query Mutation Layer
-
-- Added `useSectionMutation` with:
-  - `updateSection()`
-  - `reorderSections()`
-  - `deleteSection()`
-- Implemented optimistic updates with rollback for list/detail caches.
-
-### Reusable Components Added
-
-- `AdminSectionEditForm`
-- `AdminSectionDetails`
-- `AdminSectionOrderEditor`
-- `AdminDeleteConfirmDialog`
-
-### Section List Upgrade
-
-- Upgraded `AdminSectionList` with:
-  - drag handle
-  - drag-and-drop reorder preview
-  - save order button
-  - optimistic reorder mutation flow
-  - link to section detail/edit page
-
-### RBAC Behavior Implemented
-
-- Viewer: GET/read only.
-- Editor: update/reorder allowed, delete denied.
-- Admin/SuperAdmin: update/reorder/delete allowed.
-- Translator: write permission limited to translation fields in section update; reorder/delete denied.
-
-### Validation
-
-- Client validation:
-  - required title
-  - max lengths
-  - valid section type
-- Server validation:
-  - schema/shape checks
-  - ownership checks (reorder)
-  - permission checks
-
-### Verification
-
-- `npm run build` ✅
-- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-- Runtime permission probes on local dev server verified expected denied outcomes:
-  - viewer update -> 403
-  - translator reorder -> 403
-  - editor delete -> 403
-  - translator structure update -> 403
-- Full CRUD happy-path runtime verification remains blocked by local CMS data/API dependency failures (`/api/cms/pages` returning 500 in current environment).
-
-### Scope Compliance
-
-- No public website UI changes.
-- No routing changes outside admin and admin CMS API scope.
-- No authentication architecture changes.
-- No RBAC foundation redesign.
-- No localization architecture changes.
-
-## Phase 4.4 Status
-
-Completed on 2026-07-30 (Section Management and Page Builder foundation, read-only).
-
-### Implemented Scope
-
-- Added page-scoped section management route:
-  - `/admin/pages/[identifier]/sections`
-- Added read-only section management using live CMS API data.
-- Implemented required reusable components:
-  - `AdminSectionList`
-  - `AdminSectionCard`
-  - `AdminSectionTypeBadge`
-  - `AdminDragPlaceholder`
-  - `AdminSectionEmptyState`
-  - `AdminSectionToolbar`
-- Added page-level orchestration component:
-  - `AdminPageSectionsManagement`
-
-### Section Management Features
-
-- View sections of a page.
-- View section order.
-- View section type.
-- View status (enabled/disabled).
-- View language availability.
-- View last update.
-- Search sections by key/type/title.
-- Filter sections by status.
-- Responsive table (desktop) and cards (mobile).
-
-### Data Layer Added (React Query)
-
-- `useSections(pageId)`
-- `useSection(id)`
-- Implemented through live `/api/cms/sections` calls (no mock data).
-
-### Page Details Enhancement
-
-- Added Sections panel improvements in `/admin/pages/[identifier]`:
-  - section count
-  - section preview
-  - link to `/admin/pages/[identifier]/sections`
-
-### Future-Phase Readiness
-
-- Added drag/reorder placeholder to prepare for Phase 4.5 section editing.
-- Preserved read-only architecture to enable Phase 4.6 card builder layering.
-
-### Scope Compliance
-
-- No public website UI changes.
-- No public routing changes.
-- No AI chat changes.
-- No authentication changes.
-- No RBAC architecture changes.
-- No localization architecture changes.
-- No section editing actions introduced in this phase.
-
-### Validation
-
-- `npm run build` ✅
-- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 4.3 Status
-
-Completed on 2026-07-30 (Admin Page Editing, edit mode integration).
-
-### Implemented Scope
-
-- Added page edit mode on `/admin/pages/[identifier]` with read-only fallback mode retained.
-- Implemented editable fields for:
-  - slug/identifier
-  - status
-  - theme slug
-  - navigation visibility
-  - page order
-  - SEO keywords
-  - translation-specific title/SEO title/SEO description
-- Added EN/FA tabbed translation editing with independent per-language field state.
-- Added reusable admin form controls and validation message/saving bar components.
-
-### CMS API and Data Integration
-
-- Extended `GET /api/cms/pages/[identifier]` to include page-level settings payload:
-  - `themeSlug`
-  - `navigationVisible`
-  - `pageOrder`
-- Extended `PUT /api/cms/pages/[identifier]` to support edit-mode payload fields with:
-  - server validation for required/max-length/value ranges
-  - duplicate slug conflict detection (`409 CONFLICT`)
-  - settings persistence via `Setting` upserts keyed by page id
-- Connected details page save action to existing page endpoint through React Query mutation with optimistic cache updates.
-
-### UX Behaviors Added
-
-- Dirty-state detection for edit sessions.
-- Save/Cancel workflow.
-- Unsaved-changes warning on browser unload during active dirty edit state.
-- Client validation feedback before submit.
-
-### Scope Compliance
-
-- No public website changes.
-- No public routing changes.
-- No AI chat changes.
-- No Prisma schema changes.
-- No auth/RBAC model changes.
-- No localization architecture changes.
-- No section/card/media/theme editor expansion beyond page-level metadata settings.
-
-### Validation
-
-- `npm run build` ✅
-- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 4.2 Status
-
-Completed on 2026-07-30 (Admin Page Management, read-only integration).
-
-### Implemented Scope
-
-- Replaced admin pages mock data with real CMS API integration.
-- Pages management now loads read-only data from CMS endpoints (primary source: `/api/cms/pages`).
-- Added page details route:
-  - `/admin/pages/[identifier]`
-- Added read-only detail sections:
-  - General Information
-  - Translations
-  - Theme
-  - Sections
-  - SEO placeholders
-  - Navigation information (route-based read-only summary)
-
-### Pages Management Features
-
-- Professional data table (desktop) and card list (mobile).
-- Pagination.
-- Sorting.
-- Search.
-- Filter by status.
-- Filter by language availability.
-- Empty state.
-- Loading state.
-- Error state.
-- Responsive behavior.
-
-### Reusable Components Added
-
-- `AdminSearchBar`
-- `AdminFilterBar`
-- `AdminPagination`
-- `AdminStatusBadge`
-- `AdminLanguageBadge`
-- `AdminPageCard`
-- `AdminDescriptionList`
-- `AdminSkeleton`
-
-### CMS Data Hooks Added
-
-- `usePages()`
-- `usePage()`
-- Implemented with React Query provider inside admin layout scope.
-
-### Scope Compliance
-
-- No public website changes.
-- No public routing changes.
-- No AI chat changes.
-- No Prisma schema changes.
-- No CMS service changes.
-- No localization architecture changes.
-- No authentication/RBAC changes.
-- No editing/create/delete/upload actions added.
-
-### Validation
-
-- `npm run build` ✅
-- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 4.1 Status
-
-Completed on 2026-07-30 (Admin Panel foundation only).
-
-### Implemented Scope
-
-- Created protected admin application area under `/admin`.
-- Added full route skeleton:
-  - `/admin`
-  - `/admin/login`
-  - `/admin/dashboard`
-  - `/admin/pages`
-  - `/admin/sections`
-  - `/admin/cards`
-  - `/admin/media`
-  - `/admin/navigation`
-  - `/admin/theme`
-  - `/admin/settings`
-  - `/admin/users`
-  - `/admin/forbidden`
-- Added reusable admin layout foundation:
-  - Sidebar
-  - Topbar/Header
-  - Breadcrumb
-  - user menu placeholder
-  - notifications placeholder
-  - responsive mobile sidebar overlay
-  - RTL/LTR support
-
-### Auth + RBAC Foundation (Mock)
-
-- Added mock session abstraction and role model:
-  - `SuperAdmin`
-  - `Admin`
-  - `Editor`
-  - `Translator`
-  - `Viewer`
-- Added auth service/guards and route-role map.
-- Added proxy-level admin protection for `/admin/*`.
-- Unauthorized role access now returns a 403 route (`/admin/forbidden`).
-
-### Dashboard Foundation
-
-- Implemented dashboard with placeholder stat cards:
-  - Pages
-  - Sections
-  - Cards
-  - Media
-  - Users
-  - Languages
-  - Theme
-  - Recent Activity
-
-### Reusable Admin Design System Components
-
-- `AdminCard`
-- `AdminTable`
-- `AdminSidebar`
-- `AdminHeader`
-- `AdminToolbar`
-- `AdminStatCard`
-- `AdminEmptyState`
-- `AdminLoading`
-- `AdminModal`
-- `AdminConfirmDialog`
-
-### Validation
-
-- `npm run build` ✅
-- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-- Runtime auth/RBAC spot-checks:
-  - unauthenticated access -> redirect to `/admin/login`
-  - `Viewer` on `/admin/theme` -> `403`
-  - `Viewer` on `/admin/pages` -> `200`
-  - `Admin` on `/admin/theme` -> `200`
-
-### Scope Compliance
-
-- No CRUD implementation.
-- No forms/editors/uploads.
-- No public website routing/content changes.
-- No AI chat changes.
-- No CMS service changes.
-- No Prisma schema changes.
-- No localization behavior changes.
-
-## Phase 3.5 Status
-
-Completed on 2026-07-30 (validation and integration QA phase).
-
-### QA Scope Executed
-
-- Endpoint families covered:
-  - Pages: GET, POST, PUT, DELETE
-  - Sections: GET, POST, PUT, DELETE
-  - Cards: GET, POST, PUT, DELETE
-  - Theme: GET, PUT
-  - Media: GET, POST, PUT, DELETE
-- Translation behavior validated for:
-  - EN
-  - FA
-  - fallback (`unknown -> en`)
-- Prisma validation focus:
-  - relations reviewed in schema
-  - onDelete behavior reviewed (Cascade/SetNull/Restrict)
-  - foreign-key relation mapping reviewed
-  - translation table constraints reviewed
-  - seed command execution checked
-- Backward compatibility smoke-tested across active website routes.
-
-### Discovered and Fixed Issues
-
-- Fixed API internal error leakage for missing/unreachable DB in `src/app/api/cms/_lib/http.ts`.
-  - Before: Prisma internal invocation details were returned to clients.
-  - After: sanitized operational messages are returned.
-- Fixed wrong error classification in page routes:
-  - `POST /api/cms/pages` invalid translation payload returned 500.
-  - Updated validation mapping in:
-    - `src/app/api/cms/pages/route.ts`
-    - `src/app/api/cms/pages/[identifier]/route.ts`
-  - Now returns `BAD_REQUEST` (400) for validation errors.
-
-### Validation Results
-
-- `npm run build` ✅
-- `npm run lint` ✅ (only pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-- API permission matrix (all endpoints with `x-cms-roles: guest`) returned expected `403 FORBIDDEN`.
-- Input validation checks for malformed UUIDs across id-routes returned expected `400 BAD_REQUEST`.
-- Translation parser + mapper checks confirmed:
-  - `lang=fa -> fa`
-  - `lang=en -> en`
-  - fallback for unsupported lang -> `en`
-- Backward compatibility smoke checks passed (`/`, `/company`, `/services`, `/solutions`, `/industries`, `/projects`, `/contact` with EN/FA query variants).
-
-### Remaining Risks
-
-- Full CRUD happy-path execution against live DB is blocked until `DATABASE_URL` points to a reachable PostgreSQL instance.
-- `prisma:seed` currently fails in this environment because local PostgreSQL is not running at configured endpoint.
-
-### Admin Panel Readiness
-
-- API contract, validation behavior, error envelope, and RBAC hooks are ready for Admin Panel integration.
-- Operational prerequisite before Admin Panel build:
-  - provision reachable PostgreSQL
-  - set `DATABASE_URL`
-  - run migration + seed
-  - rerun full endpoint CRUD happy-path QA
-
-## Phase 3.4 Status
-
-Completed on 2026-07-29 (implementation phase).
-
-Implemented code (no UI/layout/routing/AI changes):
-
-- Implemented CMS API layer on top of Prisma foundation under `src/app/api/cms`.
-- Base API namespace added:
-  - `/api/cms/*`
-
-Implemented endpoints:
-
-- Pages API
-  - `GET /api/cms/pages`
-  - `GET /api/cms/pages/[identifier]` (slug-based read)
-  - `POST /api/cms/pages`
-  - `PUT /api/cms/pages/[identifier]` (id-based update)
-  - `DELETE /api/cms/pages/[identifier]` (id-based delete)
-- Sections API
-  - `GET /api/cms/sections`
-  - `POST /api/cms/sections`
-  - `PUT /api/cms/sections/[id]`
-  - `DELETE /api/cms/sections/[id]`
-- Cards API
-  - `GET /api/cms/cards`
-  - `POST /api/cms/cards`
-  - `PUT /api/cms/cards/[id]`
-  - `DELETE /api/cms/cards/[id]`
-- Theme API
-  - `GET /api/cms/theme`
-  - `PUT /api/cms/theme`
-- Media API
-  - `GET /api/cms/media`
-  - `POST /api/cms/media`
-  - `PUT /api/cms/media/[id]`
-  - `DELETE /api/cms/media/[id]`
-
-Translation handling:
-
-- Implemented `?lang=en|fa` handling across read endpoints.
-- All translatable data is served from translation tables.
-- No language-based content duplication introduced.
-
-Validation and error model:
-
-- Added request validation utilities and parsing guards.
-- Added consistent response envelope for success/error in API layer.
-- Added typed error codes and structured error details.
-
-Security preparation:
-
-- Added API-level permission hooks with RBAC-ready permission map.
-- Added header-based principal extraction placeholders for future auth integration.
-- Kept access permissive by default to preserve backward compatibility until auth is implemented.
-
-Compatibility status:
-
-- Existing provider/service contracts remain working.
-- Existing pages continue rendering unchanged.
-- No changes to UI components, layouts, routing behavior, or AI chat integration.
-
-Validation:
-
-- `npm run build` ✅
-- `npm run lint` ✅ (pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 3.3 Status
-
-Completed on 2026-07-29 (implementation phase).
-
-Implemented code (no UI/layout/routing/AI changes):
-
-- Added real CMS database foundation with Prisma + PostgreSQL schema:
-  - `prisma/schema.prisma`
-  - Models implemented exactly for:
-    - `Theme`
-    - `Language`
-    - `Page`
-    - `PageTranslation`
-    - `Section`
-    - `SectionTranslation`
-    - `Card`
-    - `CardTranslation`
-    - `Navigation`
-    - `NavigationTranslation`
-    - `Media`
-    - `Setting`
-  - All models include `id`, `createdAt`, `updatedAt`.
-  - IDs are UUID-based (`@default(uuid())`, `@db.Uuid`).
-- Implemented translation-table architecture (no page duplication per language):
-  - language-specific content moved to translation tables with `languageCode` (`en`, `fa`).
-- Implemented Media model with required fields:
-  - `id`, `title`, `alt`, `caption`, `url`, `type`, `width`, `height`, `metadata`.
-- Implemented generic Setting model for future logo/company/social/theme/seo/contact configuration.
-- Implemented Prisma-backed repository layer while preserving existing CMS interfaces/service contracts:
-  - `src/content/cms/prismaRepositories.ts`
-  - `createPrismaCmsRepositories(...)`
-  - `loadCmsCollectionFromPrisma(...)`
-- Added async Prisma service bootstrap without breaking current sync service API:
-  - `createPrismaCmsContentService(...)` in `src/content/cms/factory.ts`.
-- Refactored local repository builder to support shared collection-backed construction:
-  - `createCmsRepositoriesFromCollection(...)` in `src/content/cms/localRepositories.ts`.
-- Added Prisma seed script sourced from current local CMS/domain content to keep output parity:
-  - `prisma/seed.ts`
-  - seeds languages, themes, pages/translations, sections/translations, cards/translations, navigation/translations, media, settings.
-- Added Prisma scripts/config:
-  - `npm run prisma:generate`
-  - `npm run prisma:seed`
-
-Backward compatibility:
-
-- Existing page/provider output contracts remain intact.
-- Existing pages continue working exactly as before.
-- Current local content path remains available; Prisma path is additive and database-ready.
-
-Scope compliance:
-
-- No UI changes ✅
-- No layout redesign ✅
-- No routing changes ✅
-- No admin panel ✅
-- No AI chat modifications ✅
-- No visual changes ✅
-- Backward compatibility preserved ✅
-
-Validation:
-
-- `npm run build` ✅
-- `npm run lint` ✅ (pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 3.2 Status
-
-Completed on 2026-07-29 (implementation phase).
-
-Implemented code (no UI/layout/routing changes):
-
-- Built CMS core implementation under `src/content/cms`:
-  - `types.ts`: canonical CMS models for page, page version, section, block, card, translation, theme, navigation, media, RBAC.
-  - `repositories.ts`: repository interfaces for site/page/card/theme/navigation/translation/media/access.
-  - `localMappers.ts`: backward-compatible mapping from current local domain model to CMS entity collections.
-  - `localRepositories.ts`: local in-memory repository adapter built from existing EN/FA domain content.
-  - `services.ts`: CMS service layer with locale resolution, page resolution, page-builder assembly, theme/menu resolution, and translation retrieval.
-  - `factory.ts`: service factory for repository adapter selection (currently `local`).
-  - `index.ts`: CMS module exports.
-- Integrated CMS service into existing provider without breaking current consumers:
-  - `ContentProvider` now exposes `getCmsService()` as additive API.
-  - Existing methods (`getPageContent`, `getMetadata`, `getDomainContent`) remain unchanged.
-- Exported CMS contracts from `src/content/index.ts` for implementation usage.
-
-Phase 3.2 delivery coverage:
-
-- CMS core architecture implementation ✅
-- Repositories implementation ✅
-- Service layer implementation ✅
-- Generic page model implementation ✅
-- Generic section model implementation ✅
-- Generic card model implementation ✅
-- Translation model implementation ✅
-- Theme model implementation ✅
-- Navigation model implementation ✅
-- Media model implementation ✅
-
-Scope compliance:
-
-- No UI changes ✅
-- No layout redesign ✅
-- No routing changes ✅
-- No admin panel implementation ✅
-- No AI chat modifications ✅
-- No visual changes ✅
-- Backward compatibility preserved ✅
-- Existing pages continue working ✅
-
-Validation:
-
-- `npm run build` ✅
-- `npm run lint` ✅ (pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 3.1 Status
-
-Completed on 2026-07-29 (architecture-only).
-
-Implemented as documentation architecture foundation only:
-
-- Designed a scalable Enterprise CMS foundation without implementing admin UI.
-- Preserved existing frontend rendering, route structure, and page layouts.
-- Preserved current content-provider and adapter boundaries for backward compatibility.
-- Kept AI integration unchanged and out of scope.
-
-### 1) CMS Architecture Design
-
-- Recommended layered architecture:
-  - Presentation Layer: existing Next.js App Router pages/components remain unchanged.
-  - Content Application Layer: use-cases for page resolution, locale fallback, publish-state, and scheduled content visibility.
-  - CMS Domain Layer: entities for Site, Page, PageVersion, Section, Block, Card, Theme, Media, Menu, Locale, Permission.
-  - Infrastructure Layer: repository interfaces with adapters (local file adapter now, DB/CMS adapter later).
-- Delivery strategy:
-  - Keep existing synchronous provider API compatible.
-  - Add future-ready async repository contracts behind provider/adapters.
-- Publication strategy:
-  - Draft / Published model with version snapshots.
-  - Publish window fields (`publishAt`, `unpublishAt`) for enterprise governance.
-
-### 2) Database Model Design (Conceptual)
-
-- Core entities:
-  - `sites`: tenant/site root metadata.
-  - `locales`: available locale set per site.
-  - `pages`: canonical page records (`slug`, `type`, `status`).
-  - `page_versions`: immutable snapshots for auditing/publishing.
-  - `page_sections`: ordered sections attached to a page version.
-  - `content_blocks`: reusable block instances with typed payload.
-  - `cards`: normalized card documents used by blocks/sections.
-  - `menus` + `menu_items`: navigation model, locale-aware labels.
-  - `themes`: theme token sets and variants.
-  - `media_assets`: file metadata and usage references.
-  - `users`, `roles`, `permissions`, `role_permissions`, `user_roles`.
-- Common audit fields for enterprise governance:
-  - `createdAt`, `createdBy`, `updatedAt`, `updatedBy`, `publishedAt`, `archivedAt`, `version`.
-
-### 3) Multilingual Architecture Design
-
-- Content strategy:
-  - Canonical record + locale overlays per translatable field.
-  - Support required and optional locales per site.
-- Fallback policy:
-  - `requestedLocale -> siteDefaultLocale -> hard-default("en")`.
-- URL and routing compatibility:
-  - Keep current `?lang=en|fa` behavior in phase 3.1.
-  - Architecture is compatible with future path-based locale routing if needed.
-- Translation completeness tracking:
-  - Field-level translation status (`missing`, `draft`, `reviewed`, `published`).
-
-### 4) Reusable Page Builder Entity Design
-
-- Page Builder composition:
-  - `Page` -> ordered `PageSection[]` -> ordered `ContentBlock[]`.
-- Section contract:
-  - `sectionType`, `variant`, `spacing`, `visibilityRules`, `dataSourceRef`.
-- Block contract:
-  - `blockType`, `schemaVersion`, `payload`, `bindings`, `styleVariant`.
-- Governance:
-  - Schema-versioned blocks for safe evolution.
-  - Backward-compatible render adapters map legacy content to new block schemas.
-
-### 5) Generic Card System Design
-
-- Introduced a generic `Card` domain concept with typed variants:
-  - `serviceCard`, `solutionCard`, `industryCard`, `projectCard`, `articleCard`, `contactCard`.
-- Shared card contract:
-  - `title`, `subtitle`, `description`, `media`, `cta`, `tags`, `metrics`, `statusBadge`, `localeContent`.
-- Rendering:
-  - Existing UI components can keep current props while adapters project card entities into presentational props.
-
-### 6) Theme Architecture Design
-
-- Multi-layer theme model:
-  - Base design tokens (color, typography, spacing, radius, elevation, motion).
-  - Semantic tokens (surface, text, border, accent, state).
-  - Component token overrides (header, cards, sections, buttons).
-- Theme scope:
-  - Site-wide default + optional page-level overrides.
-- Backward compatibility:
-  - Existing CSS variables remain canonical runtime source.
-  - Theme entities map to current token names to avoid UI changes.
-
-### 7) Roles & Permissions Architecture Design
-
-- RBAC model:
-  - Roles: `super_admin`, `cms_admin`, `editor`, `author`, `translator`, `reviewer`, `viewer`.
-  - Permissions grouped by capability:
-    - Page CRUD
-    - Publish/Unpublish
-    - Version restore
-    - Theme edit
-    - Locale/translation management
-    - Menu management
-    - User/role assignment
-- Approval workflow readiness:
-  - Optional content review gates (`draft -> in_review -> approved -> published`).
-
-### 8) Backward Compatibility Strategy
-
-- Keep current `src/content/provider.ts` and adapter contracts operational.
-- Introduce new CMS repository interfaces as additive, not breaking.
-- Provide projection adapters:
-  - New CMS entities -> current page/content contracts.
-  - Current local content -> new CMS entities (migration path).
-- No change to existing page composition components or route usage in this phase.
-
-### 9/10) Scope Compliance
-
-- No UI redesign.
-- No page layout changes.
-- No admin panel implementation.
-- No AI integration changes.
-
-### 11) Validation
-
-- `npm run build` ✅
-- `npm run lint` ✅ (pre-existing warning remains in `src/integrations/ai/gateway.ts`)
-
-## Phase 2.4C Status
-
-Completed and responsive-header correction verified on 2026-07-29.
-
-Implemented:
-
-- Completed final shared UI polish pass before Phase 3 using reusable components and design-system primitives only.
-- Implemented responsive mobile/tablet navigation in Header with:
-  - hamburger trigger
-  - animated slide-in menu
-  - active page highlighting
-  - language-preserving enterprise links
-  - logo language preservation
-  - body scroll lock while open
-  - Escape key close
-  - keyboard focus trap inside menu
-- Improved header enterprise quality with refined spacing, hover behavior, sticky shadow transition, and enhanced glass treatment.
-- Improved hero visual quality without layout redesign using premium gradient tuning, subtle floating background accents, and refined CTA spacing.
-- Improved footer hierarchy and enterprise appearance using reusable surface/card styling while preserving existing content architecture.
-- Improved reusable PageCTA visual emphasis with stronger premium gradient/surface treatment and spacing.
-- Improved chat UI polish (UI-only):
-  - refined message bubble surfaces
-  - improved avatar state styling
-  - upgraded typing indicator surface
-  - stronger input focus/hover quality
-  - refined motion treatment
-- Preserved routing, provider/adapters/domain/schemas, localization architecture, AI architecture, and page content.
-- Corrected the final responsive Header defect: desktop navigation now remains hidden below the `xl` breakpoint, while tablet/mobile show logo, language switch, and hamburger only.
-- Constrained the off-canvas drawer wrapper to prevent closed-menu horizontal overflow.
-- Browser-validated mobile (390px), tablet (900px), and desktop (1440px) behavior, including body scroll lock, Escape close, focus return, and language-preserving navigation links.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.4B Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Completed shared Design System refinement and validation without architecture changes.
-- Enforced token-driven visual primitives across shared reusable components (typography, spacing, radius, elevation, motion, z-index, responsive variables).
-- Applied controlled glass usage to premium surfaces only (Header, Hero surface, CTA surface, AI chat container).
-- Standardized motion system through reusable motion tokens/variants and shared stagger/hover/focus utilities.
-- Upgraded shared components for consistent enterprise-grade polish:
-  - Header, Footer, Button, SectionReveal
-  - PageContainer, PageSection, PageTitle, PageHero, PageCTA, PageGrid
-  - Hero, Features
-  - AI chat components with readiness architecture for streaming/thinking/citations/suggestion chips/animated avatar states (UI scaffolding only)
-- Reduced oversized section rhythm by tightening global spacing tokens and shared section padding.
-- Improved accessibility readiness through reusable focus-visible utilities and keyboard-friendly interactive chip/button patterns.
-- Preserved routing, localization architecture, provider/adapter/domain/schema boundaries, and AI integration boundaries.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.4B Scope Refinement
-
-Updated on 2026-07-28.
-
-Status:
-
-- Requirements expanded and locked for the next implementation cycle.
-- Phase 2.4B is now defined as a strict shared Design System refinement and validation phase.
-- No architecture/routing/localization/provider/adapter/domain/schema changes authorized.
-- No enterprise content changes authorized.
-
-Validated baseline before next implementation:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.4A Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Upgraded global visual system quality through reusable shared styles and shared components only.
-- Enhanced global typography rhythm, spacing scale usage, elevation/shadow tokens, glass surfaces, and gradient surfaces in src/app/globals.css.
-- Improved shared component consistency for border radius, button behavior, hover transitions, and motion timing.
-- Applied reusable visual improvements across shared primitives:
-  - Container spacing consistency
-  - Header and footer polish
-  - PageContainer/PageSection/PageTitle/PageHero/PageCTA/PageGrid visual rhythm
-  - Home sections (Hero, Features)
-  - Chat surfaces and message/input styling
-- Kept architecture, routing, localization, provider, adapters, domain, schemas, AI integration, and enterprise content unchanged.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.3.1 Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Updated header logo link to preserve active language query (`?lang=en` / `?lang=fa`).
-- Localized breadcrumb Home label using existing localization content in src/content/enterprise.ts.
-- Localized header aria-label suffix using existing localization content.
-- Introduced a single canonical enterprise navigation item builder in src/content/navigation.ts and reused it in Header.
-- Kept provider, adapters, domain models, schemas, and enterprise content architecture unchanged.
-- Reviewed Phase 2.3 exports and removed no compatibility APIs.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.3 Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Added centralized bilingual enterprise localization content in src/content/enterprise.ts.
-- Removed hardcoded EN/FA visible strings from all six enterprise route pages and replaced them with content-layer lookups.
-- Localized enterprise header route labels through existing navigation content flow.
-- Localized enterprise metadata via content-layer-driven metadata callback usage.
-- Localized breadcrumb labels, hero text, section text, cards, CTA text, and contact form labels/placeholders/notes using existing architecture.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.2 Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Replaced placeholder content across all six enterprise pages (Company, Services, Solutions, Industries, Projects, Contact).
-- Kept the existing EnterprisePage template and shared page framework intact.
-- Added structured enterprise content sections:
-  - Company: overview, mission, vision, core values, and why Arandi.
-  - Services: six service cards (Artificial Intelligence, Software Development, Enterprise Solutions, Data & Analytics, Cloud & Infrastructure, Digital Transformation).
-  - Solutions: enterprise solution cards with delivery outcomes.
-  - Industries: six industry cards (Oil & Gas, Petrochemical, Energy, Manufacturing, Government, Smart Cities).
-  - Projects: realistic enterprise project showcase cards.
-  - Contact: professional contact methods, office information, and UI-only contact form layout.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.1C Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Added reusable breadcrumb component at src/components/page/PageBreadcrumb.tsx.
-- Added reusable enterprise page template at src/components/page/EnterprisePage.tsx to compose breadcrumb, hero, sections, and CTA.
-- Refactored all enterprise routes to use EnterprisePage and reduce duplicated page composition.
-- Added shared metadata helper at src/lib/pageMetadata.ts and moved repeated per-page metadata generation logic into it.
-- Updated Header navigation behavior to highlight the active route using usePathname without visual redesign.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Phase 2.1B Status
-
-Completed on 2026-07-28.
-
-Implemented:
-
-- Barrel export created at src/components/page/index.ts.
-- Enterprise static routes created: /company, /services, /solutions, /industries, /projects, /contact.
-- Each route composes PageHero, PageSection, PageCTA, and supporting page framework components via imports from @/components/page.
-- Localized page metadata added per route using contentProvider and lang query resolution.
-- Header navigation targets updated from homepage anchors to enterprise routes.
-- Language query behavior preserved for route navigation and language switching.
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅ (pre-existing warning remains in src/integrations/ai/gateway.ts)
-
-## Project
-
-Arandi Platform
-
----
+Last verified: 2026-08-03
 
 ## Current Phase
 
-Phase 1 - UI Foundation & Content Architecture
-
----
-
-## Completed
-
-### Workspace
-
-✅ Project workspace created
-
-Location:
-
-V:\MyProfile\Documents\arandi\LAB\arandi-platform
-
-
-### Project Brain
-
-✅ .ai folder created and documented
-
-Completed files:
-
-- PROJECT.md
-- MASTER_PLAN.md
-- CURRENT_STATE.md
-- NEXT_TASK.md
-- DESIGN_SYSTEM.md
-- ARCHITECTURE.md
-- DECISIONS.md
-- CHANGELOG.md
-- SESSION_LOG.md
-- PROMPTS.md
-
-
-### Next.js Setup
-
-✅ Next.js initialized
-
-Configuration:
-
-- App Router
-- TypeScript
-- Tailwind CSS
-- ESLint
-- Turbopack
-
-
-### UI Development Stack
-
-✅ Installed:
-
-- shadcn/ui
-- Framer Motion
-- Lucide React
-
-
-### Git
-
-✅ Git initialized
-
-Initial commits:
-
-- a3a8a77
-  chore: initialize arandi platform architecture
-
-- d9df881
-  docs: initialize project brain documentation
-
-
-### GitHub
-
-✅ Repository created
-
-Repository:
-
-https://github.com/SamanChalian/arandi-platform
-
-Status:
-
-Private repository
-
-Local branch connected to:
-
-origin/main
-
-
----
-
-## Current Status
-
-The project foundation is complete.
-
-The project is documented, version controlled, and synchronized with GitHub.
-
-The development environment is ready for implementation.
-
----
-
-## Completed Phase 0 Tasks
-
-✅ Workspace creation  
-✅ Architecture definition  
-✅ Project Brain initialization  
-✅ AI Context Guide creation  
-✅ Next.js setup  
-✅ UI foundation setup  
-✅ Git initialization  
-✅ GitHub repository setup  
-✅ Playwright verification
-
----
-
-## Pending Tasks
-
-1. Complete transition from initialization to implementation.
-
-2. Start Phase 1 - Design System & UI Foundation.
-
----
-
-## Current Development Focus
-
-Transition from project setup to product development.
-
----
-
-## Next Phase
-
-Phase 1 - Design System & UI Foundation
-
-## Phase 1.1 Completed
-
-Completed:
-
-- Typography foundation implemented.
-- Exo and Vazirmatn integrated.
-- Global CSS foundation created.
-- Layout components created.
-- Root layout updated.
-- Build and lint verification completed.
-
-Commit:
-
-52f40d9
-
-
----
-
-# Phase 1.2 Completed
-
-Status:
-
-Completed
-
-Implemented:
-
-- Landing page foundation created
-- Hero section component created
-- Features section component created
-- Home page converted to reusable section composition
-- Header navigation foundation improved
-- Responsive layout foundation maintained
-
-New Components:
-
-- src/components/sections/Hero.tsx
-- src/components/sections/Features.tsx
-
-Modified:
-
-- src/app/page.tsx
-- src/components/layout/Header.tsx
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅
-
-Commit:
-
-Pending
-
----
-
-# Phase 1.3 Completed
-
-Status:
-
-Completed
-
-Implemented:
-
-- Enterprise Minimal + Subtle AI visual direction
-- Refined global design tokens
-- Improved Hero visual composition
-- Improved Features presentation
-- Added reusable SectionReveal motion component
-
-New Component:
-
-- src/components/ui/SectionReveal.tsx
-
-Modified:
-
-- src/app/globals.css
-- src/components/sections/Hero.tsx
-- src/components/sections/Features.tsx
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅
-
----
-
-# Phase 1.4 Completed
-
-Status:
-
-Completed
-
-Implemented:
-
-- Created a content architecture foundation for company identity, navigation, hero, features, Jupiter AI assistant copy, footer, and metadata.
-- Moved static text into structured content modules for future CMS integration.
-- Preserved bilingual English/Persian support and kept the existing Next.js App Router structure intact.
-- Kept UI components consuming content props instead of embedding hardcoded strings.
-
-New Content Modules:
-
-- src/content/siteContent.ts
-- src/content/company.ts
-- src/content/metadata.ts
-
-Modified:
-
-- src/app/layout.tsx
-- src/app/page.tsx
-- src/components/layout/Header.tsx
-- src/components/layout/Footer.tsx
-- src/components/sections/Hero.tsx
-- src/components/sections/Features.tsx
-- src/components/ai/ChatInterface.tsx
-- src/components/ai/ChatInput.tsx
-
-Verification:
-
-- npm run build ✅
-- npm run lint ✅
----
-Phase 2.1A Completed
-
-Shared Enterprise Page Components
-
-Reusable components created:
-
-- PageContainer
-- PageHero
-- PageSection
-- PageTitle
-- PageGrid
-- PageCTA
+Phase 10 — Quality and Production
+
+Status: the application and production-like VPS staging boundary are validated. Release `20260803T093000Z-phase10-r6` is active behind loopback Nginx without replacing the existing WordPress public server block. Public production cutover remains unapproved until public DNS, a trusted renewable certificate, provider credentials, external alerting/off-host backup, and observed GitHub CI are available.
+
+`HEAD` and `origin/main` point to commit `8df6fca` (`4.5 - 4.7`). The stabilization and completed Phase 4.7 application changes described here are still uncommitted.
+
+## Verified Architecture
+
+- Next.js 16 App Router, React 19, strict TypeScript, and Tailwind CSS 4.
+- Public Home, Company, Services, Solutions, Industries, Projects, Contact, and shared bilingual Header/Footer chrome now read validated Published content, Navigation, and allowlisted public settings from Prisma through cached server-only adapters.
+- Article, Knowledge, and Legal lists/details plus Services/Solutions/Industries/Projects detail routes are Published-only and bilingual.
+- Public search projects only bounded Published Page/Section/Card text and never returns Prisma identifiers or Admin payloads.
+- Contact submissions persist through a bounded same-origin endpoint with consent, honeypot, throttling, replay deduplication, hashed client identifiers, and explicit delivery state.
+- Admin CMS uses React Query against `/api/cms/*`; APIs persist through Prisma/PostgreSQL.
+- Validated Home/Page, Section, Card, Navigation, and company-setting mutations invalidate bounded public cache tags immediately.
+- Admin routes use a dedicated shell and API permission checks remain the final authorization boundary.
+- Development mock auth is opt-in and unavailable in production.
+- Production password authentication is active. OTP and recovery routes/UI are active but delivery remains fail-closed until verified SMS.ir/SMTP transports are configured.
+
+## Completed Admin/CMS Scope
+
+- Page list/detail/edit.
+- Permission-aware Page creation with nine allowlisted templates: Standard, Service, Solution, Industry, Project, Article, Knowledge, Legal, and Contact.
+- Transactional EN/FA Page plus starter-Section creation; every new Page is forced to Draft.
+- Canonical safe slug/route validation and database uniqueness for both fields.
+- Section list/detail/edit/reorder/delete.
+- Card list/detail/edit/reorder/delete.
+- Independent EN/FA content translation editing.
+- Viewer, Translator, Editor, Admin, and SuperAdmin RBAC enforcement.
+- Complete-collection atomic reorder and optimistic concurrency.
+- Card Media attach/detach and dependency-aware deletion.
+- Focused API/input/security tests.
+- Prisma-backed Navigation list/create/edit/translation/reorder/delete with independent EN/FA labels.
+- Constrained default Theme JSON editor backed by `/api/cms/theme`.
+- Governed Settings editor plus public allowlisted settings endpoint.
+- Database-session CSRF enforcement across every CMS mutation, with shared Admin client header injection.
+
+## Phase 4.7 — Media Library
+
+Application layer validated and architecture-approved:
+
+- PostgreSQL-backed Media list with search, type filter, sorting, pagination, and responsive table/card states.
+- Admin/SuperAdmin image upload and metadata edit.
+- SuperAdmin-only delete; referenced Media returns `409`.
+- JPEG, PNG, and WebP only, detected by file signature rather than declared MIME.
+- Maximum upload size 10 MB, maximum dimension 12,000px, and maximum 40 million pixels.
+- Quarantine before processing, optional `clamdscan`, and production fail-closed scanning policy.
+- Sharp re-encoding strips metadata and writes collision-resistant UUID filenames.
+- Stable root-relative `/media/*` URLs.
+- Local Node Route Handler for development; production boundary reserved for Nginx filesystem serving.
+- Staged filesystem deletion with rollback when database deletion fails.
+- Storage directory ignored by Git; no binary upload or secret is committed.
+
+## Phase 5 — Identity Foundation
+
+Implemented and validated:
+
+- Additive Prisma models for User, Role, UserRole, UserCredential, AuthSession, OtpChallenge, PasswordRecoveryToken, SecurityEvent, and ServiceRequest.
+- Migration `20260802120000_identity_foundation` applied to the approved database.
+- Six system roles seeded without creating a default user or password.
+- Iranian phone normalization to canonical `+98` E.164 form and bounded email normalization.
+- Argon2id password hashing with 64 MiB memory cost and fail-closed verification.
+- 256-bit opaque session/recovery/CSRF token generation and SHA-256 storage hashes.
+- HMAC-SHA-256 OTP hashing with a required server-only pepper.
+- Strict SameSite, HttpOnly session-cookie and double-submit CSRF primitives.
+- Database session create/read/revoke with expiry, user status, role, and persistent permission resolution.
+- Optional IP/user-agent values are HMAC-hashed before persistence.
+- CMS APIs and Admin Server Component guards now accept trusted database sessions while preserving gated development mock sessions.
+- Proxy performs only optimistic token-shape checks and does not query the database.
+- SMS and email gateway boundaries fail closed while provider transports are unconfigured.
+- Production password login service and `/api/auth/password` route with same-origin enforcement, generic errors, 4 KB body limit, IP-window throttling, five-attempt/15-minute credential lockout, security events, and secure session/CSRF cookies.
+- `/api/auth/logout` requires matching CSRF cookie/header, revokes the database session, and expires both cookies.
+- Production Admin login form preserves a safe internal `next` destination and has desktop/mobile responsive QA.
+- One-time `npm run auth:bootstrap` command creates the first SuperAdmin only from runtime environment input and refuses once a SuperAdmin exists.
+- OTP request/verify routes with non-enumerating request responses, 60-second cooldown, five-per-hour request cap, five verification attempts, five-minute expiry, HMAC-only persistence, and atomic single-use consumption.
+- Recovery request/consume routes with generic request responses, 256-bit single-use tokens, 30-minute expiry, Argon2id password replacement, other-link consumption, and full session revocation.
+- Recovery and password/OTP login UI, including immediate removal of recovery tokens from the visible URL and no-referrer/no-index metadata.
+- Customer `/account` portal with persistent-session profile access plus owner-scoped service-request create/list APIs and responsive UI.
+- Customer writes require database-session permissions and matching CSRF cookie/header; client-supplied ownership identifiers are ignored and internal ownership IDs are not exposed.
+- `npm run auth:verify` performs a self-cleaning live PostgreSQL verification of OTP, recovery, session revocation, CSRF, service-request ownership, and replay protection.
+- Admin User list/search/status/role filters backed by Prisma, with read access for Admin and SuperAdmin.
+- SuperAdmin-only persistent User creation, identifier/status/role updates, suspension, and explicit session revocation; every write requires CSRF and a non-mock database session.
+- Last-active-SuperAdmin, self-suspension, and self-demotion lockout protections.
+- Minimized security-event API/UI that omits metadata, IP hashes, session hashes, credential fields, and other secret-bearing data.
+- `npm run admin:verify` validates SuperAdmin success, Admin/Viewer denial, CSRF rejection, suspension/revocation, self-demotion protection, audit minimization, and full cleanup.
+
+Runtime database authorization checks:
+
+- SuperAdmin database session Media read: `200`.
+- Viewer database session Media write: `403`.
+- Revoked database session Media read: `401`.
+- Temporary runtime users/sessions were deleted after validation.
+- Password runtime:
+  - five invalid attempts: five `401` responses and credential lockout
+  - correct password while locked: `401`
+  - successful login after controlled unlock: `200` with session and CSRF cookies
+  - CSRF logout: `200` and zero active sessions
+- OTP/recovery/customer runtime verifier:
+  - unknown-account OTP enters cooldown state without gateway delivery
+  - five failed OTP attempts persist and prevent later acceptance
+  - valid OTP is accepted once and replay is rejected
+  - service-request write without CSRF is `403`
+  - owner-scoped service-request create/list succeeds without exposing `userId`
+  - recovery changes the password, consumes other recovery links, revokes all sessions, and rejects replay
+  - all temporary users, requests, sessions, challenges, and tokens are removed
+- Admin identity runtime verifier:
+  - Admin read `200`; Viewer read `403`
+  - Admin mutation and missing-CSRF mutation `403`
+  - SuperAdmin create/update/revoke succeeds
+  - suspension revokes every active target session
+  - self-demotion returns `409`
+  - audit response omits metadata and client hashes
+  - post-verification User 0 and SecurityEvent 0
+
+## Prisma and Database
+
+- `prisma.config.ts`, baseline migration, schema, and seed are present.
+- Approved PostgreSQL is reachable using the ignored environment configuration.
+- Migrations `20260802000000_initial_cms`, `20260802120000_identity_foundation`, `20260803090000_unique_page_route`, and `20260803130000_contact_submissions` are applied.
+- `prisma migrate status` reports all four migrations and the schema up to date.
+- Seeded baseline verified: Page 10, Section 15, Card 23, Media 1, User 0, SecurityEvent 0.
+- No database credential or connection value is stored in source-controlled documentation.
+
+## Validation
+
+- Focused automated tests: 35/35 passed.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed with zero warnings/errors.
+- `npm run build`: passed with no warnings/errors.
+- `npx prisma validate`: passed.
+- `npx prisma migrate status`: database up to date.
+- Real Media runtime cycle:
+  - upload `201`
+  - stored asset `200 image/png`
+  - metadata update `200`
+  - delete `200`
+  - deleted asset `404`
+- Runtime RBAC:
+  - Viewer upload `403`
+  - Admin delete `403`
+  - SuperAdmin upload UI present
+  - Viewer upload UI absent
+- Browser QA:
+  - desktop 1280px, tablet 768px, and mobile 390px
+  - one `main` landmark and no horizontal document overflow
+  - English/LTR and Persian/RTL direction behavior
+  - upload dialog stays within the mobile viewport
+  - dialog semantics, initial focus, body scroll lock, Escape close, and focus return verified
+  - recovery and customer-login flows at desktop 1280px and mobile 390px
+  - customer unauthenticated redirect, one `main`, one form, and no horizontal overflow verified
+  - Users/security read-only mock QA at 1280px and 390px, one `main`, no document overflow
+  - Navigation at 1280px/390px, six seeded items, bounded modal, body lock, and translation-only controls
+  - Theme desktop editor and Settings mobile cards, one `main`, no document overflow
+- Navigation runtime:
+  - Viewer read `403`; Translator read/translation `200`; Translator structural update `403`
+  - missing-CSRF create `403`
+  - Editor create and complete reorder `200/201`; partial reorder `400`
+  - Admin delete `200`; original six-item order restored and all temporary records removed
+- Theme/Settings runtime:
+  - active CSS `url(...)` rejected `400`
+  - valid constrained theme update `200` and original theme restored
+  - secret-like setting key and nested `apiKey` rejected `400`
+  - private secret-like setting redacted in Admin and excluded from public endpoint
+  - original values restored and all temporary records removed
+- Page-template runtime:
+  - Viewer list `200`; Translator create `403`; missing-CSRF create `403`
+  - incomplete bilingual input `400` with no Page/Section count change
+  - Editor Article create `201` as Draft with two translations and two bilingual starter Sections
+  - Draft lookup through the future public query returns no result
+  - duplicate slug and route each return `409`
+  - Admin delete `200`; baseline Page/Section counts restored and temporary users removed
+- Page creation browser QA:
+  - Editor desktop list exposes Create Page without document overflow
+  - 390px modal remains within the viewport, locks body scroll, and scrolls internally
+  - all nine templates and ten bilingual/SEO fields remain reachable
+  - Translator list does not expose Page creation
+- Published Home bridge:
+  - production render exposes the safe source marker `prisma` in EN and FA
+  - Page, Section, Card, Navigation, and public company setting data is selected through server-only Prisma reads
+  - Page Draft, disabled Sections, Draft Cards, missing locale translations, and incomplete chrome settings fail closed
+  - automatic local fallback is forbidden in production; local fallback requires an explicit development-only source selection
+  - Home Draft DOM renders 404 with no public content/source marker while `/services` remains available through independent chrome data
+  - restoring Published returns Home to Prisma-backed output
+  - EN/LTR, FA/RTL, desktop, and 390px mobile pass with one `main` and no horizontal overflow
+- Published enterprise collection bridge:
+  - Services, Solutions, Industries, and Projects map validated Page/Section/Card records back to their existing public component contracts
+  - bilingual seed structures are created only when absent, so later Admin edits are not overwritten by repeat seed runs
+  - exact EN/FA output-shape parity passed for all four routes
+  - Page Draft, disabled Section, and Draft Card exclusion passed in the live PostgreSQL verifier
+  - controlled Services Draft DOM rendered 404 with no source marker; restoring Published returned six Prisma-backed Cards
+  - production EN/FA QA passed all eight route/locale combinations with correct LTR/RTL, one `main`, no 404, and no horizontal overflow
+  - 390px Persian Solutions QA passed with seven content articles and no horizontal overflow
+- Published fixed-page bridge:
+  - Company and Contact map validated bilingual Page/Section payloads back to their exact existing public component contracts
+  - contact coordinates are read independently from the allowlisted public `site.contact` Setting
+  - repeat seeds preserve existing Setting values and create fixed Pages only when absent
+  - exact EN/FA output parity, Page Draft exclusion, disabled Section exclusion, and contact-setting completeness passed
+  - Company and Contact desktop EN/FA QA passed with Prisma source, correct direction, one `main`, and no overflow
+  - Persian Contact at 390px passed with one presentation-only form, five fields, and no overflow
+  - no contact submission endpoint, persistence, or delivery behavior was introduced in Phase 7
+- Phase 8 public content completion:
+  - Published Article, Knowledge, and Legal list/detail routes use a bounded `hero` plus plain-text `richText` contract
+  - raw HTML and unsupported Section types fail closed
+  - three create-if-absent bilingual starter documents provide real initial Article, Knowledge, and Privacy content without overwriting Admin edits
+  - Services, Solutions, Industries, and Projects Cards now link to bilingual Published detail routes
+  - search is discoverable from Header, preserves query parameters across locale switching, and searches only Published exact-locale content
+  - custom bilingual 404 includes automatic `noindex`
+  - controlled Article Draft DOM rendered 404 with no source marker; restoring Published returned the Prisma-backed document
+  - desktop EN/FA, 390px mobile, and 768px tablet passed one `main`, one `h1`, correct direction, no UUID leakage, and no horizontal overflow
+- Phase 8 Contact submission:
+  - purpose-built `ContactSubmission` persistence stores bounded enquiry fields, consent time, operational status, and delivery state
+  - raw IP and User-Agent values are never persisted; optional values are HMAC-hashed with the required server pepper
+  - same-origin JSON-only requests, an 8 KB body limit, honeypot, 60-second cooldown, five-per-hour IP limit, and hour-bucket replay deduplication are active
+  - provider-unavailable delivery preserves the accepted database record and records `unavailable` without claiming email success
+  - public responses omit delivery state, hashes, provider metadata, and internal IDs
+  - Admin/SuperAdmin have a minimized latest-100 read view that omits client hashes and provider metadata
+  - production browser QA at 390px Persian returned a tracking reference, cleared the form, kept one `main`, and had no overflow
+  - controlled browser record was verified as hashed plus `unavailable`, then deleted; ContactSubmission baseline is 0
+
+## Phase 9 — AI and Knowledge
+
+Application layer validated and architecture-approved:
+
+- `/api/ai/chat` is a Node.js same-origin, JSON-only, 8 KB-bounded public mutation.
+- Chat history is session-local and restricted to eight user/assistant messages, 1,000 characters per message, and 6,000 characters total; clients cannot submit system prompts, provider names, models, context IDs, or secrets.
+- The Prisma context query independently requires Published Pages, enabled Sections, Published Cards, and an exact EN/FA translation.
+- The AI context projection excludes Prisma identifiers, private Settings, editorial payload/style/data JSON, audit timestamps, contact submissions, users, and security records.
+- Retrieval ranks bounded query terms, selects at most eight sources, and caps supplied context at 12,000 characters.
+- Unsupported queries return an explicit localized no-answer without invoking the provider.
+- The OpenAI integration uses the Responses API with `store: false`, streaming text deltas, low reasoning, bounded output, a 45-second timeout, and a privacy-preserving HMAC safety identifier.
+- Published context is treated as untrusted data in the provider instruction, and bracket citations map only to locale-preserving internal public routes.
+- Browser cancellation aborts the server request and upstream provider signal.
+- The endpoint hashes the client identifier before retaining a bounded in-process rate-limit key; the limit is ten requests per minute per application process.
+- `ai.runtime` is a private Admin-editable Setting containing only the allowlisted `openai` provider and safe model name. The API key remains environment-only and nested secret-like fields are rejected.
+- Migration `20260803160000_ai_runtime_setting` is applied; five migrations are current.
+- Deterministic PostgreSQL/provider-stub verification found two Published citations, called the Stub exactly once for the supported query, and avoided the provider for the unsupported query.
+- Focused suite is 42/42; strict typecheck, zero-warning lint, Prisma validate/status, and the 54-entry production build pass.
+- Persian production-browser QA passed desktop semantics, explicit provider-unavailable UI, and 390px RTL layout without horizontal overflow.
+
+## Phase 10 — Verified Quality and VPS Staging
+
+- Next.js is 16.2.12 with React 19.2.8; both full and production-only `npm audit` report zero vulnerabilities.
+- Canonical/EN-FA alternate metadata, Open Graph data, Organization JSON-LD, Published-only sitemap, and Admin/API-blocking robots rules are active.
+- CSP, COOP, CORP, frame denial, nosniff, referrer policy, permissions policy, and powered-by suppression are active.
+- Health endpoints, standalone output, a least-privilege systemd service, loopback Node/Nginx staging, and a loopback self-signed TLS validation listener are active.
+- PostgreSQL 16 listens on loopback plus the explicitly restricted development interface. The application role is non-superuser and all five migrations are current.
+- Nginx Media serving, ClamAV scan, daily checksummed database/Media backup, isolated restore verification, recurring readiness monitoring, bounded journald retention, and release rollback were exercised.
+- SSH accepts public keys only; root password authentication, keyboard-interactive authentication, X11, agent forwarding, and remote TCP forwarding are disabled. Local forwarding remains available for staging QA.
+- JSON mutations use bounded reads; public/auth mutations enforce same-origin through the configured public origin behind the reverse proxy. CMS and authenticated customer/Admin mutations retain database-session CSRF and RBAC enforcement.
+- The active systemd unit scores `3.0 OK` in `systemd-analyze security`.
+- The focused suite is 44/44; typecheck, zero-warning lint, AI verifier, production build, Prisma status, dependency audits, and diff checks pass.
+- Production-like QA passed 24 EN/FA route/viewport cases at 390/768/1280 px with zero Axe violations, no horizontal overflow/browser errors, and load/transfer budgets well inside thresholds.
+
+## Security State
+
+- CMS APIs reject anonymous and spoofed client identity.
+- Every database-session CMS mutation requires the session-bound CSRF cookie/header pair.
+- Media validation rejects SVG and unsupported file signatures.
+- Images are decoded and re-encoded before publication.
+- Production requires malware scanning unless an explicit operational override is set.
+- Baseline response headers include CSP, COOP/CORP, nosniff, frame denial, strict referrer policy, and restrictive permissions policy.
+- Direct application Sharp was upgraded to 0.35.3.
+- Full and production-only dependency audits report zero known vulnerabilities.
+
+## Explicit Boundaries and Remaining Risks
+
+- Public CMS consumption is implemented for Home, shared chrome, and all six fixed public page bodies.
+- SMS.ir and SMTP transports are not implemented because verified provider endpoint/template/sender configuration is unavailable; routes fail closed and no delivery claim is made.
+- No permanent SuperAdmin or customer is seeded; first Admin bootstrap requires explicit runtime credentials.
+- Real SMTP, SMS.ir, and OpenAI activation remain pending because no approved provider credentials/configuration were supplied.
+- Article, Knowledge, Legal, and Contact are constrained Page templates, not parallel persistence models; their public list/detail and submission application layers are implemented.
+- Public DNS has no public A/AAAA record. A trusted ACME certificate, renewal timer, public 80-to-443 redirect, and final Nginx cutover therefore remain blocked; staging TLS was exercised but is not a production certificate.
+- The current WordPress site remains available on its original port-80 server block and was not modified.
+- Health monitoring and bounded log retention are active, but no external alert destination is configured.
+- Local backup/restore is validated; encrypted off-host replication remains unconfigured.
+- The CI workflow exists but cannot be claimed as executed until the worktree is intentionally committed/pushed and GitHub Actions is observed.
+- The current AI rate limiter is intentionally single-process memory state; a shared store is required before horizontal scaling or multi-worker deployment.
+- Admin interface strings remain English; EN/FA content fields and document direction are supported.
+- The current worktree contains intentional uncommitted project changes and must not be overwritten or reset.
+
+## Approval State
+
+- Phase 4.6 stabilization: verified.
+- Phase 4.7 application architecture: approved.
+- Phase 4.7 production infrastructure activation: deferred to Phase 10 deployment.
+- Phase 5 application architecture: approved.
+- Phase 6 Admin CMS architecture: approved, including Navigation/Theme/Settings and constrained Page templates.
+- Phase 7 Home/shared-chrome bridge slice: architecture-approved.
+- Phase 7 Services/Solutions/Industries/Projects bridge slice: architecture-approved.
+- Phase 7 Company/Contact bridge slice: architecture-approved.
+- Phase 7 Published CMS-to-public bridge: architecture-approved.
+- Phase 8 Published documents, organization details, search, and 404 slice: architecture-approved.
+- Phase 8 Contact persistence/application slice: architecture-approved.
+- Phase 9 AI/Knowledge application architecture: approved.
+- Phase 9 real-provider activation: blocked until an approved `OPENAI_API_KEY` is supplied and runtime-tested.
+- Phase 10 application quality and production-like VPS staging: architecture/security/data/UI/UX approved.
+- Phase 10 public production cutover: not approved.
+- Next approved implementation scope: public DNS/trusted TLS, provider activation, external alerting/off-host backup, observed CI, stakeholder content acceptance, and controlled Nginx cutover.

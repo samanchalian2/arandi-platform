@@ -42,6 +42,10 @@ type AdminSectionEditFormProps = {
 const sectionTypeOptions = [
     { value: "hero", label: "Hero" },
     { value: "features", label: "Features" },
+    { value: "content", label: "Content" },
+    { value: "richText", label: "Rich text" },
+    { value: "metrics", label: "Metrics" },
+    { value: "contactForm", label: "Contact form" },
     { value: "text", label: "Text" },
     { value: "cards", label: "Cards" },
     { value: "gallery", label: "Gallery" },

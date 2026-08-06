@@ -1,33 +1,30 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { EnterprisePage, PageGrid } from "@/components/page";
-import { getEnterpriseContent } from "@/content";
-import { buildEnterprisePageMetadata, resolveLanguage } from "@/lib/pageMetadata";
+import { buildLocalizedMetadata, resolveLanguage } from "@/lib/pageMetadata";
+import { getPublicFixedPage } from "@/lib/public-content";
 
 type PageProps = {
     searchParams?: Promise<{ lang?: string }> | { lang?: string };
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-    return buildEnterprisePageMetadata({
-        searchParams,
-        getLocalizedMetadata: (lang) => {
-            const metadata = getEnterpriseContent(lang).pages.company.metadata;
-            return {
-                title: metadata.title,
-                description: metadata.description,
-            };
-        },
-    });
+    const lang = await resolveLanguage(searchParams);
+    const page = await getPublicFixedPage("company", lang).catch(() => null);
+    return page
+        ? buildLocalizedMetadata({ path: "/company", lang, title: page.metadata.title, description: page.metadata.description })
+        : { title: "Content unavailable", robots: { index: false, follow: false } };
 }
 
 export default async function CompanyPage({ searchParams }: PageProps) {
     const lang = await resolveLanguage(searchParams);
-    const companyPageContent = getEnterpriseContent(lang).pages.company;
+    const companyPageContent = await getPublicFixedPage("company", lang).catch(() => notFound());
 
     return (
         <EnterprisePage
             lang={lang}
+            contentSource="prisma"
             breadcrumbLabel={companyPageContent.breadcrumbLabel}
             hero={{
                 badge: companyPageContent.hero.badge,

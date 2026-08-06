@@ -1,5 +1,6 @@
 "use client";
 
+import type { RefObject } from "react";
 import { Menu } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 
@@ -10,6 +11,7 @@ type AdminHeaderProps = {
     displayName: string;
     roleLabel: string;
     onMenuToggle: () => void;
+    menuButtonRef: RefObject<HTMLButtonElement | null>;
 };
 
 function titleFromSegment(segment: string): string {
@@ -28,7 +30,7 @@ function buildBreadcrumb(pathname: string): string[] {
     return parts.map((part) => titleFromSegment(part));
 }
 
-export function AdminHeader({ displayName, roleLabel, onMenuToggle }: AdminHeaderProps) {
+export function AdminHeader({ displayName, roleLabel, onMenuToggle, menuButtonRef }: AdminHeaderProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const isRtl = searchParams.get("lang") === "fa";
@@ -37,7 +39,7 @@ export function AdminHeader({ displayName, roleLabel, onMenuToggle }: AdminHeade
     return (
         <header className="sticky top-0 z-30 border-b border-border/60 bg-background/88 px-4 py-3 backdrop-blur md:px-6">
             <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon-sm" className="md:hidden" onClick={onMenuToggle} aria-label="Toggle admin navigation">
+                <Button ref={menuButtonRef} variant="outline" size="icon-sm" className="md:hidden" onClick={onMenuToggle} aria-label="Toggle admin navigation">
                     <Menu className="size-4" />
                 </Button>
                 <div className="min-w-0 flex-1">

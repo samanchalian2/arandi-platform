@@ -1,18 +1,13 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 
 import { asError, failure, success } from "../_lib/http";
+import { parseMediaCreateInput } from "../_lib/media-input";
 import { parseOrdering } from "../_lib/queries";
 import { requirePermission } from "../_lib/security";
-import {
-    isRecord,
-    parseOptionalNumber,
-    parseOptionalString,
-    parseString,
-    readJson,
-} from "../_lib/validation";
+import { readJson } from "../_lib/validation";
 
 function mapMediaItem(media: {
     id: string;
@@ -38,8 +33,8 @@ function mapMediaItem(media: {
         height: media.height,
         metadata: media.metadata,
         uploadReady: {
-            supported: false,
-            strategy: "placeholder",
+            supported: true,
+            strategy: "filesystem",
         },
         createdAt: media.createdAt,
         updatedAt: media.updatedAt,
@@ -47,7 +42,7 @@ function mapMediaItem(media: {
 }
 
 export async function GET(request: NextRequest) {
-    const forbidden = requirePermission(request, "media.read");
+    const forbidden = await requirePermission(request, "media.read");
     if (forbidden) {
         return forbidden;
     }
@@ -73,7 +68,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const forbidden = requirePermission(request, "media.write");
+    const forbidden = await requirePermission(request, "media.write");
     if (forbidden) {
         return forbidden;
     }
@@ -81,35 +76,25 @@ export async function POST(request: NextRequest) {
     try {
         const body = await readJson(request);
 
-        const title = parseString(body.title, "title");
-        const url = parseString(body.url, "url");
-        const type = parseString(body.type, "type");
-        const alt = parseOptionalString(body.alt) ?? null;
-        const caption = parseOptionalString(body.caption) ?? null;
-        const width = parseOptionalNumber(body.width) ?? null;
-        const height = parseOptionalNumber(body.height) ?? null;
-        const metadata = isRecord(body.metadata) ? body.metadata : {};
+        const input = parseMediaCreateInput(body);
 
-        const existing = await prisma.media.findUnique({ where: { url } });
+        const existing = await prisma.media.findUnique({ where: { url: input.url } });
         if (existing) {
             return failure("CONFLICT", "Media url already exists.", 409);
         }
 
         const created = await prisma.media.create({
             data: {
-                title,
-                alt,
-                caption,
-                url,
-                type,
-                width,
-                height,
-                metadata: metadata as Prisma.InputJsonValue,
+                ...input,
+                metadata: input.metadata as Prisma.InputJsonValue,
             },
         });
 
         return success(mapMediaItem(created), 201);
     } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+            return failure("CONFLICT", "Media url already exists.", 409);
+        }
         const err = asError(error);
         if (err.message.includes("must") || err.message.includes("Expected")) {
             return failure("BAD_REQUEST", err.message, 400);

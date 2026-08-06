@@ -6,7 +6,7 @@ export type AdminSession = {
     userId: string;
     displayName: string;
     roles: AdminRole[];
-    isMock: true;
+    isMock: boolean;
 };
 
 export const ADMIN_SESSION_COOKIE = "admin_mock_role";

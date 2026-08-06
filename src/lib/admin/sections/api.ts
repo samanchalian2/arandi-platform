@@ -8,9 +8,10 @@ import type {
     UpdateSectionPayload,
 } from "./types";
 import { mapRawSection } from "./types";
+import { cmsFetch } from "@/lib/admin/cms-fetch";
 
 async function readEnvelope<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-    const response = await fetch(input, {
+    const response = await cmsFetch(input, {
         ...init,
         cache: "no-store",
     });

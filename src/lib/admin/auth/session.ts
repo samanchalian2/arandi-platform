@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { AUTH_SESSION_COOKIE, readDatabaseSession } from "@/lib/auth";
 
 import {
     ADMIN_ROLES,
@@ -30,20 +31,30 @@ function displayNameForRole(role: AdminRole): string {
 export async function getAdminSession(): Promise<AdminSession | null> {
     const cookieStore = await cookies();
 
-    if (!isDevelopmentMockAuthEnabled()) {
-        return null;
+    if (isDevelopmentMockAuthEnabled()) {
+        const roleFromCookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
+        if (roleFromCookie && isAdminRole(roleFromCookie)) {
+            return {
+                userId: `mock-${roleFromCookie.toLowerCase()}`,
+                displayName: displayNameForRole(roleFromCookie),
+                roles: [roleFromCookie],
+                isMock: true,
+            };
+        }
     }
 
-    const roleFromCookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
+    const session = await readDatabaseSession(
+        cookieStore.get(AUTH_SESSION_COOKIE)?.value,
+    );
+    if (!session) return null;
 
-    if (!roleFromCookie || !isAdminRole(roleFromCookie)) {
-        return null;
-    }
+    const roles = session.roles.filter(isAdminRole);
+    if (roles.length === 0) return null;
 
     return {
-        userId: `mock-${roleFromCookie.toLowerCase()}`,
-        displayName: displayNameForRole(roleFromCookie),
-        roles: [roleFromCookie],
-        isMock: true,
+        userId: session.userId,
+        displayName: session.displayName,
+        roles,
+        isMock: false,
     };
 }

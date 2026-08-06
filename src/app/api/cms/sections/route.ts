@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
 import { asError, failure, success } from "../_lib/http";
 import { mapSection } from "../_lib/mappers";
@@ -19,7 +20,7 @@ import {
 } from "../_lib/validation";
 
 export async function GET(request: NextRequest) {
-    const forbidden = requirePermission(request, "section.read");
+    const forbidden = await requirePermission(request, "section.read");
     if (forbidden) {
         return forbidden;
     }
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const forbidden = requirePermission(request, "section.write");
+    const forbidden = await requirePermission(request, "section.write");
     if (forbidden) {
         return forbidden;
     }
@@ -110,6 +111,7 @@ export async function POST(request: NextRequest) {
         });
 
         const lang = parseLang(request.nextUrl.searchParams.get("lang"));
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(mapSection(created, lang, true), 201);
     } catch (error) {
         const err = asError(error);

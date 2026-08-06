@@ -57,13 +57,22 @@ export function asError(error: unknown): { message: string; details?: unknown } 
             "does not exist",
             "mismatch",
             "required",
+            "unsafe",
+            "too many",
+            "too large",
+            "forbidden",
+            "editable",
         ].some((fragment) => message.includes(fragment));
+        const containsSensitiveMaterial =
+            /(?:password|secret|token|credential|api[-_. ]?key|database[_ -]?url|postgres(?:ql)?):?/i.test(message)
+            || /(?:https?|postgres(?:ql)?):\/\//i.test(message)
+            || /[\r\n]/.test(message);
 
-        if (isSafeRequestError) {
+        if (isSafeRequestError && message.length <= 240 && !containsSensitiveMaterial) {
             return { message };
         }
 
-        console.error("CMS API request failed.", error);
+        console.error(`CMS API request failed (${error.name || "Error"}).`);
         return { message: "Unable to complete the CMS request." };
     }
 

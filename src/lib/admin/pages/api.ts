@@ -6,10 +6,12 @@ import type {
     PageDetailsData,
     PageListItem,
     UpdatePagePayload,
+    CreatePagePayload,
 } from "./types";
+import { cmsFetch } from "@/lib/admin/cms-fetch";
 
 async function readEnvelope<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-    const response = await fetch(input, {
+    const response = await cmsFetch(input, {
         ...init,
         cache: "no-store",
     });
@@ -114,4 +116,15 @@ export async function updatePage(payload: UpdatePagePayload): Promise<CmsPage> {
     });
 
     return data;
+}
+
+export async function createPage(payload: CreatePagePayload): Promise<CmsPage> {
+    return readEnvelope<CmsPage>("/api/cms/pages?lang=en", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+            ...payload,
+            status: "draft",
+        }),
+    });
 }

@@ -224,3 +224,22 @@ The design system should support future components:
 - Knowledge search
 - Intelligent assistants
 - Interactive dashboards
+
+---
+
+# Admin Experience
+
+- Admin routes use a dedicated application shell and must not render the public Header/Footer.
+- A page must expose one primary `main` landmark.
+- Mobile Admin navigation must:
+  - be absent from the accessibility tree while closed
+  - use dialog/modal semantics while open
+  - lock background scrolling
+  - move focus into the menu
+  - contain Tab focus
+  - close with Escape
+  - return focus to the trigger
+- Responsive acceptance widths include 390px mobile and desktop.
+- No horizontal overflow is permitted.
+- Loading, error, empty, and populated states require separate QA.
+- Destructive actions require an explicit confirmation and dependency-aware messaging.

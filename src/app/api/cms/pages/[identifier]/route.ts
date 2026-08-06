@@ -1,9 +1,12 @@
+import { Prisma } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_HOME_TAG, revalidatePublicContent } from "@/lib/public-content/cache";
 
 import { asError, failure, success } from "../../_lib/http";
 import { mapPage } from "../../_lib/mappers";
+import { parsePageRoute, parsePageSlug } from "../../_lib/page-create-input";
 import { requirePermission } from "../../_lib/security";
 import {
     parseOptionalBoolean,
@@ -23,7 +26,7 @@ type Params = {
 };
 
 export async function GET(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "page.read");
+    const forbidden = await requirePermission(request, "page.read");
     if (forbidden) {
         return forbidden;
     }
@@ -80,7 +83,7 @@ function assertMaxLength(value: string | undefined, fieldName: string, max: numb
 }
 
 export async function PUT(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "page.write");
+    const forbidden = await requirePermission(request, "page.write");
     if (forbidden) {
         return forbidden;
     }
@@ -90,8 +93,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
         const id = parseUuid(identifier, "id");
         const body = await readJson(request);
 
-        const slug = parseOptionalString(body.slug);
-        const route = parseOptionalString(body.route);
+        const rawSlug = parseOptionalString(body.slug);
+        const rawRoute = parseOptionalString(body.route);
+        const slug = rawSlug === undefined ? undefined : parsePageSlug(rawSlug);
+        const route = rawRoute === undefined ? undefined : parsePageRoute(rawRoute);
         const pageType = parseOptionalString(body.pageType);
         const status = parseOptionalString(body.status);
         const seoKeywords = parseOptionalStringArray(body.seoKeywords);
@@ -107,11 +112,6 @@ export async function PUT(request: NextRequest, { params }: Params) {
         const themeSlug = settings && typeof settings === "object"
             ? parseOptionalString((settings as Record<string, unknown>).themeSlug)
             : undefined;
-
-        if (slug !== undefined) {
-            assertRequiredString(slug, "slug");
-            assertMaxLength(slug, "slug", 120);
-        }
 
         if (status !== undefined && status !== "published" && status !== "draft") {
             throw new Error("status must be either published or draft.");
@@ -141,6 +141,12 @@ export async function PUT(request: NextRequest, { params }: Params) {
             const duplicate = await prisma.page.findUnique({ where: { slug } });
             if (duplicate && duplicate.id !== existing.id) {
                 return failure("CONFLICT", "Page slug already exists.", 409);
+            }
+        }
+        if (route && route !== existing.route) {
+            const duplicate = await prisma.page.findUnique({ where: { route } });
+            if (duplicate && duplicate.id !== existing.id) {
+                return failure("CONFLICT", "Page route already exists.", 409);
             }
         }
 
@@ -254,10 +260,20 @@ export async function PUT(request: NextRequest, { params }: Params) {
         });
 
         const lang = parseLang(request.nextUrl.searchParams.get("lang"));
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success(mapPage(updated, lang, true));
     } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+            return failure("CONFLICT", "Page slug or route already exists.", 409);
+        }
         const err = asError(error);
-        if (err.message.includes("must") || err.message.includes("Expected")) {
+        if (
+            err.message.includes("must")
+            || err.message.includes("Expected")
+            || err.message.includes("required")
+            || err.message.includes("canonical")
+            || err.message.includes("safe lowercase")
+        ) {
             return failure("BAD_REQUEST", err.message, 400);
         }
 
@@ -266,7 +282,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
-    const forbidden = requirePermission(request, "page.delete");
+    const forbidden = await requirePermission(request, "page.delete");
     if (forbidden) {
         return forbidden;
     }
@@ -281,6 +297,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
         }
 
         await prisma.page.delete({ where: { id } });
+        revalidatePublicContent(PUBLIC_HOME_TAG);
         return success({ id, deleted: true });
     } catch (error) {
         const err = asError(error);

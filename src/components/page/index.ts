@@ -6,3 +6,9 @@ export { PageTitle } from "./PageTitle";
 export { PageGrid } from "./PageGrid";
 export { PageCTA } from "./PageCTA";
 export { EnterprisePage } from "./EnterprisePage";
+export {
+    PublicDocumentList,
+    PublicDocumentView,
+    PublicCollectionDetailView,
+    PublicSearchView,
+} from "./PublicDocumentViews";

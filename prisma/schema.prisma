@@ -22,35 +22,33 @@ model Theme {
 }
 
 model Language {
-  id         String   @id @default(uuid()) @db.Uuid
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  code       String   @unique
-  name       String
-  isDefault  Boolean  @default(false)
-  isActive   Boolean  @default(true)
-
-  pageTranslations       PageTranslation[]
-  sectionTranslations    SectionTranslation[]
+  id                     String                  @id @default(uuid()) @db.Uuid
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  code                   String                  @unique
+  name                   String
+  isDefault              Boolean                 @default(false)
+  isActive               Boolean                 @default(true)
   cardTranslations       CardTranslation[]
   navigationTranslations NavigationTranslation[]
+  pageTranslations       PageTranslation[]
+  sectionTranslations    SectionTranslation[]
 
   @@index([isDefault])
   @@index([isActive])
 }
 
 model Page {
-  id           String   @id @default(uuid()) @db.Uuid
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  slug         String   @unique
-  route        String
+  id           String            @id @default(uuid()) @db.Uuid
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  slug         String            @unique
+  route        String            @unique
   pageType     String
-  publishState String   @default("published")
+  publishState String            @default("published")
   seoKeywords  String[]
-
-  sections     Section[]
   translations PageTranslation[]
+  sections     Section[]
 
   @@index([publishState])
 }
@@ -64,32 +62,30 @@ model PageTranslation {
   title          String
   seoTitle       String
   seoDescription String
-
-  page     Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+  language       Language @relation(fields: [languageCode], references: [code])
+  page           Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, languageCode])
   @@index([languageCode])
 }
 
 model Section {
-  id          String   @id @default(uuid()) @db.Uuid
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  pageId      String   @db.Uuid
-  key         String
-  sectionType String
-  order       Int
-  enabled     Boolean  @default(true)
-  style       Json
-  payload     Json
-
-  page         Page                 @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  id           String               @id @default(uuid()) @db.Uuid
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  pageId       String               @db.Uuid
+  key          String
+  sectionType  String
+  order        Int
+  enabled      Boolean              @default(true)
+  style        Json
+  payload      Json
   cards        Card[]
+  page         Page                 @relation(fields: [pageId], references: [id], onDelete: Cascade)
   translations SectionTranslation[]
 
-  @@index([pageId, order])
   @@unique([pageId, key])
+  @@index([pageId, order])
 }
 
 model SectionTranslation {
@@ -102,30 +98,28 @@ model SectionTranslation {
   subtitle     String?
   description  String?
   data         Json
-
-  section  Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+  language     Language @relation(fields: [languageCode], references: [code])
+  section      Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@unique([sectionId, languageCode])
   @@index([languageCode])
 }
 
 model Card {
-  id           String   @id @default(uuid()) @db.Uuid
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  sectionId    String?  @db.Uuid
-  key          String   @unique
+  id           String            @id @default(uuid()) @db.Uuid
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  sectionId    String?           @db.Uuid
+  key          String            @unique
   variant      String
-  order        Int      @default(0)
-  publishState String   @default("published")
+  order        Int               @default(0)
+  publishState String            @default("published")
   tags         String[]
   metrics      Json
   payload      Json
-  mediaId      String?  @db.Uuid
-
-  section      Section?           @relation(fields: [sectionId], references: [id], onDelete: SetNull)
-  media        Media?             @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  mediaId      String?           @db.Uuid
+  media        Media?            @relation(fields: [mediaId], references: [id])
+  section      Section?          @relation(fields: [sectionId], references: [id])
   translations CardTranslation[]
 
   @@index([sectionId, order])
@@ -144,39 +138,36 @@ model CardTranslation {
   statusBadge  String?
   ctaLabel     String?
   ctaHref      String?
-
-  card     Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+  card         Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  language     Language @relation(fields: [languageCode], references: [code])
 
   @@unique([cardId, languageCode])
   @@index([languageCode])
 }
 
 model Navigation {
-  id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  key       String   @unique
-  href      String
-  order     Int
-  isExternal Boolean @default(false)
-  openInNewTab Boolean @default(false)
-
+  id           String                  @id @default(uuid()) @db.Uuid
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  key          String                  @unique
+  href         String
+  order        Int
+  isExternal   Boolean                 @default(false)
+  openInNewTab Boolean                 @default(false)
   translations NavigationTranslation[]
 
   @@index([order])
 }
 
 model NavigationTranslation {
-  id             String   @id @default(uuid()) @db.Uuid
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  navigationId   String   @db.Uuid
-  languageCode   String
-  label          String
-
-  navigation Navigation @relation(fields: [navigationId], references: [id], onDelete: Cascade)
-  language   Language   @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+  id           String     @id @default(uuid()) @db.Uuid
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  navigationId String     @db.Uuid
+  languageCode String
+  label        String
+  language     Language   @relation(fields: [languageCode], references: [code])
+  navigation   Navigation @relation(fields: [navigationId], references: [id], onDelete: Cascade)
 
   @@unique([navigationId, languageCode])
   @@index([languageCode])
@@ -194,8 +185,7 @@ model Media {
   width     Int?
   height    Int?
   metadata  Json
-
-  cards Card[]
+  cards     Card[]
 }
 
 model Setting {
@@ -208,4 +198,170 @@ model Setting {
   isPublic  Boolean  @default(true)
 
   @@index([group])
+}
+
+model ContactSubmission {
+  id                String    @id @default(uuid()) @db.Uuid
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  reference         String    @unique
+  fullName          String
+  email             String
+  organization      String?
+  topic             String
+  message           String
+  languageCode      String
+  consentAt         DateTime
+  status            String    @default("received")
+  deliveryState     String    @default("pending")
+  deliveryAttempts  Int       @default(0)
+  lastDeliveryAt    DateTime?
+  deliveryProvider  String?
+  providerMessageId String?
+  ipHash            String?
+  userAgentHash     String?
+  dedupeHash        String    @unique
+
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([deliveryState, createdAt])
+  @@index([ipHash, createdAt])
+}
+
+model User {
+  id              String                  @id @default(uuid()) @db.Uuid
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  phoneE164       String?                 @unique
+  email           String?                 @unique
+  displayName     String
+  status          String                  @default("active")
+  phoneVerifiedAt DateTime?
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+  sessions        AuthSession[]
+  otpChallenges   OtpChallenge[]
+  recoveryTokens  PasswordRecoveryToken[]
+  securityEvents  SecurityEvent[]
+  serviceRequests ServiceRequest[]
+  credential      UserCredential?
+  roles           UserRole[]
+
+  @@index([status])
+}
+
+model Role {
+  id          String     @id @default(uuid()) @db.Uuid
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  key         String     @unique
+  name        String
+  permissions String[]
+  isSystem    Boolean    @default(true)
+  users       UserRole[]
+}
+
+model UserRole {
+  id         String   @id @default(uuid()) @db.Uuid
+  createdAt  DateTime @default(now())
+  userId     String   @db.Uuid
+  roleId     String   @db.Uuid
+  assignedAt DateTime @default(now())
+  role       Role     @relation(fields: [roleId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([roleId])
+}
+
+model UserCredential {
+  id                String    @id @default(uuid()) @db.Uuid
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  userId            String    @unique @db.Uuid
+  passwordHash      String
+  passwordChangedAt DateTime  @default(now())
+  failedAttempts    Int       @default(0)
+  lockedUntil       DateTime?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuthSession {
+  id            String    @id @default(uuid()) @db.Uuid
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userId        String    @db.Uuid
+  tokenHash     String    @unique
+  csrfHash      String
+  expiresAt     DateTime
+  lastSeenAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  ipHash        String?
+  userAgentHash String?
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model OtpChallenge {
+  id          String    @id @default(uuid()) @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String?   @db.Uuid
+  phoneE164   String
+  purpose     String
+  codeHash    String
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(5)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phoneE164, purpose, createdAt])
+  @@index([expiresAt])
+}
+
+model PasswordRecoveryToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  userId     String    @db.Uuid
+  email      String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model SecurityEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  userId    String?  @db.Uuid
+  eventType String
+  outcome   String
+  ipHash    String?
+  metadata  Json
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([eventType, createdAt])
+}
+
+model ServiceRequest {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.Uuid
+  reference   String   @unique
+  subject     String
+  description String
+  status      String   @default("submitted")
+  priority    String   @default("normal")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
 }

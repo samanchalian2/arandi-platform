@@ -1,4 +1,4 @@
-import { ArrowUp, LoaderCircle } from "lucide-react";
+import { ArrowUp, LoaderCircle, Square } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -8,6 +8,7 @@ type ChatInputProps = {
   disabled?: boolean;
   isLoading?: boolean;
   onSend?: () => void;
+  onCancel?: () => void;
   label: string;
   placeholder: string;
   ariaLabel: string;
@@ -21,6 +22,7 @@ export function ChatInput({
   disabled = false,
   isLoading = false,
   onSend,
+  onCancel,
   label,
   placeholder,
   ariaLabel,
@@ -67,11 +69,15 @@ export function ChatInput({
           type="button"
           size="icon"
           className="shrink-0 rounded-2xl shadow-[var(--elevation-1)]"
-          disabled={disabled || isLoading || value.trim().length === 0}
-          aria-label={ariaLabel}
-          onClick={() => onSend?.()}
+          disabled={disabled || (!isLoading && value.trim().length === 0)}
+          aria-label={isLoading ? "Stop response" : ariaLabel}
+          onClick={() => isLoading ? onCancel?.() : onSend?.()}
         >
-          {isLoading ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
+          {isLoading
+            ? onCancel
+              ? <Square className="size-4" />
+              : <LoaderCircle className="size-4 animate-spin" />
+            : <ArrowUp className="size-4" />}
         </Button>
       </div>
     </div>

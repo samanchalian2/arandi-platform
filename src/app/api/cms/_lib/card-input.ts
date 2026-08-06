@@ -30,6 +30,44 @@ export type CardUpdateInput = {
     hasStructuralFields: boolean;
 };
 
+export type CardCreateInput = {
+    key: string;
+    variant: string;
+    order: number;
+    publishState: string;
+    sectionId?: string;
+    mediaId?: string;
+    tags: string[];
+    metrics: Record<string, unknown>;
+    payload: Record<string, unknown>;
+    translations: TranslationsInput;
+};
+
+export function parseCardCreateInput(body: Record<string, unknown>): CardCreateInput {
+    const key = parseOptionalNonEmptyString(body, "key", 120);
+    if (!key) throw new Error("key must be a non-empty string.");
+
+    const sectionId = parseOptionalNullableUuid(body, "sectionId") ?? undefined;
+    const mediaId = parseOptionalNullableUuid(body, "mediaId") ?? undefined;
+    const translations = parseCardTranslations(body);
+    if (!translations) {
+        throw new Error("translations must include at least one of en/fa.");
+    }
+
+    return {
+        key,
+        variant: parseOptionalNonEmptyString(body, "variant", 120) ?? "genericCard",
+        order: parseOptionalNonNegativeInteger(body, "order") ?? 0,
+        publishState: parsePublishState(body) ?? "published",
+        sectionId,
+        mediaId,
+        tags: parseTags(body) ?? [],
+        metrics: parseOptionalRecord(body, "metrics") ?? {},
+        payload: parseOptionalRecord(body, "payload") ?? {},
+        translations,
+    };
+}
+
 export function parseCardUpdateInput(body: Record<string, unknown>): CardUpdateInput {
     const key = parseOptionalNonEmptyString(body, "key", 120);
     const variant = parseOptionalNonEmptyString(body, "variant", 120);

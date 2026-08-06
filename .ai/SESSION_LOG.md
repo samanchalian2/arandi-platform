@@ -1,5 +1,392 @@
 # Session Log
 
+## 2026-08-03 - Phase 9 AI and Knowledge
+
+Objective
+
+- Replace the Hero chat simulation with a secure, grounded, streaming AI application boundary.
+
+Implemented
+
+- Added exact-locale Published Page/Section/Card retrieval and bounded relevance projection.
+- Added the server-only OpenAI Responses gateway with storage disabled, bounded output, low reasoning, HMAC safety identity, citation instruction, cancellation, and timeout.
+- Added a same-origin, size/history-bounded, rate-limited NDJSON chat endpoint with no client-controlled system/provider/model/context input.
+- Added explicit no-answer behavior that avoids provider calls when no Published source supports the query.
+- Connected the existing ChatInterface without redesign and added streaming, safe locale links, stop control, and localized failure states.
+- Added private Admin-editable `ai.runtime` provider/model selection and applied its data migration.
+
+Validation
+
+- 42/42 tests, typecheck, zero-warning lint, Prisma validate/status, deterministic AI verifier, and 54-entry build passed.
+- Approved PostgreSQL returned two bounded Published citations; provider Stub was called exactly once for grounded content and never for unsupported content.
+- Browser runtime confirmed the missing-provider fail-closed message in Persian.
+- Desktop semantics and 390px RTL layout passed with no horizontal overflow.
+- Repository scan found no committed OpenAI key or previously supplied SSH credential.
+
+Readiness
+
+- Phase 9 application architecture is approved.
+- Real OpenAI activation remains blocked by absent approved `OPENAI_API_KEY`; no network-provider claim is made.
+- Phase 10 is the next approved scope.
+
+## 2026-08-03 - Phase 8 Secured Contact Submission
+
+Objective
+
+- Persist anonymous enquiries securely while separating database acceptance from unverified SMTP delivery.
+
+Implemented
+
+- Added ContactSubmission schema/migration, validation service, abuse controls, public API, interactive form, and minimized Admin view.
+- Extended the email gateway contract for Contact notifications while preserving fail-closed provider behavior.
+- Kept raw client identifiers out of PostgreSQL and all public/Admin responses.
+
+Validation
+
+- 35/35 tests, typecheck, zero-warning lint, Prisma validate/status, live Contact verifier, and 53-route production build passed.
+- Controlled browser submission passed Persian/RTL mobile QA and returned a reference.
+- Database inspection proved hashed client values and `unavailable` delivery; the QA record was removed.
+- Missing local pepper initially caused the expected 503; runtime with a non-persisted test pepper succeeded.
+- Real SMTP remains unconfigured and unclaimed.
+
+Readiness
+
+- Phase 8 application architecture is approved.
+- Phase 9 begins with the server-only AI gateway and Published-content grounding.
+
+## 2026-08-03 - Phase 8 Published Details, Documents, Search, and 404
+
+Objective
+
+- Complete public list/detail experiences and establish a safe Published-only search projection.
+
+Implemented
+
+- Added constrained bilingual Article, Knowledge, and Legal list/detail rendering.
+- Added create-if-absent bilingual Article, Responsible AI knowledge, and Privacy content.
+- Added detail routes for every existing Services/Solutions/Industries/Projects Card.
+- Added discoverable Published-content search and query-preserving language switching.
+- Added a bilingual custom 404 and corrected the constrained Section-type allowlists.
+
+Validation
+
+- 34/34 tests, typecheck, lint, Prisma validation, document verifier, and production build passed.
+- Draft, disabled, missing-locale, and unsupported-Section cases fail closed; verifier records were deleted.
+- Controlled Draft HTML returned 404 without a content marker and restored cleanly.
+- Production EN/FA, mobile 390px, and tablet 768px QA passed landmarks, direction, overflow, and identifier-leak checks.
+- Repeat seed did not change document timestamps.
+- Database baseline is Page 10, Section 15, Card 23, User 0, SecurityEvent 0.
+
+Readiness
+
+- This Phase 8 slice is architecture-approved.
+- Next: secured Contact submission persistence, anti-spam, delivery state, and accessible form behavior.
+
+## 2026-08-03 - Phase 7 Company and Contact Published Bridge
+
+Objective
+
+- Finish the fixed-page Published bridge while keeping editorial content, public settings, and future contact submissions separate.
+
+Implemented
+
+- Added create-if-absent Company/Contact Page and Section seed structures.
+- Added exact-shape validated public mappers and localized metadata.
+- Read contact email, phone, and address from a separate allowlisted public Setting.
+- Preserved existing Setting values during repeat seed runs.
+- Switched both public routes to Prisma and kept the Contact form presentation-only.
+
+Validation
+
+- Fixed-page verifier passed EN/FA parity, Setting completeness, Draft exclusion, disabled-Section exclusion, and restoration.
+- 34/34 tests, typecheck, lint, and the 47-route production build passed.
+- Desktop EN/FA QA passed Company and Contact with Prisma source, correct direction, one `main`, and no overflow.
+- 390px Persian Contact passed with one form, five inputs, and no overflow.
+- Database baseline is Page 7, Section 9, Card 23, Media 1, User 0, SecurityEvent 0.
+
+Readiness
+
+- Phase 7 is architecture-approved.
+- Phase 8 begins with Published Article/Knowledge/Legal rendering and the search projection contract.
+
+## 2026-08-03 - Phase 7 Enterprise Collection Published Bridge
+
+Objective
+
+- Extend strict Published-only Prisma consumption to Services, Solutions, Industries, and Projects without changing public component contracts.
+
+Implemented
+
+- Added create-if-absent bilingual Page/Section/Card seed structures for all four collection routes.
+- Added validated cached Prisma mappers that reconstruct the exact existing EN/FA output shapes.
+- Switched route rendering and metadata to the new public adapters with fail-closed production behavior.
+- Added page-specific tags, safe Prisma source markers, and a self-cleaning publication/parity verifier.
+- Corrected the seeded Industries page type from the invalid singularization to `industry`.
+
+Validation
+
+- 34/34 tests, typecheck, lint, 47-route production build, Prisma validate/status, and enterprise verifier passed.
+- Repeat enterprise seed preserved Page timestamps, confirming that it does not overwrite editorial content.
+- Production DOM passed all four routes in both locales with Prisma source, correct direction, one `main`, no 404, and no horizontal overflow.
+- Controlled Services Draft DOM returned 404 with no source marker; Published restoration returned six Prisma-backed Cards.
+- Persian Solutions at 390px passed with correct RTL and no horizontal overflow.
+- Final database baseline is Page 5, Section 7, Card 23, Media 1, User 0, SecurityEvent 0; verifier data was fully restored.
+
+Readiness
+
+- The enterprise collection slice is architecture-approved.
+- Next: migrate Company and Contact page bodies while preserving the separation between editorial content, public settings, and future contact submissions.
+
+## 2026-08-03 - Phase 7 Published Home and Shared Chrome Bridge
+
+Objective
+
+- Begin public Prisma consumption with strict Draft isolation and zero public-component redesign.
+
+Implemented
+
+- Added server-only Published Home mapping for hero, chat, features, Cards, metadata, Navigation, company, and Footer data.
+- Added exact EN/FA translation selection and independent Published/enabled filters at Page, Section, and Card levels.
+- Added deterministic ORM caching and immediate CMS mutation tag invalidation.
+- Made shared chrome independent from Home status and kept production fallback fail-closed.
+- Added explicit development-only local source selection and a safe public source marker.
+
+Validation
+
+- 34/34 tests, typecheck, lint, 47-route production build, Prisma validate/status, and diff check passed.
+- Runtime production DOM proved Prisma source in EN/LTR and FA/RTL.
+- 390px QA passed one `main`, correct direction, and no horizontal overflow.
+- Controlled Draft verification removed Home content and rendered 404 while Services stayed healthy; Published was restored and Prisma output returned.
+- Page, Navigation, and Theme/Settings verifiers passed with full cleanup.
+
+Readiness
+
+- Home/shared-chrome slice is architecture-approved.
+- Next: map Services, Solutions, Industries, and Projects from Published Page/Section/Card data.
+
+## 2026-08-03 - Phase 6 Page Creation and Constrained Templates
+
+Objective
+
+- Complete the remaining generic editorial entry point without introducing parallel content models.
+
+Implemented
+
+- Added Standard, Service, Solution, Industry, Project, Article, Knowledge, Legal, and Contact template presets.
+- Added transactional Draft Page creation with required EN/FA translations and bilingual starter Sections.
+- Added permission-aware Admin creation UI and retained Translator/Viewer read-only boundaries.
+- Added canonical slug/route validation, a unique Page-route migration, and deterministic conflict responses for create/update.
+- Added a future public query that requires Published Pages, enabled Sections, and Published Cards.
+- Added a self-cleaning live Page-template verifier.
+
+Validation
+
+- 34/34 tests, typecheck, lint, production build, Prisma validate/status, and diff check passed.
+- Three migrations are applied and the approved database is up to date.
+- Runtime verification passed Viewer/Translator/Editor/Admin boundaries, CSRF denial, invalid bilingual rollback, Draft isolation, duplicate slug/route conflicts, delete, and cleanup.
+- Browser QA passed the Editor list at 1280px, the internally scrollable creation modal at 390px, and Translator control minimization without horizontal overflow.
+
+Readiness
+
+- Phase 6 application architecture is approved.
+- Phase 7 starts with a Published-only Prisma-to-public provider bridge and strict Draft/disabled-content exclusion.
+- SMS.ir/SMTP activation and production Media infrastructure remain explicit provider/deployment boundaries.
+
+## 2026-08-02 - Phase 6 Navigation, Theme, Settings, and CMS CSRF
+
+Objective
+
+- Replace remaining configuration placeholders with governed Prisma workflows and close the CMS CSRF boundary.
+
+Implemented
+
+- Added bilingual Navigation list/create/edit/translation/reorder/delete APIs and responsive UI with structural/translation RBAC.
+- Added bounded Theme token validation and a real default-theme JSON editor.
+- Added governed Settings read/write, secret-key/field denial, private-value redaction, and a public allowlisted endpoint.
+- Added shared `cmsFetch` CSRF injection and database-session CSRF enforcement for every CMS mutation.
+- Added self-cleaning Navigation and Theme/Settings runtime verifiers.
+
+Validation
+
+- 33/33 tests, typecheck, lint, and production build passed; build exposes 47 routes.
+- Navigation runtime passed Viewer/Translator/Editor/Admin boundaries, missing-CSRF denial, partial-reorder denial, complete reorder, delete, order restoration, and cleanup.
+- Theme/Settings runtime rejected active CSS and secret-like data, redacted private values, excluded them publicly, restored original data, and cleaned all temporary records.
+- Browser QA passed Navigation at 1280px/390px, translation-only controls, bounded modal/focus/scroll lock, Theme desktop, and Settings mobile without document overflow.
+
+Readiness
+
+- Navigation/Theme/Settings slice is architecture-approved.
+- Next: Page creation and constrained editorial templates over Page -> Section -> Card -> Media.
+
+## 2026-08-02 - Phase 5 Identity Administration Completion
+
+Objective
+
+- Replace the Users placeholder with persistent, least-privilege identity administration and safe audit visibility.
+
+Implemented
+
+- Added Admin/SuperAdmin User directory reads and SuperAdmin-only create/update/suspend/session-revoke actions.
+- Added persistent identity permissions, CSRF enforcement, mock write denial, last-SuperAdmin and self-demotion protections.
+- Added minimized security-event API/UI without metadata, client hashes, credentials, or token fields.
+- Added responsive User filters/cards/audit table and a bounded accessible editor modal.
+- Added a self-cleaning live Admin verifier and corrected authentication-verifier event cleanup.
+
+Validation
+
+- 30/30 tests, typecheck, lint, and production build passed.
+- Live PostgreSQL checks passed Admin read, Viewer denial, Admin mutation denial, missing-CSRF denial, SuperAdmin create/update/revoke, suspension revocation, self-demotion conflict, and audit minimization.
+- Final database verification returned User 0 and SecurityEvent 0 after cleanup.
+- Browser QA passed at 1280px and 390px with one `main` and no horizontal overflow.
+
+Readiness
+
+- Phase 5 application architecture is approved.
+- SMS.ir/SMTP network transports remain fail-closed pending verified provider configuration.
+- Phase 6 starts with Navigation, Theme, and Settings.
+
+## 2026-08-02 - Phase 5 OTP, Recovery, and Customer Portal
+
+Objective
+
+- Complete the persistent OTP/recovery application flows and establish the customer account/service-request workflow.
+
+Implemented
+
+- Added OTP request/verify services and routes with non-enumerating request behavior, cooldown/rate limits, committed attempt caps, expiry, atomic single-use consumption, and session issuance.
+- Added password-recovery request/consume services and routes with high-entropy hashed tokens, password replacement, other-link consumption, and full session revocation.
+- Added recovery UI and password/SMS login selection.
+- Added Customer account authorization, profile access, owner-scoped service-request create/list APIs, CSRF enforcement, and responsive UI.
+- Added a self-cleaning live PostgreSQL authentication/customer verifier.
+
+Validation
+
+- 28/28 focused tests, typecheck, lint, and production build passed.
+- Live PostgreSQL OTP checks passed unknown-account cooldown parity, five-attempt persistence, successful single use, and replay rejection.
+- Live recovery checks passed password replacement, all-session revocation, other-token consumption, and replay rejection.
+- Live customer checks passed missing-CSRF `403`, owner-scoped create/list, ignored spoofed ownership, minimized response fields, and complete temporary-data cleanup.
+- Browser QA passed recovery at 1280px and 390px and customer unauthenticated redirect/login at 390px with one `main`, one form, and no horizontal overflow.
+
+Blocked
+
+- SMS.ir and SMTP delivery remain fail-closed because approved endpoint/template/sender configuration and runtime credentials are not available.
+- No permanent account was created or seeded.
+
+## 2026-08-02 - Phase 5 Persistent Identity Foundation
+
+Objective
+
+- Establish production-grade persistent identity and trusted database-session authorization before implementing authentication UI/provider delivery.
+
+Implemented
+
+- Added and deployed the additive identity/customer Prisma migration.
+- Seeded system roles without seeding any password or default account.
+- Added Argon2id, canonical Iranian phone/email normalization, opaque token, HMAC OTP, expiry, cookie, and CSRF primitives.
+- Added database session create/read/revoke and persistent permission resolution.
+- Converted CMS authorization helpers and route call sites to asynchronous database-session checks.
+- Extended Admin Server Component guards to trusted database sessions.
+- Kept Proxy optimistic and the mock auth path development-only.
+- Added fail-closed SMS/email provider boundaries.
+- Added password login, lockout/throttling, session/CSRF cookie issuance, logout/revocation, and security events.
+- Added the production Admin login form and first-SuperAdmin bootstrap command.
+
+Validation
+
+- Migration deployed successfully; database reports two migrations up to date.
+- Seed preserved Page 1, Section 3, Card 3, Media 1 and added Role 6, User 0.
+- Temporary session lifecycle check passed and cleaned up.
+- Production-style CMS authorization passed: SuperAdmin 200, Viewer write 403, revoked session 401.
+- 28/28 tests, typecheck, lint, build, Prisma validate/status, and diff check passed.
+- Runtime password lockout/login/logout completed with all temporary data removed.
+- Production login UI passed desktop/mobile responsive checks; browser QA found and fixed stale Mock copy and a missing `main` landmark.
+
+Blocked
+
+- SMS.ir transport cannot be claimed complete without verified provider endpoint/template configuration and credentials.
+- SMTP delivery cannot be runtime-tested without approved transport configuration.
+- OTP/recovery provider delivery and customer account UI are the next slice.
+
+## 2026-08-02 - Phase 4.7 Media Upload and Application Validation
+
+Objective
+
+- Implement the approved VPS-filesystem Media strategy, complete the Admin workflow, validate real persistence/file behavior, and advance the project brain to the identity phase.
+
+Implemented
+
+- Added secure filesystem storage and `/api/cms/media/upload`.
+- Added local immutable Media serving while preserving the Nginx production boundary.
+- Added upload/edit/delete clients and responsive Admin controls matching RBAC.
+- Added staged filesystem deletion with rollback.
+- Added filesystem and signature-validation tests.
+- Upgraded direct Sharp to 0.35.3.
+- Hardened shared Admin dialog accessibility.
+- Corrected Base UI link semantics and the Next.js 16 scroll-behavior declaration.
+
+Validation
+
+- 21/21 tests, typecheck, and lint passed.
+- Production build passed with no warnings/errors after scoping local Media reads to the development storage directory.
+- Prisma validation and live migration status passed.
+- Real runtime cycle returned upload 201, asset 200, update 200, delete 200, and post-delete asset 404.
+- Viewer upload and Admin delete returned 403.
+- Browser QA passed at 1280px, 768px, and 390px with no document overflow.
+- EN/LTR and FA/RTL direction states were verified.
+- Modal semantics, focus, Escape, scroll lock, and focus return were verified.
+
+Boundaries
+
+- No public CMS bridge, production authentication, AI, Navigation, Settings, or deployment behavior was implemented.
+- Nginx/ClamAV activation and Media backup/retention remain production deployment work.
+- No secret, database URL, or provider credential was added to source control or `.ai`.
+
+Readiness
+
+- Phase 4.7 application architecture is approved.
+- The next active task is Phase 5 persistent production identity and customer foundation.
+
+## 2026-08-02 - Post-4.6 Stabilization and Phase 4.7 Foundation
+
+Objective
+
+- Resolve the repository audit findings, restore a repeatable validation baseline, and align the project brain before continuing Media Library work.
+
+Implemented
+
+- Repaired the Windows/Node test launcher and TypeScript test errors.
+- Expanded focused coverage to Card create and Media input validation.
+- Added `npm run typecheck`.
+- Removed the unused AI gateway lint warning without implementing AI behavior.
+- Removed public Header/Footer chrome from Admin routes and eliminated nested main landmarks.
+- Corrected closed-menu accessibility, focus containment, Escape behavior, focus return, and scroll locking.
+- Hardened Card POST and Media POST/PUT/DELETE boundaries.
+- Added response security headers.
+- Added `prisma.config.ts` and a baseline PostgreSQL migration.
+- Implemented the real read-only Media library list foundation with responsive search/filter/sort/pagination states.
+
+Validation
+
+- 20/20 tests passed.
+- Typecheck passed.
+- Lint passed with zero warnings/errors.
+- Production build passed.
+- Prisma schema validation passed.
+- Runtime public/admin/API guards and security headers passed.
+- Desktop/390px Admin Media QA passed with one main landmark, no public chrome, no overflow, and correct mobile menu accessibility.
+- Dependency audit remains at 6 vulnerabilities (2 moderate, 4 high).
+
+Blocked
+
+- Configured PostgreSQL is unreachable, so migration status/deploy, seed, DB-backed CRUD, and populated-state UI QA remain blocked.
+- Production authentication provider is not implemented.
+- Media upload requires a separately approved storage/security policy.
+
+Readiness
+
+- Phase 4.6 implementation and stabilization pass are verified in the working tree.
+- Phase 4.7 is in progress and must not be marked complete until the blocked database and populated-state checks pass.
+
 ## 2026-08-01 - Phase 4.6 Admin Card Builder
 
 Objective
@@ -1052,3 +1439,27 @@ Continue with:
 1. Phase 3.4 consumption bridge from current local adapter output to Prisma-backed CMS service data.
 2. Preserve strict output-shape parity for all existing provider contracts.
 3. Keep no-UI/no-layout/no-routing/no-AI-change policy.
+
+# 2026-08-02 — PostgreSQL Activation and Seed Validation
+
+- Verified the approved PostgreSQL host is reachable from the development host.
+- Restricted PostgreSQL network access to the current development host, project database, and application role through UFW and `pg_hba.conf`.
+- Applied the baseline Prisma migration successfully.
+- Ran the project seed successfully.
+- Verified seeded counts: 1 Page, 3 Sections, 3 Cards, and 1 Media record.
+- Remaining Phase 4.7 work: populated-state browser QA, role-appropriate DB-backed API checks, and approved storage/upload policy.
+
+# 2026-08-03 — Phase 10 Quality and VPS Staging Validation
+
+- Upgraded and validated Next.js 16.2.12/React 19.2.8 with zero full or production dependency advisories.
+- Added SEO/canonical/alternate/JSON-LD/robots/sitemap coverage, health probes, standalone output, security headers, skip navigation, and repeatable Axe/performance/responsive verification.
+- Added bounded streaming JSON mutation reads, configured-origin reverse-proxy validation, and minimized CMS production error logging.
+- Passed 44 focused tests, typecheck, zero-warning lint, deterministic AI verification, five-migration Prisma status, and the 56-page Linux production build.
+- Passed production-like EN/FA QA for Home, Services, Articles, and Contact across 390/768/1280 px: 24 checks, zero Axe violations, no browser errors or horizontal overflow, and performance budgets within thresholds.
+- Activated release `20260803T093000Z-phase10-r6` behind loopback Nginx while preserving the existing WordPress port-80 server block.
+- Exercised PostgreSQL least privilege/loopback access, Nginx Media `200`, ClamAV, health probes/timers, checksummed backup, isolated restore, rollback/roll-forward, bounded journald retention, and systemd hardening (`3.0 OK`).
+- Rotated the application database credential after accidental tool-output exposure; no credential value was written to source or `.ai`.
+- Validated a separate SSH key, then disabled SSH password and keyboard-interactive authentication.
+- Negotiated TLS 1.3 on the self-signed loopback staging listener. Public trusted TLS remains blocked because public DNS has no A/AAAA record.
+- Removed four obsolete/failed release directories after verifying the active and retained rollback releases, reducing filesystem use from 89% to 71%. Releases are rebuildable; persistent database/Media backups were not removed.
+- Remaining gates are provider credentials, public DNS/trusted TLS/cutover, external alerts, encrypted off-host backups, observed GitHub CI, and stakeholder content acceptance.
