@@ -8,6 +8,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -202,10 +203,7 @@ export function Header({ content, company, lang }: HeaderProps) {
             aria-hidden="true"
             className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-background/80 shadow-[var(--elevation-1)]"
           >
-            <svg viewBox="0 0 24 24" className="size-5 text-muted-foreground/70" fill="none" stroke="currentColor" strokeWidth="1.6">
-              <rect x="4.5" y="4.5" width="15" height="15" rx="3.5" />
-              <path d="M8 15.5 11 12.5l2 2 3-4" />
-            </svg>
+            <Image src="/brand/arandi-symbol.png" alt="" width={40} height={40} className="size-7 object-contain" />
           </span>
           <span className={cn("truncate font-semibold tracking-[0.08em]", isRtl ? "text-base tracking-normal" : "ds-caps-label")}>{brandDisplayName}</span>
         </Link>
@@ -310,14 +308,9 @@ export function Header({ content, company, lang }: HeaderProps) {
             aria-label={mobileMenuTitle}
             className={cn(
               "ds-glass absolute inset-y-0 flex w-full max-w-md flex-col overflow-y-auto border-border/70 px-5 pb-6 pt-6 shadow-[var(--elevation-3)] transition-transform duration-[var(--duration-hero)] ease-[var(--ease-emphasized)]",
-              // The panel always anchors to the logical "end" edge, which matches
-              // where the hamburger button itself sits in each language: `end-0`
-              // resolves to `right: 0` under `dir="ltr"` (en, button on the right)
-              // and to `left: 0` under `dir="rtl"` (fa, button on the left). The
-              // closed-state offset must push the panel further toward that same
-              // physical edge (positive for en/right, negative for fa/left) so it
-              // ends up fully off-screen rather than sliding back into view.
-              "end-0 border-s",
+              // Mobile navigation follows the logical content start: left in LTR
+              // and right in RTL. Its divider stays on the inner (end) edge.
+              "start-0 border-e",
               "translate-x-0",
             )}
           >

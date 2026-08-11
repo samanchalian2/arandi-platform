@@ -17,7 +17,7 @@ Phase 10 — Controlled Production Cutover
 4. Obtain and independently runtime-test approved OpenAI, SMTP, and SMS.ir credentials; keep every unavailable provider fail-closed.
 5. Configure an external health/incident alert destination and encrypted off-host backup replication, then exercise both.
 6. Intentionally review/commit/push the current worktree and observe the GitHub CI workflow; do not claim CI success from the local workflow file alone.
-7. Complete final real-content/stakeholder review for Persian and English.
+7. Obtain stakeholder acceptance for the imported Persian company-profile content and its English translation; correct only approved editorial feedback.
 8. Perform a controlled Nginx cutover with the tested release and rollback checkpoint, then rerun health, Prisma, Media, SEO, accessibility, responsive, TLS, and provider smoke checks on the public hostname.
 
 ## Constraints

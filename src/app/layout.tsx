@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(getSiteOrigin()),
   applicationName: "Arandi Platform",
   title: "Arandi Bonyan",
+  icons: {
+    icon: "/brand/arandi-symbol.png",
+    apple: "/brand/arandi-symbol.png",
+  },
   robots: {
     index: true,
     follow: true,
@@ -52,7 +56,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     name: englishContent.company.name,
     alternateName: persianContent.company.name,
     url: getSiteOrigin(),
-    logo: `${getSiteOrigin()}/logo.svg`,
+    logo: `${getSiteOrigin()}/brand/arandi-lockup.png`,
   }).replace(/</g, "\\u003c");
 
   return (

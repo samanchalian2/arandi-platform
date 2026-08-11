@@ -1,5 +1,29 @@
 # Session Log
 
+## 2026-08-11 — Company Profile Content Integration
+
+Objective
+
+- Replace the remaining public placeholder copy with the supplied Arandi company profile while preserving the Published Prisma/CMS boundary.
+
+Implemented
+
+- Structurally extracted `Arandi_Company_Profile_Final.docx` and mapped its company positioning, mission, vision, values, seven services, six industries, four projects, and contact details to the existing public contracts.
+- Added `scripts/import-company-profile.ts`, a repeatable, serializable Prisma importer that updates only the scoped Published records and allowlisted public company/contact settings.
+- Updated Home, Company, Services, Solutions, Industries, Projects, and Contact in both English and Persian. English prose is a faithful translation where the supplied profile did not contain English body copy.
+- Replaced obsolete catalog cards rather than leaving contradictory placeholders in the public collections.
+
+Validation
+
+- The importer completed successfully against the approved PostgreSQL database. Record checks confirmed exact EN/FA translations for every changed Page, Section, and Card: 7 Services, 4 Solutions, 6 Industries, 4 Projects, and 3 Home capabilities.
+- Public local routes returned `200`, rendered `data-content-source="prisma"`, and contained expected profile-derived content in both languages.
+- 44/44 focused tests, strict TypeScript, zero-warning lint, and the 56-route production build passed.
+- Visual rendering of the source DOCX was blocked only because LibreOffice is not installed locally; structural extraction succeeded. Headless Chrome verified the Services page at 390px Persian/RTL, 768px Persian/RTL, and 1280px English/LTR with no horizontal overflow or console/page errors; the lazy-loaded footer lockup loaded at its actual viewport. Final stakeholder review of wording remains required before public cutover.
+
+Readiness
+
+- The profile-content import is architecture-approved. The remaining content gate is stakeholder acceptance, not missing source material.
+
 ## 2026-08-03 - Phase 9 AI and Knowledge
 
 Objective
@@ -1463,3 +1487,32 @@ Continue with:
 - Negotiated TLS 1.3 on the self-signed loopback staging listener. Public trusted TLS remains blocked because public DNS has no A/AAAA record.
 - Removed four obsolete/failed release directories after verifying the active and retained rollback releases, reducing filesystem use from 89% to 71%. Releases are rebuildable; persistent database/Media backups were not removed.
 - Remaining gates are provider credentials, public DNS/trusted TLS/cutover, external alerts, encrypted off-host backups, observed GitHub CI, and stakeholder content acceptance.
+
+# 2026-08-09 — Mobile Navigation Development Hydration Fix
+
+- Reproduced the public hamburger-menu failure at `390px` on `http://127.0.0.1:3000/?lang=fa`: the button rendered but `aria-expanded` did not change because the Client Component had not hydrated.
+- Read the installed Next.js 16 Client Component and `allowedDevOrigins` documentation before changing configuration.
+- Root cause: Next.js development resources/HMR rejected the explicit `127.0.0.1` loopback origin, and the strict CSP lacked the development-only `unsafe-eval` exception required by Next.js dev tooling.
+- Updated the existing `next.config.ts` only:
+  - added `allowedDevOrigins: ["127.0.0.1"]`;
+  - scoped `unsafe-eval` and `ws:/wss:` CSP allowances strictly to `NODE_ENV === "development"`.
+- Production CSP remains strict and does not allow `unsafe-eval` or unrestricted development WebSocket sources.
+- Browser verification with Chrome at `390×844`: hamburger open, visible modal navigation, body scroll lock, Escape close, and zero browser errors all passed.
+- Validation passed: `npm test` (44/44), `npm run typecheck`, `npm run lint`, and `npm run build`.
+
+# 2026-08-09 — Mobile Navigation RTL/LTR Placement
+
+- Changed the public mobile navigation panel from logical end to logical start: it now opens from the right for Persian/RTL and from the left for English/LTR, matching common web navigation conventions.
+- Kept the divider on the panel's inner edge by changing `border-s` to `border-e` with the new logical position.
+- Chrome runtime verification at `768×1024`: Persian panel `x=320` (right-aligned) and English panel `x=0` (left-aligned); no browser errors.
+- Validation passed: `npm run typecheck`, `npm run lint`, and `npm run build`.
+
+# 2026-08-10 — Supplied Brand Assets and Catalog Intake
+
+- Inspected both supplied PNG files: a 1254×1254 compact Arandi symbol and a 1316×600 Arandi lockup with the `Committed to Results` tagline.
+- Added the supplied assets under `public/brand/` without modifying the existing design system.
+- Replaced the placeholder Header mark with the compact symbol; added the lockup to the public Footer; updated favicon metadata and Organization JSON-LD to use the supplied assets.
+- Added create-if-absent seed definitions for both brand Media records and changed the default `site.logo` seed value to the supplied lockup.
+- Applied the approved branding data to the live PostgreSQL database in one transaction: both Media records exist and public `site.logo` resolves to `/brand/arandi-lockup.png`.
+- Verified Prisma schema/migration status, local Next image optimization responses, public Header visual rendering, 44/44 focused tests, typecheck, zero-warning lint, and the production build.
+- The attachment directory contains only the two logos. The referenced company catalog is not available, so real catalog-derived Persian/English content remains pending a source file or readable attachment.

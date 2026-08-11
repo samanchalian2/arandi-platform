@@ -910,22 +910,47 @@ async function seedMediaAndSettings() {
     const faModel = getDomainContentModel("fa");
 
     await prisma.media.upsert({
-        where: { url: "/logo.svg" },
+        where: { url: "/brand/arandi-lockup.png" },
         update: {
-            title: "Arandi Logo",
+            title: "Arandi Logo Lockup",
             alt: "Arandi Bonyan",
             caption: "Primary brand logo",
-            type: "image/svg+xml",
-            width: null,
-            height: null,
+            type: "image/png",
+            width: 1316,
+            height: 600,
             metadata: toJsonValue({}),
         },
         create: {
-            title: "Arandi Logo",
+            title: "Arandi Logo Lockup",
             alt: "Arandi Bonyan",
             caption: "Primary brand logo",
-            url: "/logo.svg",
-            type: "image/svg+xml",
+            url: "/brand/arandi-lockup.png",
+            type: "image/png",
+            width: 1316,
+            height: 600,
+            metadata: toJsonValue({}),
+        },
+    });
+
+    await prisma.media.upsert({
+        where: { url: "/brand/arandi-symbol.png" },
+        update: {
+            title: "Arandi Brand Symbol",
+            alt: "Arandi Bonyan symbol",
+            caption: "Compact brand symbol",
+            type: "image/png",
+            width: 1254,
+            height: 1254,
+            metadata: toJsonValue({}),
+        },
+        create: {
+            title: "Arandi Brand Symbol",
+            alt: "Arandi Bonyan symbol",
+            caption: "Compact brand symbol",
+            url: "/brand/arandi-symbol.png",
+            type: "image/png",
+            width: 1254,
+            height: 1254,
             metadata: toJsonValue({}),
         },
     });
@@ -972,7 +997,7 @@ async function seedMediaAndSettings() {
             group: "contact",
             isPublic: true,
         },
-        { key: "site.logo", value: { mediaUrl: "/logo.svg" }, group: "branding", isPublic: true },
+        { key: "site.logo", value: { mediaUrl: "/brand/arandi-lockup.png" }, group: "branding", isPublic: true },
         {
             key: "ai.runtime",
             value: { provider: "openai", model: "gpt-5.6-sol" },

@@ -19,6 +19,15 @@ Date:
 - Activated PostgreSQL loopback access, least-privilege application connectivity, ClamAV, Nginx Media serving, key-only SSH, checksummed backups, restore verification, health timers, bounded journal retention, and a hardened systemd application service on the approved VPS.
 - Preserved the existing WordPress public server block; no public cutover was performed.
 
+## Brand assets and profile-content integration — 2026-08-10/11
+
+- Added the supplied compact Arandi symbol and full lockup under `public/brand/`.
+- Used the compact symbol in the public Header and favicon metadata, and the full lockup in the Footer and Organization JSON-LD.
+- Added the two supplied assets to the default Media seed and set the default public `site.logo` value to the lockup; the live database branding records were updated in a controlled transaction.
+- On 2026-08-11, received `Arandi_Company_Profile_Final.docx`, structurally extracted its content, and added the repeatable `scripts/import-company-profile.ts` importer.
+- Imported validated bilingual content for Home, Company, Services, Solutions, Industries, Projects, and Contact into Published Prisma CMS records; changed the public portfolio to seven services, six target industries, and four profile-backed projects.
+- Updated allowlisted public company/contact settings with the approved tagline and contact information; no secret-bearing setting was read or persisted.
+
 ## Verification
 
 - 44/44 focused tests, strict typecheck, zero-warning lint, AI verifier, five-current-migration Prisma status, and the 56-page production build pass.
@@ -33,7 +42,7 @@ Date:
 
 - Public DNS/trusted renewable certificate and final Nginx cutover.
 - Approved OpenAI/SMTP/SMS.ir credentials and real provider checks.
-- External alerting, encrypted off-host backup, observed GitHub CI, and stakeholder content acceptance.
+- External alerting, encrypted off-host backup, observed GitHub CI, and stakeholder acceptance of the newly imported Persian copy and its English translation.
 
 ---
 

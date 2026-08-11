@@ -1,12 +1,18 @@
 # Current State
 
-Last verified: 2026-08-03
+Last verified: 2026-08-11
 
 ## Current Phase
 
 Phase 10 — Quality and Production
 
 Status: the application and production-like VPS staging boundary are validated. Release `20260803T093000Z-phase10-r6` is active behind loopback Nginx without replacing the existing WordPress public server block. Public production cutover remains unapproved until public DNS, a trusted renewable certificate, provider credentials, external alerting/off-host backup, and observed GitHub CI are available.
+
+Local development verification on 2026-08-09: the public mobile navigation is interactive again at `http://127.0.0.1:3000/?lang=fa` and follows logical content-start placement (right in Persian/RTL, left in English/LTR). Next.js development assets/HMR had rejected the explicit loopback origin, preventing Client Component hydration; `allowedDevOrigins` now permits only `127.0.0.1`, and the development-only CSP exceptions required by Next.js tooling do not apply to production.
+
+Branding update on 2026-08-10: supplied Arandi symbol and lockup assets are served locally from `/brand/`; the compact symbol is used in the public Header and favicon metadata, while the lockup is used in the Footer and Organization JSON-LD. PostgreSQL Media records and the public `site.logo` setting point to the supplied lockup.
+
+Company-profile content update on 2026-08-11: the supplied `Arandi_Company_Profile_Final.docx` was structurally extracted and mapped into Published PostgreSQL/CMS content through the idempotent `scripts/import-company-profile.ts` importer. The public Home, Company, Services, Solutions, Industries, Projects, and Contact pages now have validated EN/FA copy based on the profile; the service portfolio has seven capabilities, industries have six target sectors, and projects have four profile-backed entries. Public `site.company` and `site.contact` settings now use the approved brand tagline and contact information. English page copy is a faithful translation of the Persian profile where no English body copy was supplied. The document could not be rendered for visual inspection because LibreOffice is absent locally; its text structure was extracted successfully and public route plus headless-Chrome checks verified the resulting public content.
 
 `HEAD` and `origin/main` point to commit `8df6fca` (`4.5 - 4.7`). The stabilization and completed Phase 4.7 application changes described here are still uncommitted.
 
@@ -16,6 +22,7 @@ Status: the application and production-like VPS staging boundary are validated. 
 - Public Home, Company, Services, Solutions, Industries, Projects, Contact, and shared bilingual Header/Footer chrome now read validated Published content, Navigation, and allowlisted public settings from Prisma through cached server-only adapters.
 - Article, Knowledge, and Legal lists/details plus Services/Solutions/Industries/Projects detail routes are Published-only and bilingual.
 - Public search projects only bounded Published Page/Section/Card text and never returns Prisma identifiers or Admin payloads.
+- The company-profile importer changes only Published CMS Page/Section/Card translations and the allowlisted `site.company`/`site.contact` settings; it does not alter Prisma schema, Admin permissions, infrastructure, contact-submission data, or secrets.
 - Contact submissions persist through a bounded same-origin endpoint with consent, honeypot, throttling, replay deduplication, hashed client identifiers, and explicit delivery state.
 - Admin CMS uses React Query against `/api/cms/*`; APIs persist through Prisma/PostgreSQL.
 - Validated Home/Page, Section, Card, Navigation, and company-setting mutations invalidate bounded public cache tags immediately.

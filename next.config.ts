@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  // Local QA opens the development server at 127.0.0.1 while Next initializes
+  // it as localhost. Allow that explicit loopback origin so HMR and Client
+  // Component hydration are not rejected during development.
+  allowedDevOrigins: ["127.0.0.1"],
   outputFileTracingExcludes: {
     "/media/*": [
       "./next.config.ts",
@@ -34,11 +40,14 @@ const nextConfig: NextConfig = {
               "object-src 'none'",
               "frame-ancestors 'none'",
               "form-action 'self'",
-              "script-src 'self' 'unsafe-inline'",
+              // Next.js development tooling evaluates source-mapped code to hydrate
+              // Client Components. Keep this exception strictly local to development;
+              // production continues to block eval.
+              `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob:",
               "font-src 'self' data:",
-              "connect-src 'self'",
+              `connect-src 'self'${isDevelopment ? " ws: wss:" : ""}`,
               "media-src 'self'",
               "worker-src 'self' blob:",
               "manifest-src 'self'",
