@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:seed": "prisma db seed",
+    "content:import-profile": "tsx scripts/import-company-profile.ts",
     "auth:bootstrap": "tsx scripts/bootstrap-admin.ts",
     "auth:verify": "tsx scripts/verify-auth-flows.ts",
     "admin:verify": "tsx scripts/verify-admin-users.ts",

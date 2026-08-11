@@ -24,9 +24,11 @@ Date:
 - Added the supplied compact Arandi symbol and full lockup under `public/brand/`.
 - Used the compact symbol in the public Header and favicon metadata, and the full lockup in the Footer and Organization JSON-LD.
 - Added the two supplied assets to the default Media seed and set the default public `site.logo` value to the lockup; the live database branding records were updated in a controlled transaction.
-- On 2026-08-11, received `Arandi_Company_Profile_Final.docx`, structurally extracted its content, and added the repeatable `scripts/import-company-profile.ts` importer.
+- On 2026-08-11, received `Arandi_Company_Profile_Final.docx`, structurally extracted its content, and added the repeatable `scripts/import-company-profile.ts` importer, available through `npm run content:import-profile`.
 - Imported validated bilingual content for Home, Company, Services, Solutions, Industries, Projects, and Contact into Published Prisma CMS records; changed the public portfolio to seven services, six target industries, and four profile-backed projects.
 - Updated allowlisted public company/contact settings with the approved tagline and contact information; no secret-bearing setting was read or persisted.
+- Updated the enterprise and fixed-page CMS bridge verifiers to validate the approved profile identifiers/content shape rather than the retired sample copy; importer, route, Chrome QA, tests, lint, and production build passed.
+- Stakeholder approved the Persian company-profile copy and its English translation on 2026-08-11.
 
 ## Verification
 

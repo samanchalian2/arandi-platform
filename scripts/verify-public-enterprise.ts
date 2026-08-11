@@ -2,26 +2,55 @@ import "dotenv/config";
 
 import assert from "node:assert/strict";
 
-import { getEnterpriseContent } from "../src/content/enterprise";
 import { prisma } from "../src/lib/prisma";
 import {
     mapPublishedEnterprisePage,
     type EnterpriseCollectionKey,
+    type EnterpriseCollectionPage,
 } from "../src/lib/public-content/enterprise-pages";
 import { findPublishedPageBySlug } from "../src/lib/public-content/pages";
 
 const keys: EnterpriseCollectionKey[] = ["services", "solutions", "industries", "projects"];
+const expectedCards: Record<EnterpriseCollectionKey, string[]> = {
+    services: ["digital-transformation-consulting", "infrastructure-network-data-center", "cloud-modern-infrastructure", "cybersecurity-business-continuity", "enterprise-solutions", "ai-solutions", "managed-it-services"],
+    solutions: ["digital-foundation", "secure-modern-infrastructure", "enterprise-collaboration", "ai-knowledge-operations"],
+    industries: ["energy-petrochemicals", "manufacturing", "financial-services", "government", "healthcare", "holdings"],
+    projects: ["persian-gulf-petrochemical", "sonqor-methylamine", "negin-zafar", "noorin-bonyad"],
+};
+
+function assertProfileContent(key: EnterpriseCollectionKey, page: EnterpriseCollectionPage<EnterpriseCollectionKey>) {
+    let cardIds: string[];
+    switch (key) {
+        case "services":
+            cardIds = (page as EnterpriseCollectionPage<"services">).cards.map((card) => card.id);
+            break;
+        case "solutions":
+            cardIds = (page as EnterpriseCollectionPage<"solutions">).catalog.cards.map((card) => card.id);
+            break;
+        case "industries":
+            cardIds = (page as EnterpriseCollectionPage<"industries">).section.cards.map((card) => card.id);
+            break;
+        case "projects":
+            cardIds = (page as EnterpriseCollectionPage<"projects">).section.cards.map((card) => card.id);
+            break;
+    }
+    assert.deepEqual(
+        cardIds,
+        expectedCards[key],
+        `${key} card order must match the approved company profile.`,
+    );
+    assert.ok(page.metadata.title.trim().length > 2, `${key} metadata title is required.`);
+    assert.ok(page.metadata.description.trim().length >= 20, `${key} metadata description is required.`);
+    assert.ok(page.hero.title.trim().length > 2, `${key} hero title is required.`);
+    assert.ok(page.cta.title.trim().length > 2, `${key} CTA title is required.`);
+}
 
 async function main() {
     for (const language of ["en", "fa"] as const) {
         for (const key of keys) {
             const page = await findPublishedPageBySlug(key, language);
             assert.ok(page, `${key}/${language} must be Published.`);
-            assert.deepEqual(
-                mapPublishedEnterprisePage(key, page, language),
-                getEnterpriseContent(language).pages[key],
-                `${key}/${language} must preserve the existing public output contract.`,
-            );
+            assertProfileContent(key, mapPublishedEnterprisePage(key, page, language));
         }
     }
 

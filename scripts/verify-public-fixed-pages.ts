@@ -2,26 +2,37 @@ import "dotenv/config";
 
 import assert from "node:assert/strict";
 
-import { getEnterpriseContent } from "../src/content/enterprise";
 import { prisma } from "../src/lib/prisma";
 import {
     mapPublishedFixedPage,
     type FixedEnterprisePageKey,
+    type FixedEnterprisePage,
 } from "../src/lib/public-content/fixed-pages";
 import { findPublishedPageBySlug } from "../src/lib/public-content/pages";
 
 const keys: FixedEnterprisePageKey[] = ["company", "contact"];
+
+const expectedCompanyHero = {
+    en: "From infrastructure to intelligence",
+    fa: "از زیرساخت تا هوشمندی",
+} as const;
+const expectedContactEmail = "info@arandi.io";
 
 async function main() {
     for (const language of ["en", "fa"] as const) {
         for (const key of keys) {
             const page = await findPublishedPageBySlug(key, language);
             assert.ok(page, `${key}/${language} must be Published.`);
-            assert.deepEqual(
-                mapPublishedFixedPage(key, page, language),
-                getEnterpriseContent(language).pages[key],
-                `${key}/${language} must preserve the existing public output contract.`,
-            );
+            const mapped = mapPublishedFixedPage(key, page, language);
+            assert.ok(mapped.metadata.title.trim().length > 2, `${key}/${language} metadata title is required.`);
+            assert.ok(mapped.metadata.description.trim().length >= 20, `${key}/${language} metadata description is required.`);
+            assert.ok(mapped.hero.title.trim().length > 2, `${key}/${language} hero title is required.`);
+            if (key === "company") {
+                assert.equal(mapped.hero.title, expectedCompanyHero[language]);
+                assert.equal((mapped as FixedEnterprisePage<"company">).coreValues.values.length, 6, `company/${language} requires six profile values.`);
+            } else {
+                assert.equal((mapped as FixedEnterprisePage<"contact">).methods.items.length, 3, `contact/${language} requires three contact methods.`);
+            }
         }
     }
 
@@ -32,7 +43,7 @@ async function main() {
     assert.equal(contactSetting.isPublic, true);
     const settingValue = contactSetting.value as Record<string, Record<string, unknown>>;
     for (const language of ["en", "fa"] as const) {
-        assert.equal(typeof settingValue[language]?.email, "string");
+        assert.equal(settingValue[language]?.email, expectedContactEmail);
         assert.equal(typeof settingValue[language]?.phone, "string");
         assert.equal(typeof settingValue[language]?.address, "string");
     }
