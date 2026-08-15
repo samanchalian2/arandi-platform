@@ -8,10 +8,13 @@ type Props = {
     searchParams?: Promise<{ lang?: string; q?: string }> | { lang?: string; q?: string };
 };
 
-export const metadata: Metadata = {
-    title: "Search",
-    robots: { index: false, follow: true },
-};
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+    const lang = await resolveLanguage(searchParams);
+    return {
+        title: lang === "fa" ? "جست‌وجو" : "Search",
+        robots: { index: false, follow: true },
+    };
+}
 
 export default async function SearchPage({ searchParams }: Props) {
     const resolved = await searchParams;

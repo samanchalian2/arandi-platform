@@ -1,9 +1,8 @@
-import type { Transition, Variants } from "framer-motion";
+import type { Transition, Variants } from "motion/react";
 
 export const motionTokens = {
-    revealDistance: 18,
-    blurStart: 2,
-    durationReveal: 0.56,
+    revealDistance: 10,
+    durationReveal: 0.34,
     durationHover: 0.2,
     durationFocus: 0.18,
     staggerStep: 0.09,
@@ -20,12 +19,10 @@ export const revealVariants: Variants = {
     hidden: {
         opacity: 0,
         y: motionTokens.revealDistance,
-        filter: `blur(${motionTokens.blurStart}px)`,
     },
     visible: {
         opacity: 1,
         y: 0,
-        filter: "blur(0px)",
     },
 };
 

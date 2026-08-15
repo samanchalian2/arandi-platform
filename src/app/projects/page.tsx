@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -43,13 +44,20 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
                     content: (
                         <PageGrid columns={2}>
                             {projectsPageContent.section.cards.map((project) => (
-                                <article key={project.id} className="rounded-[1.5rem] border border-border/70 bg-card p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
+                                <article key={project.id} className="group overflow-hidden rounded-[1.5rem] border border-border/70 bg-card shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)] transition-shadow hover:shadow-[0_24px_70px_-40px_rgba(15,23,42,0.34)]">
+                                    {project.mediaUrl ? (
+                                        <div className="relative aspect-[16/8] overflow-hidden bg-muted">
+                                            <Image src={project.mediaUrl} alt={project.mediaAlt ?? project.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                                        </div>
+                                    ) : null}
+                                    <div className="p-6">
                                     <h3 className="text-xl font-semibold text-foreground">{project.title}</h3>
                                     <p className="mt-3 text-sm leading-7 text-muted-foreground">{project.summary}</p>
                                     <p className="mt-6 text-sm font-medium text-primary">{project.impact}</p>
                                     <Link className="mt-5 inline-flex font-semibold text-primary hover:underline" href={`/projects/${project.id}?lang=${lang}`}>
                                         {lang === "fa" ? "جزئیات پروژه" : "Project details"}
                                     </Link>
+                                    </div>
                                 </article>
                             ))}
                         </PageGrid>

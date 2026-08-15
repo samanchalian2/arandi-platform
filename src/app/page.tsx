@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 
 import { ChatInterface } from "@/components/ai/ChatInterface";
 import { Features } from "@/components/sections/Features";
+import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
 import { Hero } from "@/components/sections/Hero";
 import type { EditableHomepageSection } from "@/content";
 import { buildLocalizedMetadata } from "@/lib/pageMetadata";
-import { getPublicHomepageContent } from "@/lib/public-content";
+import { getPublicEnterprisePage, getPublicHomepageContent } from "@/lib/public-content";
 
 type PageProps = {
   searchParams?: Promise<{ lang?: string }> | { lang?: string };
@@ -39,10 +40,19 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
 export default async function Home({ searchParams }: PageProps) {
   const lang = await resolvePageLanguage(searchParams);
-  const pageContent = await getPublicHomepageContent(lang).catch(() => notFound());
+  const [pageContent, projects, services, industries] = await Promise.all([
+    getPublicHomepageContent(lang),
+    getPublicEnterprisePage("projects", lang),
+    getPublicEnterprisePage("services", lang),
+    getPublicEnterprisePage("industries", lang),
+  ]).catch(() => notFound());
 
   const visibleSections = [
     { section: pageContent.hero, node: <Hero content={pageContent.hero.content} lang={pageContent.language} /> },
+    {
+      section: { ...pageContent.hero, id: "delivery-evidence", order: pageContent.hero.order + 0.1 },
+      node: <FeaturedProjects lang={pageContent.language} projects={projects.section.cards} serviceCount={services.cards.length} industryCount={industries.section.cards.length} />,
+    },
     { section: pageContent.chat, node: <ChatInterface content={pageContent.chat.content} lang={pageContent.language} /> },
     { section: pageContent.features, node: <Features content={pageContent.features.content} lang={pageContent.language} /> },
   ]

@@ -38,7 +38,7 @@ const pageLoaders: Record<
     ),
     projects: unstable_cache(
         (language: PublicLanguage) => findPublishedPageBySlug("projects", language),
-        ["arandi-public-projects-v1"],
+        ["arandi-public-projects-v2"],
         { tags: [PUBLIC_CONTENT_TAG, publicPageTag("projects")], revalidate: 3_600 },
     ),
 };
@@ -121,6 +121,8 @@ function cardText(card: PublishedCard, language: PublicLanguage) {
         summary: translation.description,
         subtitle: translation.subtitle,
         badge: translation.statusBadge,
+        mediaUrl: card.media?.url,
+        mediaAlt: card.media?.alt ?? translation.title,
     };
 }
 
@@ -230,6 +232,8 @@ export function mapPublishedEnterprisePage<K extends EnterpriseCollectionKey>(
                     title: mapped.title,
                     summary: mapped.summary,
                     impact: mapped.subtitle,
+                    mediaUrl: mapped.mediaUrl,
+                    mediaAlt: mapped.mediaAlt,
                 };
             });
             return {

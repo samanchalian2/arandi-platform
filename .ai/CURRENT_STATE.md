@@ -1,6 +1,6 @@
 # Current State
 
-Last verified: 2026-08-11
+Last verified: 2026-08-15
 
 ## Current Phase
 
@@ -18,7 +18,17 @@ Final content audit on 2026-08-11: the CMS bridge verifiers were updated from ob
 
 Stakeholder content acceptance on 2026-08-11: the supplied Persian company-profile content and its English translation were explicitly approved. This closes the final content-review gate for Phase 10; public cutover is still separately blocked by the infrastructure and provider gates stated below.
 
-`HEAD` and `origin/main` point to commit `8df6fca` (`4.5 - 4.7`). The stabilization and completed Phase 4.7 application changes described here are still uncommitted.
+Public presentation enhancement on 2026-08-11: Header brand treatment is larger and responsive; the Footer now renders contact details, a Google Maps link, and Instagram/Telegram/WhatsApp/Bale icons. Social URLs have a structured Admin Settings editor, strict provider-host HTTPS validation, and public cache invalidation; icons remain visibly disabled until actual profile URLs are entered. The four published project details now expose client/type, industry, overview, scope, technologies/capabilities, and outcome in EN/FA from the company profile through a repeatable importer.
+
+InspectB remediation on 2026-08-12: public entrance motion no longer uses blur, the Header uses an eager local brand asset, the mobile menu has one close control, and desktop/mobile direction remains RTL-right for Persian and LTR-left for English. Home now presents a source-backed delivery-evidence section using the four published projects, seven services, and six industries; project Cards can display Media selected from the existing Admin Media Library, and the Admin Card editor provides a human-readable image selector rather than requiring a Media UUID. Projects, document lists, Search metadata, Contact, and Footer received corresponding presentation refinements. Footer now includes localized quick links, one rendered value per contact method, a safe Google Maps link, and the governed social-link controls. No new stock, AI-generated, customer-logo, or testimonial asset was introduced.
+
+Generated project-media update on 2026-08-12: with stakeholder authorization, four original, unbranded illustrative project-cover images were generated and added under `public/media-generated/`. `scripts/import-generated-project-media.ts` registers them as Prisma Media records, attaches them to the four Published Project Cards, and is exposed as `npm run content:import-generated-project-media`. Every generated cover remains replaceable through Admin Card image selection / the Admin Media Library; the image captions explicitly identify them as illustrative generated covers rather than evidence of a client site. The same importer sets only Instagram to `https://instagram.com/arandi.io` and preserves any later Telegram, WhatsApp, or Bale values. A 9.966-second silent WebM hero background was also created from original generated imagery, registered as `video/webm` Media, and enabled by the governed public `site.heroMedia` Setting. Admin Settings provides a structured Hero background video editor selecting a registered video and poster Media asset; the public client honors `prefers-reduced-motion` and keeps the poster/gradient fallback. It is decorative, unbranded, and does not represent a specific customer facility.
+
+`HEAD` and `origin/main` point to commit `a6325fb` (`complete contents - 14050520`). The earlier Phase 4.7/stabilization changes and the approved content integration are now committed; the next Git gate is observing CI for the exact reviewed commit before public cutover.
+
+Assistant entry-point update on 2026-08-12: every public informational route now has a bilingual fixed floating chat launcher. Its locally held, bounded input transfers visitors to `/assistant?lang=en|fa` through `sessionStorage` rather than the URL, then sends exactly once through the existing same-origin, rate-limited, Published-content-grounded AI endpoint. `/assistant` reuses the governed Home Chat content and is marked `noindex, follow`; it omits the floating launcher itself. The launcher is also omitted from Admin, account, and recovery surfaces. The existing Home chat remains independently governed by its Admin Section enabled switch: Home now loads complete section data and applies the enabled flag at rendering time, so disabling Chat no longer makes the page data invalid. No AI provider credential, runtime setting, API boundary, or Prisma schema was changed.
+
+Public-theme expansion on 2026-08-15: the original `default` public appearance remains Arandi Classic and a second source-owned `arandi-pro` Enterprise Glass appearance is now available. The public page theme is resolved server-side from the single canonical `Theme.isDefault` record; Admin is deliberately outside this wrapper. SuperAdmin/Admin can edit constrained tokens, set a 30-minute HttpOnly/SameSite preview cookie, and publish exactly one global public theme through `/api/cms/themes`, `/activate`, and `/preview`. The former public `theme.default` Setting is no longer editable and no page-level `themeSlug` is treated as a runtime override. Migration `20260815120000_theme_public_variants` adds a partial unique default constraint and the `Arandi Pro` row without altering existing custom themes.
 
 ## Verified Architecture
 
@@ -46,9 +56,10 @@ Stakeholder content acceptance on 2026-08-11: the supplied Persian company-profi
 - Viewer, Translator, Editor, Admin, and SuperAdmin RBAC enforcement.
 - Complete-collection atomic reorder and optimistic concurrency.
 - Card Media attach/detach and dependency-aware deletion.
+- Card image selection from the existing Admin Media Library for editors with the necessary Card permission; public project Cards and project detail pages render only the selected safe Media URL.
 - Focused API/input/security tests.
 - Prisma-backed Navigation list/create/edit/translation/reorder/delete with independent EN/FA labels.
-- Constrained default Theme JSON editor backed by `/api/cms/theme`.
+- Multi-theme public appearance management backed by `/api/cms/theme` plus `/api/cms/themes`, with private preview and explicit global publish.
 - Governed Settings editor plus public allowlisted settings endpoint.
 - Database-session CSRF enforcement across every CMS mutation, with shared Admin client header injection.
 

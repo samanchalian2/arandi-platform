@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "motion/react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { revealTransition, revealVariants } from "./motion";
@@ -27,7 +27,7 @@ export function SectionReveal({ children, className }: SectionRevealProps) {
   }
 
   return (
-    <motion.div
+    <m.div
       initial={shouldReduceMotion ? { opacity: 1, y: 0 } : "hidden"}
       whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : "visible"}
       variants={revealVariants}
@@ -36,6 +36,6 @@ export function SectionReveal({ children, className }: SectionRevealProps) {
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

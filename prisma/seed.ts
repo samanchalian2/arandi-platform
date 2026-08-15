@@ -123,6 +123,14 @@ async function seedTheme() {
             componentOverrides: {},
         },
     });
+    await prisma.theme.upsert({
+        where: { slug: "arandi-pro" }, update: {},
+        create: {
+            slug: "arandi-pro", name: "Arandi Pro", isDefault: false,
+            tokens: { colors: { "--background": "oklch(0.975 0.008 247)", "--foreground": "oklch(0.18 0.024 255)", "--surface": "oklch(1 0 0)", "--card": "oklch(1 0 0)", "--primary": "oklch(0.31 0.058 255)", "--primary-foreground": "oklch(0.99 0.003 247)", "--accent": "oklch(0.55 0.14 234)", "--accent-foreground": "oklch(0.99 0.003 247)", "--muted": "oklch(0.945 0.012 247)", "--border": "oklch(0.86 0.018 247)", "--ring": "oklch(0.51 0.13 234)" }, radius: { "--radius": "0.9rem", "--radius-card": "1.5rem", "--radius-panel": "2rem" }, shadows: { "--glass-surface": "color-mix(in oklch, white 78%, transparent)" } },
+            semanticTokens: { surface: "var(--surface)", text: "var(--foreground)", accent: "var(--accent)" }, componentOverrides: {},
+        },
+    });
 }
 
 async function seedPagesAndSections() {
@@ -978,7 +986,8 @@ async function seedMediaAndSettings() {
             group: "company",
             isPublic: true,
         },
-        { key: "site.social", value: { linkedin: "", x: "" }, group: "social", isPublic: true },
+        { key: "site.social", value: { instagram: "", telegram: "", whatsapp: "", bale: "" }, group: "social", isPublic: true },
+        { key: "site.heroMedia", value: { enabled: false, videoUrl: "/media-generated/arandi-hero-digital-infrastructure.webm", posterUrl: "/media-generated/arandi-bid-boland-energy.png" }, group: "hero", isPublic: true },
         { key: "site.seo", value: { title: "Arandi Bonyan" }, group: "seo", isPublic: true },
         {
             key: "site.contact",
@@ -987,11 +996,13 @@ async function seedMediaAndSettings() {
                     email: enModel.contact.primaryEmail,
                     phone: enModel.contact.primaryPhone,
                     address: enModel.contact.address,
+                    mapUrl: "",
                 },
                 fa: {
                     email: faModel.contact.primaryEmail,
                     phone: faModel.contact.primaryPhone,
                     address: faModel.contact.address,
+                    mapUrl: "",
                 },
             },
             group: "contact",

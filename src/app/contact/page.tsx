@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ExternalLink, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { EnterprisePage, PageGrid } from "@/components/page";
@@ -49,7 +50,9 @@ export default async function ContactPage({ searchParams }: PageProps) {
                                     <p className="mt-4 text-base font-medium text-foreground">
                                         {method.key === "email" ? contact.primaryEmail : method.key === "phone" ? contact.primaryPhone : contact.address}
                                     </p>
-                                    <p className="mt-3 text-sm leading-7 text-muted-foreground">{method.note}</p>
+                                    {method.note.trim() !== (method.key === "email" ? contact.primaryEmail : method.key === "phone" ? contact.primaryPhone : contact.address) ? (
+                                        <p className="mt-3 text-sm leading-7 text-muted-foreground">{method.note}</p>
+                                    ) : null}
                                 </article>
                             ))}
                         </PageGrid>
@@ -60,7 +63,14 @@ export default async function ContactPage({ searchParams }: PageProps) {
                     eyebrow: contactPageContent.office.eyebrow,
                     title: contactPageContent.office.title,
                     content: (
-                        <PageGrid columns={2}>
+                        <PageGrid columns={3}>
+                            <article className="rounded-[1.5rem] border border-primary/20 bg-primary/5 p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
+                                <MapPin className="size-5 text-primary" />
+                                <h3 className="mt-5 text-lg font-semibold text-foreground">{lang === "fa" ? "موقعیت دفتر" : "Office location"}</h3>
+                                <a className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline" href={contact.mapUrl} target="_blank" rel="noreferrer">
+                                    {lang === "fa" ? "مشاهده روی نقشه" : "View on map"}<ExternalLink className="size-4" />
+                                </a>
+                            </article>
                             <article className="rounded-[1.5rem] border border-border/70 bg-card p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
                                 <h3 className="text-lg font-semibold text-foreground">{contactPageContent.office.businessHoursTitle}</h3>
                                 <p className="mt-3 text-sm leading-7 text-muted-foreground">

@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import { BookOpen, FileText, Scale } from "lucide-react";
 
 import type {
     PublicCollectionDetail,
@@ -37,6 +39,8 @@ function listRoute(type: PublicDocumentType): string {
     return type === "article" ? "/articles" : `/${type}`;
 }
 
+const documentIcons = { article: FileText, knowledge: BookOpen, legal: Scale } as const;
+
 export function PublicDocumentList({
     type,
     lang,
@@ -47,6 +51,7 @@ export function PublicDocumentList({
     items: PublicDocumentSummary[];
 }) {
     const copy = labels[lang][type];
+    const Icon = documentIcons[type];
     return (
         <div data-content-source="prisma" className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
             <header className="max-w-3xl">
@@ -56,14 +61,19 @@ export function PublicDocumentList({
             {items.length === 0 ? (
                 <p className="mt-12 rounded-2xl border border-border/70 bg-card p-6 text-muted-foreground">{copy.empty}</p>
             ) : (
-                <section className="mt-12 grid gap-5 md:grid-cols-2" aria-label={copy.title}>
+                <section className={items.length === 1 ? "mt-12 max-w-3xl" : "mt-12 grid gap-5 md:grid-cols-2"} aria-label={copy.title}>
                     {items.map((item) => (
-                        <article key={item.slug} className="flex flex-col rounded-[1.5rem] border border-border/70 bg-card p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
+                        <article key={item.slug} className="flex flex-col overflow-hidden rounded-[1.5rem] border border-border/70 bg-card shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
+                            <div className="flex min-h-28 items-end bg-[linear-gradient(135deg,rgba(14,116,144,0.16),rgba(255,255,255,0.7))] p-6">
+                                <span className="inline-flex size-11 items-center justify-center rounded-2xl border border-primary/15 bg-background/72 text-primary shadow-[var(--elevation-1)]"><Icon className="size-5" /></span>
+                            </div>
+                            <div className="flex flex-1 flex-col p-6">
                             <h2 className="text-xl font-semibold text-foreground">{item.title}</h2>
                             <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{item.description}</p>
                             <Link className="mt-6 font-semibold text-primary hover:underline" href={`${item.route}?lang=${lang}`}>
                                 {labels[lang].read}
                             </Link>
+                            </div>
                         </article>
                     ))}
                 </section>
@@ -155,8 +165,8 @@ export function PublicCollectionDetailView({
     lang: Language;
 }) {
     const collectionLabel = {
-        en: { services: "Services", solutions: "Solutions", industries: "Industries", projects: "Projects", contact: "Discuss this capability" },
-        fa: { services: "خدمات", solutions: "راهکارها", industries: "صنایع", projects: "پروژه‌ها", contact: "گفت‌وگو درباره این توانمندی" },
+        en: { services: "Services", solutions: "Solutions", industries: "Industries", projects: "Projects", contact: "Discuss this capability", projectContact: "Discuss this project" },
+        fa: { services: "خدمات", solutions: "راهکارها", industries: "صنایع", projects: "پروژه‌ها", contact: "گفت‌وگو درباره این توانمندی", projectContact: "گفت‌وگو درباره این پروژه" },
     }[lang];
     return (
         <div data-content-source="prisma" className="mx-auto w-full max-w-5xl px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
@@ -164,16 +174,36 @@ export function PublicCollectionDetailView({
                 {collectionLabel[detail.collection]}
             </Link>
             <article className="mt-8 rounded-[2rem] border border-border/70 bg-card p-7 shadow-[0_24px_70px_-40px_rgba(15,23,42,0.3)] sm:p-10">
+                {detail.mediaUrl ? (
+                    <div className="relative -mx-2 mb-8 aspect-[16/7] overflow-hidden rounded-[1.5rem] bg-muted sm:mx-0">
+                        <Image src={detail.mediaUrl} alt={detail.mediaAlt ?? detail.title} fill sizes="(max-width: 1024px) 100vw, 960px" className="object-cover" />
+                    </div>
+                ) : null}
                 <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">{detail.eyebrow}</p>
                 <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">{detail.title}</h1>
                 <p className="mt-6 text-base leading-8 text-muted-foreground">{detail.summary}</p>
                 {detail.highlight ? (
                     <p className="mt-7 rounded-2xl border border-primary/20 bg-primary/5 p-5 font-medium leading-7 text-primary">{detail.highlight}</p>
                 ) : null}
+                {detail.projectDetails ? <ProjectDetails details={detail.projectDetails} lang={lang} /> : null}
                 <Link className="mt-8 inline-flex rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground" href={`/contact?lang=${lang}`}>
-                    {collectionLabel.contact}
+                    {detail.collection === "projects" ? collectionLabel.projectContact : collectionLabel.contact}
                 </Link>
             </article>
         </div>
     );
+}
+
+function ProjectDetails({ details, lang }: { details: NonNullable<PublicCollectionDetail["projectDetails"]>; lang: Language }) {
+    const labels = lang === "fa"
+        ? { client: "کارفرما / نوع پروژه", industry: "صنعت", overview: "معرفی پروژه", scope: "دامنهٔ فعالیت‌ها", technologies: "فناوری‌ها و قابلیت‌های کلیدی", outcome: "دستاورد" }
+        : { client: "Client / Project type", industry: "Industry", overview: "Project overview", scope: "Scope of work", technologies: "Key technologies & capabilities", outcome: "Outcome" };
+    return <div className="mt-8 grid gap-5 md:grid-cols-2">
+        <section className="rounded-2xl border border-border/70 bg-background/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{labels.client}</p><p className="mt-2 font-semibold text-foreground">{details.client}</p></section>
+        <section className="rounded-2xl border border-border/70 bg-background/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{labels.industry}</p><p className="mt-2 font-semibold text-foreground">{details.industry}</p></section>
+        <section className="rounded-2xl border border-border/70 bg-background/60 p-5 md:col-span-2"><h2 className="text-xl font-semibold text-foreground">{labels.overview}</h2><p className="mt-3 leading-8 text-muted-foreground">{details.overview}</p></section>
+        <section className="rounded-2xl border border-border/70 bg-background/60 p-5"><h2 className="text-xl font-semibold text-foreground">{labels.scope}</h2><ul className="mt-4 space-y-2 text-sm leading-7 text-muted-foreground">{details.scope.map((item) => <li key={item}>• {item}</li>)}</ul></section>
+        <section className="rounded-2xl border border-border/70 bg-background/60 p-5"><h2 className="text-xl font-semibold text-foreground">{labels.technologies}</h2><ul className="mt-4 space-y-2 text-sm leading-7 text-muted-foreground">{details.technologies.map((item) => <li key={item}>• {item}</li>)}</ul></section>
+        <section className="rounded-2xl border border-primary/20 bg-primary/5 p-5 md:col-span-2"><h2 className="text-xl font-semibold text-primary">{labels.outcome}</h2><p className="mt-3 leading-8 text-foreground">{details.outcome}</p></section>
+    </div>;
 }

@@ -14,6 +14,7 @@ export type PublicContactDetails = {
     primaryEmail: string;
     primaryPhone: string;
     address: string;
+    mapUrl: string;
 };
 
 type PublicLanguage = "en" | "fa";
@@ -49,6 +50,13 @@ function asRecord(value: unknown, field: string): Record<string, unknown> {
         throw new Error(`${field} must be a published object.`);
     }
     return value as Record<string, unknown>;
+}
+
+function safeGoogleMapsUrl(value: unknown, address: string): string {
+    if (typeof value === "string" && /^https:\/\/(?:www\.)?google\.com\/maps\//i.test(value)) {
+        return value;
+    }
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 
 function mapPublicShape(value: unknown, template: unknown, field: string): unknown {
@@ -131,5 +139,6 @@ export async function getPublicContactDetails(
         primaryEmail: details.email,
         primaryPhone: details.phone,
         address: details.address,
+        mapUrl: safeGoogleMapsUrl(localized.mapUrl, details.address),
     };
 }

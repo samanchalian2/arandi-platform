@@ -1,5 +1,90 @@
 # Session Log
 
+## 2026-08-15 — Public Theme Variants
+
+Objective
+
+- Add a switchable public visual system without replacing the approved Classic appearance or weakening CMS, Prisma, Admin, or public-content boundaries.
+
+Implemented
+
+- Added `arandi-pro` as a Prisma-backed Enterprise Glass theme and retained `default` as Arandi Classic.
+- Added a partial unique database constraint for one public default, authenticated preview and publish routes, safe allowlisted CSS-variable projection, and an Admin workflow that distinguishes editing, private preview, and global publish.
+- Added the requested 21st.dev-derived Bento, Spotlight, Shining Button, and chat-input patterns. Motion now uses the `motion` React package with lazy features and user reduced-motion preference support.
+
+Validation
+
+- Migration applied to the approved PostgreSQL instance. Typecheck, lint, 46 focused tests, theme/settings runtime verification, public bridge verification, and production build passed.
+- Browser QA confirmed both theme states in FA/RTL and EN/LTR, 390px and 1280px layouts, no horizontal overflow, and a clean restoration to Classic after the private preview.
+
+Readiness
+
+- The visual-system scope is architecture-approved. The public default is intentionally still Classic until the stakeholder explicitly publishes Arandi Pro from Admin.
+
+## 2026-08-12 — InspectB UI/UX remediation
+
+Objective
+
+- Resolve the actionable presentation findings from InspectB while keeping public content, Admin CMS data, Prisma persistence, and media storage boundaries explicit.
+
+Implemented
+
+- Refined first-render motion and Header branding; removed the duplicate mobile-drawer close control without changing the established locale direction behavior.
+- Added a factual Home delivery-evidence treatment from Published data and improved project/document/list/contact/footer presentation.
+- Connected public project images to existing Media records and changed the Admin Card image input from an opaque UUID field to a Media Library selector. No generated or ungoverned visual asset was added.
+- Added localized Footer quick links and kept social URLs governed by the existing Settings editor and host validation.
+
+Validation
+
+- TypeScript, ESLint, all 44 focused tests, production build, and whitespace validation passed.
+- Browser QA confirmed no broken image, no horizontal overflow, a loaded Header brand image, and four Footer navigation links at 1280px Persian. Mobile drawer and Contact regressions were also checked during implementation.
+
+Readiness
+
+- The implementation slice is architecture-approved. Remaining visual-content work requires authorized project imagery, publishable proof/customer material, measurable outcomes, and the real social destinations; these are content inputs, not code blockers.
+
+## 2026-08-12 — Generated Project Covers
+
+Objective
+
+- Use appropriate original visuals on the public Project experience while keeping every placed image changeable through Admin.
+
+Implemented
+
+- Generated four unbranded 16:9 editorial covers for the four existing profile-backed projects. They are intentionally illustrative rather than representations of named customer facilities.
+- Saved the source assets in `public/media-generated/`, added an idempotent Prisma importer, registered the assets in Media, and attached each to its corresponding Published Card.
+- Configured the provided Instagram handle as `https://instagram.com/arandi.io`; empty social fields remain governed by the existing Admin settings UI and future non-Instagram values are not overwritten by the importer.
+
+Validation
+
+- The importer, 44 focused tests, TypeScript, lint, production build, whitespace validation, and Published enterprise verifier passed.
+- Browser inspection verified all four project cover images load and the Instagram Footer link is present with no horizontal overflow.
+
+Readiness
+
+- Generated assets can be replaced by selecting another Media Library image on each Card. No video was added: the current content structure does not need one, and autoplay/background video would create a performance and accessibility regression without an approved narrative asset.
+
+## 2026-08-12 — Hero Background Video
+
+Objective
+
+- Add a short, original, appropriate Hero background video without weakening the public CMS, performance, or accessibility boundaries.
+
+Implemented
+
+- Composed a silent 9.966-second WebM from the original generated industrial/digital-infrastructure visuals with a restrained crossfade, pan, and non-textual data-light motion.
+- Registered it in the existing Media model and introduced a public, allowlisted `site.heroMedia` setting. Admin Settings now provides a structured video/poster selection UI, and the generated-media importer configures the initial choice repeatably.
+- Hero uses a static poster plus visual overlay before hydration and omits the video altogether when `prefers-reduced-motion: reduce` is active.
+
+Validation
+
+- Browser inspection confirmed a loaded video source, muted/autoplay/loop properties, ready state 4, 9.966-second duration, no broken image, and no horizontal overflow at Persian desktop.
+- TypeScript, lint, 44 focused tests, build, and whitespace validation passed.
+
+Readiness
+
+- The Hero video is live locally and can be changed in Admin Settings by selecting another registered video/poster asset. The present media upload UI remains intentionally image-only; adding arbitrary customer video upload is a separate security/storage scope and is not implied by this decorative generated asset.
+
 ## 2026-08-11 — Company Profile Content Integration
 
 Objective
@@ -25,6 +110,13 @@ Readiness
 
 - The profile-content import is architecture-approved. The remaining content gate is stakeholder acceptance, not missing source material.
 - Stakeholder approved the Persian source copy and the English translation on 2026-08-11; the remaining Phase 10 gates are deployment and external-service readiness only.
+
+## 2026-08-11 — Public Presentation Enhancement
+
+- Enlarged the responsive Header symbol and aligned the mobile-menu offset with the new Header height.
+- Added structured Footer contact, Google Maps, and social-link presentation; Admin Settings now edits Instagram, Telegram, WhatsApp, and Bale URLs with approved HTTPS-host validation.
+- Added repeatable full project-detail import and expanded public project details using the approved company profile.
+- Typecheck, lint, 44/44 tests, public route checks, URL-validation checks, browser inspection, and the 56-route production build passed.
 
 ## 2026-08-03 - Phase 9 AI and Knowledge
 
@@ -1518,3 +1610,11 @@ Continue with:
 - Applied the approved branding data to the live PostgreSQL database in one transaction: both Media records exist and public `site.logo` resolves to `/brand/arandi-lockup.png`.
 - Verified Prisma schema/migration status, local Next image optimization responses, public Header visual rendering, 44/44 focused tests, typecheck, zero-warning lint, and the production build.
 - The attachment directory contains only the two logos. The referenced company catalog is not available, so real catalog-derived Persian/English content remains pending a source file or readable attachment.
+
+# 2026-08-12 — Assistant Hub and Floating Launcher
+
+- Added a fixed bilingual public chat launcher and the dedicated `/assistant` page. Both use the existing Chat content contract and AI endpoint; no secondary chatbot, data model, or provider credential was introduced.
+- The launcher stores a trimmed, 1,000-character maximum message in same-tab `sessionStorage`, is locale-scoped, clears malformed/consumed data, and sends the transferred prompt once after navigation. Typed visitor content never appears in the URL.
+- The launcher is excluded from the Assistant, Admin, account, and recovery routes. `/assistant` is `noindex, follow` and has no permanent Header navigation item.
+- Corrected Home section loading so a disabled Chat Section remains valid source data with `{ enabled: false }`; the existing Admin Section switch can now hide the embedded Home chat without breaking the page.
+- Validation passed: strict typecheck, ESLint, 46 focused tests, enterprise/fixed public bridge checks, production build, and whitespace validation. Browser QA verified FA handoff and one automatic user message, no launcher on `/assistant`, `noindex, follow`, EN launcher visibility, and no horizontal overflow.

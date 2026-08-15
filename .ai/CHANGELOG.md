@@ -4,6 +4,117 @@ All important project changes are recorded here.
 
 ---
 
+# Public theme variants and UI/UX Pro Max adoption
+
+Date:
+
+2026-08-15
+
+## Implemented
+
+- Installed the reviewed `ui-ux-pro-max` skill from the user-supplied repository at pinned commit `a38d04c3d5c298c851dbe5e6ee1965ee3de42cb5` and applied its enterprise accessibility, responsive, and restrained-motion guidance.
+- Added `Arandi Pro` while retaining Arandi Classic. The public resolver reads the canonical Prisma `Theme.isDefault`; a migration guarantees at most one published default and inserts the initial Pro theme without overwriting existing custom rows.
+- Added permission-protected Admin list, private preview (HttpOnly, SameSite, 30-minute cookie), stop-preview, and explicit global-publish controls. Admin UI does not receive public theme tokens.
+- Adopted source-owned adaptations of the requested 21st.dev Bento Feature Grid, Spotlight Card, Shining Button, and AI Chat Input patterns. Replaced the direct `framer-motion` dependency with `motion` and a reduced-motion-aware lazy provider.
+
+## Validation
+
+- PostgreSQL migration deployment, strict typecheck, ESLint, 46 focused tests, Theme/Settings runtime verifier, enterprise/fixed-public verifiers, and production build passed.
+- Browser QA verified Classic restoration, private Pro preview, FA/RTL and EN/LTR, 390px and 1280px views, visible chat launcher, Bento/Spotlight rendering, and no horizontal overflow. Preview was stopped after the check; the public default remains Classic.
+
+---
+
+# Assistant hub and floating public launcher
+
+Date:
+
+2026-08-12
+
+## Implemented
+
+- Added a bilingual fixed floating input on public informational routes. It is excluded from `/assistant`, `/admin/*`, `/account*`, and `/recover*` so it neither duplicates the dedicated conversation surface nor appears in privileged/recovery flows.
+- Added the dedicated `/assistant?lang=en|fa` route. It reuses the existing Prisma-governed Home Chat copy and the established `/api/ai/chat` boundary rather than creating a parallel chatbot or a new provider integration.
+- Transfers are stored only in same-tab `sessionStorage`, are capped at 1,000 characters, locale-scoped, malformed-data-safe, removed after consumption, and automatically submitted once. Visitor text is never placed in the URL.
+- Preserved the existing Home Chat as an independently Admin-hideable section. Its public mapper now preserves the Section enabled state, allowing a disabled chat to be omitted from the Home UI without invalidating Home content.
+- Marked the dedicated assistant route `noindex, follow`; no permanent Header navigation link was added.
+
+## Validation
+
+- `npm run typecheck`, `npm run lint`, `npm test` (46/46), `npm run enterprise-public:verify`, `npm run fixed-public:verify`, `npm run build`, and `git diff --check` passed.
+- Browser QA verified Persian floating-input transfer to `/assistant?lang=fa`, exactly one transferred user message, launcher omission on the dedicated page, `noindex, follow`, English launcher availability on `/company?lang=en`, correct RTL/LTR document directions, and no horizontal overflow.
+
+---
+
+# InspectB public UI/UX remediation
+
+Date:
+
+2026-08-12
+
+## Implemented
+
+- Replaced excessive blurred entrance animation with a restrained, fast reveal and made the local Header brand image eager to avoid an empty first impression.
+- Corrected the mobile-menu close-control duplication while retaining its validated RTL/LTR opening behavior, focus handling, Escape close, and scroll lock.
+- Added a Home delivery-evidence section based only on current Published CMS facts: four projects, seven services, and six industries; it links to the existing detail routes.
+- Added public project-card/detail Media rendering, and replaced manual Media UUID entry in the Admin Card editor with an image selector sourced from the existing Media Library. Uploaded/selected assets remain editable in Admin.
+- Improved single-document list presentation, localized Search metadata, and removed repeated address/email/phone rendering from Contact while adding a safe Google Maps action.
+- Expanded Footer navigation and localized it; it now includes governed social-link affordances, a safe Maps action, legal link, and responsive quick links.
+
+## Validation
+
+- `npm run typecheck`, `npm run lint`, `npm test` (44/44), and `npm run build` passed.
+- `git diff --check` passed.
+- Browser review at 1280px Persian: Header asset loaded, no broken images, no horizontal overflow, and all four Footer quick links rendered. Earlier regression QA also verified 390px mobile menu behavior and Contact/Articles presentation.
+
+## Content prerequisites still outside code authority
+
+- Approved, rights-cleared project images and captions; client logos/testimonials only where publication permission exists.
+- Verifiable project outcomes/metrics and approved current social profile URLs.
+- Additional approved Article/Knowledge content if the one seeded item per collection is not sufficient for launch.
+
+---
+
+# Generated project media and Instagram configuration
+
+Date:
+
+2026-08-12
+
+## Implemented
+
+- Generated four original, unbranded illustrative project covers for the existing energy, petrochemical, commercial-network, and manufacturing-operations project Cards.
+- Added the source assets to `public/media-generated/` and a repeatable `npm run content:import-generated-project-media` importer that creates/updates their Media records and attaches each to the correct Published Project Card.
+- Marked all four Media captions as illustrative generated covers and documented their Admin replacement path; they do not represent a specific customer site.
+- Configured `https://instagram.com/arandi.io` as the public Instagram link. Telegram, WhatsApp, and Bale remain editable and unset; rerunning the importer preserves values entered for them later.
+
+## Validation
+
+- Importer completed against the approved PostgreSQL database.
+- Browser QA on `/projects?lang=fa` confirmed four loaded project images, zero broken images, zero horizontal overflow, and the configured Instagram Footer link.
+- 44/44 focused tests and production build passed; `git diff --check` passed.
+
+---
+
+# Hero background video
+
+Date:
+
+2026-08-12
+
+## Implemented
+
+- Created a silent 9.966-second, 960×540 WebM hero loop from original generated Arandi infrastructure imagery, with a restrained crossfade, slow camera movement, and decorative data-light treatment.
+- Added a governed public `site.heroMedia` setting and a dedicated Admin Settings editor that selects a registered video and poster from the Media Library.
+- Registered the video as `video/webm` Media through the repeatable generated-media importer and enabled it for the public Home hero.
+- Added a poster fallback and `prefers-reduced-motion` behavior: the animated video is not rendered for visitors who request reduced motion.
+
+## Validation
+
+- Browser QA confirmed the hero video is muted, looping, playing, loaded to ready state 4, and reports a 9.966-second duration. The Persian 1280px page had no broken images or horizontal overflow.
+- Strict typecheck, zero-warning lint, 44/44 tests, production build, and whitespace validation passed.
+
+---
+
 # Version 0.5.9
 
 Date:

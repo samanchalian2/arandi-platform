@@ -3,6 +3,7 @@ import {
     type CardAdminRole,
     type CardTranslation,
 } from "@/lib/admin/cards";
+import { useMedia } from "@/lib/admin/media";
 
 import { AdminFormSection } from "./AdminFormSection";
 import { AdminSaveBar } from "./AdminSaveBar";
@@ -51,7 +52,15 @@ export function AdminCardEditForm({
     onCancel,
 }: AdminCardEditFormProps) {
     const structural = role === "SuperAdmin" || role === "Admin" || role === "Editor";
+    const media = useMedia({ search: "", type: "image", sortBy: "updatedAt", sortDirection: "desc", page: 1, pageSize: 100 });
     const translation = draft.translations[activeLang];
+    const mediaOptions = [
+        { value: "", label: "No image attached" },
+        ...media.items.map((item) => ({ value: item.id, label: item.alt ? `${item.title} — ${item.alt}` : item.title })),
+    ];
+    if (draft.mediaId && !mediaOptions.some((item) => item.value === draft.mediaId)) {
+        mediaOptions.push({ value: draft.mediaId, label: `Current image (${draft.mediaId})` });
+    }
     const setTranslation = (key: keyof CardTranslation, value: string) => {
         onChange({
             ...draft,
@@ -95,11 +104,11 @@ export function AdminCardEditForm({
                                 onChange={(order) => onChange({ ...draft, order })}
                                 error={errors.order}
                             />
-                            <AdminTextField
-                                label="Media UUID"
+                            <AdminSelect
+                                label="Card image"
                                 value={draft.mediaId}
                                 onChange={(mediaId) => onChange({ ...draft, mediaId })}
-                                placeholder="Leave empty to explicitly detach media"
+                                options={mediaOptions}
                                 error={errors.mediaId}
                             />
                             <AdminTextField

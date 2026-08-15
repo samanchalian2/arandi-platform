@@ -14,6 +14,7 @@ type ChatInputProps = {
   ariaLabel: string;
   suggestionChips?: string[];
   onSelectSuggestion?: (value: string) => void;
+  maxLength?: number;
 };
 
 export function ChatInput({
@@ -28,9 +29,10 @@ export function ChatInput({
   ariaLabel,
   suggestionChips = [],
   onSelectSuggestion,
+  maxLength,
 }: ChatInputProps) {
   return (
-    <div className="ds-chat-shell ds-chat-input-area ds-subtle-ring rounded-2xl p-3 shadow-[var(--elevation-1)]">
+    <div className="ds-chat-shell ds-chat-input-area ds-pro-chat-input ds-subtle-ring rounded-2xl p-3 shadow-[var(--elevation-1)]">
       <label className="sr-only" htmlFor="ai-chat-input">
         {label}
       </label>
@@ -60,6 +62,7 @@ export function ChatInput({
             }
           }}
           placeholder={placeholder}
+          maxLength={maxLength}
           rows={2}
           disabled={disabled || isLoading}
           dir="auto"
@@ -68,7 +71,7 @@ export function ChatInput({
         <Button
           type="button"
           size="icon"
-          className="shrink-0 rounded-2xl shadow-[var(--elevation-1)]"
+          className="ds-shine-button shrink-0 rounded-2xl shadow-[var(--elevation-1)]"
           disabled={disabled || (!isLoading && value.trim().length === 0)}
           aria-label={isLoading ? "Stop response" : ariaLabel}
           onClick={() => isLoading ? onCancel?.() : onSend?.()}

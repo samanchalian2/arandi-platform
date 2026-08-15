@@ -54,7 +54,7 @@ export type EnterpriseContentModel = {
             metadata: { title: string; description: string };
             breadcrumbLabel: string;
             hero: { badge: string; title: string; description: string; primaryAction: string; secondaryAction: string };
-            section: { eyebrow: string; title: string; description: string; cards: Array<{ id: string; title: string; summary: string; impact: string }> };
+            section: { eyebrow: string; title: string; description: string; cards: Array<{ id: string; title: string; summary: string; impact: string; mediaUrl?: string; mediaAlt?: string }> };
             cta: { eyebrow: string; title: string; description: string; action: string };
         };
         contact: {

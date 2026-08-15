@@ -18,9 +18,20 @@ import {
     PUBLIC_SETTINGS_TAG,
 } from "./cache";
 import { findPublishedPageBySlug } from "./pages";
+import { sectionVisibility } from "./visibility";
 
 type PublicLanguage = "en" | "fa";
-export type PublicChromeContent = Pick<AppPageContent, "company" | "footer" | "navigation">;
+export type PublicSocialLinks = Record<"instagram" | "telegram" | "whatsapp" | "bale", string | null>;
+export type PublicFooterContent = {
+    tagline: string;
+    contact: { email: string; phone: string; address: string; mapUrl: string | null };
+    social: PublicSocialLinks;
+};
+type PublicHeroMedia = {
+    url: string;
+    posterUrl: string | null;
+};
+export type PublicChromeContent = Omit<Pick<AppPageContent, "company" | "navigation">, "footer"> & { footer: PublicFooterContent };
 type PublishedPage = NonNullable<Awaited<ReturnType<typeof findPublishedPageBySlug>>>;
 type PublishedSection = PublishedPage["sections"][number];
 
@@ -38,6 +49,39 @@ function requiredText(record: Record<string, unknown>, key: string): string {
     return value;
 }
 
+function optionalUrl(value: unknown, allowedHosts: readonly string[]): string | null {
+    if (value === undefined || value === null || value === "") return null;
+    if (typeof value !== "string" || value.length > 2_048) return null;
+    try {
+        const url = new URL(value);
+        const hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+        if (url.protocol !== "https:" || !allowedHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`))) return null;
+        return url.toString();
+    } catch {
+        return null;
+    }
+}
+
+function googleMapsUrl(value: unknown): string | null {
+    if (typeof value !== "string" || value.length === 0 || value.length > 2_048) return null;
+    return /^https:\/\/(?:www\.)?google\.com\/maps\//i.test(value) ? value : null;
+}
+
+function safeRootRelativeAsset(value: unknown, extensions: readonly string[]): string | null {
+    if (typeof value !== "string" || value.length === 0 || value.length > 500) return null;
+    if (!value.startsWith("/") || value.startsWith("//") || value.includes("..") || value.includes("?") || value.includes("#")) return null;
+    const normalized = value.toLowerCase();
+    return extensions.some((extension) => normalized.endsWith(extension)) ? value : null;
+}
+
+function localizedHeroMedia(value: unknown): PublicHeroMedia | null {
+    const record = asRecord(value);
+    if (!record || record.enabled !== true) return null;
+    const url = safeRootRelativeAsset(record.videoUrl, [".webm", ".mp4"]);
+    const posterUrl = safeRootRelativeAsset(record.posterUrl, [".jpg", ".jpeg", ".png", ".webp"]);
+    return url ? { url, posterUrl } : null;
+}
+
 function isoTimestamp(value: Date | string): string {
     const date = value instanceof Date ? value : new Date(value);
     if (Number.isNaN(date.getTime())) {
@@ -49,7 +93,7 @@ function isoTimestamp(value: Date | string): string {
 function localizedCompany(
     value: unknown,
     language: PublicLanguage,
-): Pick<AppPageContent, "company" | "footer"> {
+): Pick<AppPageContent, "company"> & { footer: Pick<PublicFooterContent, "tagline"> } {
     const root = asRecord(value);
     const localized = root ? asRecord(root[language]) : null;
     if (!localized) {
@@ -68,8 +112,53 @@ function localizedCompany(
     };
 }
 
+function localizedFooterDetails(contactValue: unknown, socialValue: unknown, language: PublicLanguage): Pick<PublicFooterContent, "contact" | "social"> {
+    const contact = asRecord(asRecord(contactValue)?.[language]);
+    if (!contact) throw new Error(`Published contact settings are incomplete for ${language}.`);
+    const social = asRecord(socialValue) ?? {};
+    return {
+        contact: {
+            email: requiredText(contact, "email"),
+            phone: requiredText(contact, "phone"),
+            address: requiredText(contact, "address"),
+            mapUrl: googleMapsUrl(contact.mapUrl),
+        },
+        social: {
+            instagram: optionalUrl(social.instagram, ["instagram.com"]),
+            telegram: optionalUrl(social.telegram, ["t.me", "telegram.me", "telegram.org"]),
+            whatsapp: optionalUrl(social.whatsapp, ["wa.me", "whatsapp.com"]),
+            bale: optionalUrl(social.bale, ["ble.ir", "bale.ai"]),
+        },
+    };
+}
+
 const loadPublishedHomePage = unstable_cache(
-    (language: PublicLanguage) => findPublishedPageBySlug("home", language),
+    (language: PublicLanguage) => prisma.page.findFirst({
+        where: {
+            slug: "home",
+            publishState: "published",
+        },
+        include: {
+            translations: { where: { languageCode: language } },
+            // Home needs the complete section set so an Admin can disable an
+            // individual section without making the page data invalid. The
+            // page component applies each section's visibility flag.
+            sections: {
+                orderBy: [{ order: "asc" }, { id: "asc" }],
+                include: {
+                    translations: { where: { languageCode: language } },
+                    cards: {
+                        where: { publishState: "published" },
+                        orderBy: [{ order: "asc" }, { id: "asc" }],
+                        include: {
+                            translations: { where: { languageCode: language } },
+                            media: true,
+                        },
+                    },
+                },
+            },
+        },
+    }),
     ["arandi-public-home-page-v4"],
     {
         tags: [PUBLIC_CONTENT_TAG, PUBLIC_HOME_TAG],
@@ -77,9 +166,21 @@ const loadPublishedHomePage = unstable_cache(
     },
 );
 
+const loadPublishedHeroMedia = unstable_cache(
+    async () => prisma.setting.findFirst({
+        where: { key: "site.heroMedia", isPublic: true },
+        select: { value: true },
+    }),
+    ["arandi-public-hero-media-v2"],
+    {
+        tags: [PUBLIC_CONTENT_TAG, PUBLIC_HOME_TAG, PUBLIC_SETTINGS_TAG],
+        revalidate: 3_600,
+    },
+);
+
 const loadPublicChromeSnapshot = unstable_cache(
     async (language: PublicLanguage) => {
-        const [navigation, companySetting] = await Promise.all([
+        const [navigation, companySetting, contactSetting, socialSetting] = await Promise.all([
             prisma.navigation.findMany({
                 orderBy: [{ order: "asc" }, { id: "asc" }],
                 include: {
@@ -95,8 +196,10 @@ const loadPublicChromeSnapshot = unstable_cache(
                 },
                 select: { value: true },
             }),
+            prisma.setting.findFirst({ where: { key: "site.contact", isPublic: true }, select: { value: true } }),
+            prisma.setting.findFirst({ where: { key: "site.social", isPublic: true }, select: { value: true } }),
         ]);
-        return { navigation, companySetting };
+        return { navigation, companySetting, contactSetting, socialSetting };
     },
     ["arandi-public-chrome-v1"],
     {
@@ -108,8 +211,8 @@ const loadPublicChromeSnapshot = unstable_cache(
 export async function getPublicChromeContent(
     language: PublicLanguage,
 ): Promise<PublicChromeContent> {
-    const { navigation, companySetting } = await loadPublicChromeSnapshot(language);
-    if (!companySetting) throw new Error("Public company settings are unavailable.");
+    const { navigation, companySetting, contactSetting, socialSetting } = await loadPublicChromeSnapshot(language);
+    if (!companySetting || !contactSetting || !socialSetting) throw new Error("Public chrome settings are unavailable.");
     const navigationLabels = Object.fromEntries(
         navigation.map((item) => [item.key, item.translations[0]?.label]),
     );
@@ -120,6 +223,10 @@ export async function getPublicChromeContent(
     }
     return {
         ...localizedCompany(companySetting.value, language),
+        footer: {
+            ...localizedCompany(companySetting.value, language).footer,
+            ...localizedFooterDetails(contactSetting.value, socialSetting.value, language),
+        },
         navigation: {
             links: {
                 overview: language === "fa" ? "معرفی" : "Overview",
@@ -142,13 +249,14 @@ export async function getPublicChromeContent(
 function createHeroSection(
     section: PublishedSection,
     language: PublicLanguage,
+    backgroundVideo: PublicHeroMedia | null,
 ): HeroSectionSchema {
     const translation = section.translations[0];
     const data = asRecord(translation?.data);
     if (!translation || !data) throw new Error(`Published hero translation is missing for ${language}.`);
     return {
         id: section.key,
-        visibility: { enabled: true },
+        visibility: sectionVisibility(section.enabled),
         order: section.order,
         content: {
             badge: requiredText(data, "badge"),
@@ -156,6 +264,7 @@ function createHeroSection(
             description: requiredText(data, "description"),
             primaryCta: requiredText(data, "primaryCta"),
             secondaryCta: requiredText(data, "secondaryCta"),
+            ...(backgroundVideo ? { backgroundVideo } : {}),
         },
         appearance: { theme: "hero", variant: "default" },
         cms: {
@@ -177,7 +286,7 @@ function createChatSection(
     if (!translation || !data) throw new Error(`Published chat translation is missing for ${language}.`);
     return {
         id: section.key,
-        visibility: { enabled: true },
+        visibility: sectionVisibility(section.enabled),
         order: section.order,
         content: {
             badge: requiredText(data, "badge"),
@@ -214,7 +323,7 @@ function createFeaturesSection(
     if (!translation || !data) throw new Error(`Published features translation is missing for ${language}.`);
     return {
         id: section.key,
-        visibility: { enabled: true },
+        visibility: sectionVisibility(section.enabled),
         order: section.order,
         content: {
             eyebrow: requiredText(data, "eyebrow"),
@@ -244,9 +353,10 @@ function createFeaturesSection(
 }
 
 async function buildPublishedHomepage(language: PublicLanguage): Promise<AppPageContent> {
-    const [page, chrome] = await Promise.all([
+    const [page, chrome, heroMediaSetting] = await Promise.all([
         loadPublishedHomePage(language),
         getPublicChromeContent(language),
+        loadPublishedHeroMedia(),
     ]);
     if (!page) throw new Error("Published Home is unavailable.");
     const pageTranslation = page.translations[0];
@@ -259,7 +369,7 @@ async function buildPublishedHomepage(language: PublicLanguage): Promise<AppPage
         throw new Error("Published Home requires hero, features, and chat Sections.");
     }
 
-    const hero = createHeroSection(heroSection, language);
+    const hero = createHeroSection(heroSection, language, localizedHeroMedia(heroMediaSetting?.value));
     const features = createFeaturesSection(featuresSection, language);
     const chat = createChatSection(chatSection, language);
 

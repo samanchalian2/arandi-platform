@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Exo, Vazirmatn } from "next/font/google";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { AppChrome } from "@/components/layout/AppChrome";
 import { DirectionProvider } from "@/components/layout/DirectionProvider";
 import { getSiteOrigin } from "@/lib/pageMetadata";
-import { getPublicChromeContent } from "@/lib/public-content";
+import { getPublicChromeContent, getPublicTheme, THEME_PREVIEW_COOKIE } from "@/lib/public-content";
 import "./globals.css";
 
 const exo = Exo({
@@ -46,9 +47,11 @@ type RootLayoutProps = Readonly<{
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   const lang = "en" as const;
-  const [englishContent, persianContent] = await Promise.all([
+  const cookieStore = await cookies();
+  const [englishContent, persianContent, publicTheme] = await Promise.all([
     getPublicChromeContent("en"),
     getPublicChromeContent("fa"),
+    getPublicTheme(cookieStore.get(THEME_PREVIEW_COOKIE)?.value),
   ]);
   const organizationJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -89,6 +92,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               },
             }}
             lang={lang}
+            publicTheme={publicTheme}
           >
             {children}
           </AppChrome>

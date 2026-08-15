@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bot, MessageSquareText } from "lucide-react";
 
 import { ChatInput } from "@/components/ai/ChatInput";
 import { ChatMessage, type ChatCitation } from "@/components/ai/ChatMessage";
 import { Container } from "@/components/layout/Container";
 import { SectionReveal } from "@/components/ui/SectionReveal";
+import { MAX_ASSISTANT_HANDOFF_LENGTH } from "@/lib/ai/handoff";
 
 type ChatContent = {
   badge: string;
@@ -37,9 +38,11 @@ type Message = {
 type ChatInterfaceProps = {
   content: ChatContent;
   lang: "en" | "fa";
+  variant?: "embedded" | "page";
+  initialPrompt?: string | null;
 };
 
-export function ChatInterface({ content, lang }: ChatInterfaceProps) {
+export function ChatInterface({ content, lang, variant = "embedded", initialPrompt }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "assistant-initial",
@@ -53,6 +56,7 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const requestController = useRef<AbortController | null>(null);
+  const initialPromptSent = useRef(false);
 
   useEffect(() => () => requestController.current?.abort(), []);
 
@@ -66,8 +70,8 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
     return content.assistantHint;
   }, [content.assistantHint, content.placeholder, messages.length]);
 
-  const handleSend = async () => {
-    const trimmed = draft.trim();
+  const sendMessage = useCallback(async (candidate: string) => {
+    const trimmed = candidate.trim();
     if (!trimmed || isLoading) {
       return;
     }
@@ -168,16 +172,26 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
       if (requestController.current === controller) requestController.current = null;
       setIsLoading(false);
     }
+  }, [isLoading, lang, messages]);
+
+  const handleSend = () => {
+    void sendMessage(draft);
   };
+
+  useEffect(() => {
+    if (!initialPrompt || initialPromptSent.current) return;
+    initialPromptSent.current = true;
+    void sendMessage(initialPrompt);
+  }, [initialPrompt, sendMessage]);
 
   const suggestionChips = lastAssistantMessage?.suggestions ?? [];
 
   const handleSelectSuggestion = (value: string) => {
-    setDraft(value);
+    setDraft(value.slice(0, MAX_ASSISTANT_HANDOFF_LENGTH));
   };
 
   return (
-    <section id="assistant" dir={lang === "fa" ? "rtl" : "ltr"} className="ds-chat-section-surface border-b border-border/70">
+    <section id="assistant" dir={lang === "fa" ? "rtl" : "ltr"} className={`ds-chat-section-surface border-b border-border/70 ${variant === "page" ? "min-h-[calc(100vh-var(--header-height))]" : ""}`}>
       <Container className="ds-section-padding">
         <SectionReveal className="ds-chat-premium ds-subtle-ring mx-auto max-w-5xl p-6 sm:p-8 lg:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -186,9 +200,11 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
                 <Bot className="size-4" />
                 {content.badge}
               </div>
-              <h2 className="ds-heading-2 mt-4 font-semibold text-foreground">
-                {content.heading}
-              </h2>
+              {variant === "page" ? (
+                <h1 className="ds-heading-2 mt-4 font-semibold text-foreground">{content.heading}</h1>
+              ) : (
+                <h2 className="ds-heading-2 mt-4 font-semibold text-foreground">{content.heading}</h2>
+              )}
               <p className="ds-body-lg mt-5 text-muted-foreground">{content.description}</p>
             </div>
             <div className="flex items-center gap-2 rounded-full border border-border/70 bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
@@ -223,7 +239,7 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
             <div className="mt-6">
               <ChatInput
                 value={draft}
-                onChange={setDraft}
+                onChange={(value) => setDraft(value.slice(0, MAX_ASSISTANT_HANDOFF_LENGTH))}
                 isLoading={isLoading}
                 disabled={false}
                 onSend={handleSend}
@@ -233,6 +249,7 @@ export function ChatInterface({ content, lang }: ChatInterfaceProps) {
                 ariaLabel={content.inputAriaLabel}
                 suggestionChips={suggestionChips}
                 onSelectSuggestion={handleSelectSuggestion}
+                maxLength={MAX_ASSISTANT_HANDOFF_LENGTH}
               />
             </div>
           </div>

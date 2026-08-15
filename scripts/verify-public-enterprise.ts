@@ -15,7 +15,7 @@ const expectedCards: Record<EnterpriseCollectionKey, string[]> = {
     services: ["digital-transformation-consulting", "infrastructure-network-data-center", "cloud-modern-infrastructure", "cybersecurity-business-continuity", "enterprise-solutions", "ai-solutions", "managed-it-services"],
     solutions: ["digital-foundation", "secure-modern-infrastructure", "enterprise-collaboration", "ai-knowledge-operations"],
     industries: ["energy-petrochemicals", "manufacturing", "financial-services", "government", "healthcare", "holdings"],
-    projects: ["persian-gulf-petrochemical", "sonqor-methylamine", "negin-zafar", "noorin-bonyad"],
+    projects: ["bid-boland-gas-gathering", "sonqor-methylamine", "negin-zafar", "noorin-bonyad"],
 };
 
 function assertProfileContent(key: EnterpriseCollectionKey, page: EnterpriseCollectionPage<EnterpriseCollectionKey>) {

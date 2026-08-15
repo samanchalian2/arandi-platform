@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { revalidatePublicTheme } from "@/lib/public-content/theme";
 import { requestBodyTooLarge } from "@/app/api/auth/_lib/request";
 
 import { asError, failure, success } from "../_lib/http";
@@ -53,7 +54,7 @@ export async function PUT(request: NextRequest) {
         const id = parseOptionalString(body.id);
         const slug = parseThemeSlug(parseOptionalString(body.slug) ?? "default");
         const name = parseThemeName(parseOptionalString(body.name) ?? "Default Enterprise Theme");
-        const isDefault = parseOptionalBoolean(body.isDefault) ?? true;
+        const requestedIsDefault = parseOptionalBoolean(body.isDefault);
 
         const colors = parseThemeTokenRecord(body.colors ?? {}, "colors");
         const typography = parseThemeTokenRecord(body.typography ?? {}, "typography");
@@ -64,17 +65,12 @@ export async function PUT(request: NextRequest) {
         const componentOverrides = parseComponentOverrides(body.componentOverrides ?? {});
 
         const theme = await prisma.$transaction(async (tx) => {
-            if (isDefault) {
-                await tx.theme.updateMany({
-                    data: {
-                        isDefault: false,
-                    },
-                });
-            }
-
             const existing = id
                 ? await tx.theme.findUnique({ where: { id } })
                 : await tx.theme.findUnique({ where: { slug } });
+
+            const isDefault = requestedIsDefault ?? existing?.isDefault ?? false;
+            if (isDefault) await tx.theme.updateMany({ data: { isDefault: false } });
 
             if (existing) {
                 return tx.theme.update({
@@ -114,15 +110,18 @@ export async function PUT(request: NextRequest) {
             });
         });
 
+        revalidatePublicTheme();
+
         return success(mapTheme(theme));
     } catch (error) {
         const err = asError(error);
+        const rawMessage = error instanceof Error ? error.message : "";
         if (
-            err.message.includes("Expected")
-            || err.message.includes("must")
-            || err.message.includes("invalid")
-            || err.message.includes("unsafe")
-            || err.message.includes("too many")
+            rawMessage.includes("Expected")
+            || rawMessage.includes("must")
+            || rawMessage.includes("invalid")
+            || rawMessage.includes("unsafe")
+            || rawMessage.includes("too many")
         ) {
             return failure("BAD_REQUEST", err.message, 400);
         }

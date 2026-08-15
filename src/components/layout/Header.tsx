@@ -190,7 +190,7 @@ export function Header({ content, company, lang }: HeaderProps) {
           : "shadow-[var(--elevation-1)] bg-background/72",
       )}
     >
-      <Container className="grid h-18 grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-4">
+      <Container className="grid h-20 grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-4">
         <Link
           href={`/?lang=${currentLang}`}
           className={cn(
@@ -201,9 +201,18 @@ export function Header({ content, company, lang }: HeaderProps) {
         >
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-background/80 shadow-[var(--elevation-1)]"
+            className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-background/80 shadow-[var(--elevation-1)] sm:size-14"
           >
-            <Image src="/brand/arandi-symbol.png" alt="" width={40} height={40} className="size-7 object-contain" />
+            <Image
+              src="/brand/arandi-symbol.png"
+              alt=""
+              width={56}
+              height={56}
+              sizes="(max-width: 640px) 48px, 56px"
+              loading="eager"
+              unoptimized
+              className="size-9 object-contain sm:size-10"
+            />
           </span>
           <span className={cn("truncate font-semibold tracking-[0.08em]", isRtl ? "text-base tracking-normal" : "ds-caps-label")}>{brandDisplayName}</span>
         </Link>
@@ -314,7 +323,7 @@ export function Header({ content, company, lang }: HeaderProps) {
               "translate-x-0",
             )}
           >
-            <div className="mb-5 flex items-center justify-between">
+            <div className="mb-5">
               <div className={cn("min-w-0", isRtl ? "text-right" : "text-left")}>
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   <Sparkles className="size-3.5 text-primary" />
@@ -322,14 +331,6 @@ export function Header({ content, company, lang }: HeaderProps) {
                 </p>
                 <p className="mt-2 truncate text-sm font-medium text-foreground/90">{brandDisplayName}</p>
               </div>
-              <button
-                type="button"
-                className="ds-focus-visible inline-flex size-10 items-center justify-center rounded-xl border border-border/70 bg-background/80 text-foreground transition-colors hover:bg-muted"
-                aria-label={closeButtonLabel}
-                onClick={closeMobileMenu}
-              >
-                <X className="size-4" />
-              </button>
             </div>
 
             <div className="mb-5 rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(59,130,246,0.15),rgba(30,64,175,0.06))] px-4 py-3">

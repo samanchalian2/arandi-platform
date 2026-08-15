@@ -4,6 +4,7 @@ export const PUBLIC_CONTENT_TAG = "public-content";
 export const PUBLIC_HOME_TAG = "public-page:home";
 export const PUBLIC_NAVIGATION_TAG = "public-navigation";
 export const PUBLIC_SETTINGS_TAG = "public-settings";
+export const PUBLIC_THEME_TAG = "public-theme";
 
 export function revalidatePublicContent(...tags: string[]): void {
     const uniqueTags = new Set([PUBLIC_CONTENT_TAG, ...tags]);

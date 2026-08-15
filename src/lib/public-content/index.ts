@@ -3,8 +3,10 @@ export {
     PUBLIC_HOME_TAG,
     PUBLIC_NAVIGATION_TAG,
     PUBLIC_SETTINGS_TAG,
+    PUBLIC_THEME_TAG,
     revalidatePublicContent,
 } from "./cache";
+export { getPublicTheme, THEME_PREVIEW_COOKIE, type PublicTheme } from "./theme";
 export {
     getPublicChromeContent,
     getPublicHomepageContent,

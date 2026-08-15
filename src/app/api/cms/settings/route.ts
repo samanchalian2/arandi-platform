@@ -10,6 +10,7 @@ import {
     isPrivateEditableSettingKey,
     isSecretBearingSettingKey,
     parseEditableSettingKey,
+    parsePublicSettingValue,
     parseSettingValue,
 } from "../_lib/setting-input";
 import { parseAIRuntimeSelection } from "@/lib/ai/config";
@@ -61,7 +62,7 @@ export async function PUT(request: NextRequest) {
     try {
         const body = await readJson(request);
         const key = parseEditableSettingKey(body.key);
-        const value = parseSettingValue(body.value);
+        const value = parsePublicSettingValue(key, parseSettingValue(body.value));
         if (key === "ai.runtime") parseAIRuntimeSelection(value);
         const existing = await prisma.setting.findUnique({ where: { key } });
         if (!existing) return failure("NOT_FOUND", "Setting not found.", 404);

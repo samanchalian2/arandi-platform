@@ -72,6 +72,22 @@ Additional:
 
 21st.dev components when appropriate.
 
+Motion:
+
+- `motion` for React with `LazyMotion`, `domAnimation`, and `MotionConfig reducedMotion="user"`.
+- Non-essential motion must preserve the final state for `prefers-reduced-motion` visitors.
+
+---
+
+# Public Theme Variants
+
+- **Arandi Classic** (`default`) remains the existing public baseline and is never replaced by a visual experiment.
+- **Arandi Pro** (`arandi-pro`) is a light Enterprise Glass variant: navy authority surfaces, blue CTA accent, high-contrast readable text, controlled translucency, and spacious 4/8px rhythm.
+- Themes use semantic CSS variables only. Public values are allowlisted and sanitized before server rendering; Admin does not inherit public theme variables.
+- There is no visitor-facing theme toggle. Administrators preview privately, then publish one canonical global theme after review.
+- Arandi Pro uses source-owned adaptations of 21st.dev Bento Feature Grid, Spotlight Card, Shining Button, and AI Chat Input patterns; Lucide remains the sole icon family.
+- Focus states, labels, 44px touch controls, RTL/LTR behavior, no horizontal overflow, and reduced motion are non-negotiable acceptance criteria.
+
 
 ---
 

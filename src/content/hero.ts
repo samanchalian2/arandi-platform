@@ -8,6 +8,10 @@ export type HeroContent = {
   description: string;
   primaryCta: string;
   secondaryCta: string;
+  backgroundVideo?: {
+    url: string;
+    posterUrl: string | null;
+  };
 };
 
 export const heroContent: Record<Language, HeroContent> = {
