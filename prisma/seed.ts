@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 import { getDomainContentModel } from "../src/content/domain";
 import { getEnterpriseContent } from "../src/content/enterprise";
+import { defaultScrollwiseCopy } from "../src/lib/scrollwise-copy";
 import type {
     PageSectionEntity,
     ServiceEntity,
@@ -129,6 +130,30 @@ async function seedTheme() {
             slug: "arandi-pro", name: "Arandi Pro", isDefault: false,
             tokens: { colors: { "--background": "oklch(0.975 0.008 247)", "--foreground": "oklch(0.18 0.024 255)", "--surface": "oklch(1 0 0)", "--card": "oklch(1 0 0)", "--primary": "oklch(0.31 0.058 255)", "--primary-foreground": "oklch(0.99 0.003 247)", "--accent": "oklch(0.55 0.14 234)", "--accent-foreground": "oklch(0.99 0.003 247)", "--muted": "oklch(0.945 0.012 247)", "--border": "oklch(0.86 0.018 247)", "--ring": "oklch(0.51 0.13 234)" }, radius: { "--radius": "0.9rem", "--radius-card": "1.5rem", "--radius-panel": "2rem" }, shadows: { "--glass-surface": "color-mix(in oklch, white 78%, transparent)" } },
             semanticTokens: { surface: "var(--surface)", text: "var(--foreground)", accent: "var(--accent)" }, componentOverrides: {},
+        },
+    });
+    await prisma.theme.upsert({
+        where: { slug: "scrollwise" }, update: {},
+        create: {
+            slug: "scrollwise", name: "Arandi Scrollwise", isDefault: false,
+            tokens: {
+                colors: {
+                    "--background": "oklch(0.965 0.018 85)", "--foreground": "oklch(0.22 0.018 255)",
+                    "--surface": "oklch(0.985 0.012 85)", "--card": "oklch(0.985 0.012 85)",
+                    "--primary": "oklch(0.34 0.09 245)", "--primary-foreground": "oklch(0.98 0.008 85)",
+                    "--accent": "oklch(0.62 0.13 225)", "--accent-foreground": "oklch(0.18 0.03 250)",
+                    "--muted": "oklch(0.91 0.018 82)", "--muted-foreground": "oklch(0.42 0.025 250)",
+                    "--border": "oklch(0.78 0.025 80)", "--ring": "oklch(0.51 0.12 235)",
+                },
+                radius: { "--radius": "0.45rem", "--radius-card": "1rem", "--radius-panel": "1.4rem" },
+                spacing: { "--section-block-padding": "clamp(5rem, 9vw, 9rem)" },
+                shadows: {
+                    "--elevation-1": "0 18px 48px -38px rgba(24, 38, 55, 0.38)",
+                    "--elevation-2": "0 28px 80px -52px rgba(24, 38, 55, 0.46)",
+                },
+            },
+            semanticTokens: { surface: "var(--surface)", text: "var(--foreground)", accent: "var(--accent)" },
+            componentOverrides: {},
         },
     });
 }
@@ -924,8 +949,8 @@ async function seedMediaAndSettings() {
             alt: "Arandi Bonyan",
             caption: "Primary brand logo",
             type: "image/png",
-            width: 1316,
-            height: 600,
+            width: 658,
+            height: 300,
             metadata: toJsonValue({}),
         },
         create: {
@@ -934,11 +959,49 @@ async function seedMediaAndSettings() {
             caption: "Primary brand logo",
             url: "/brand/arandi-lockup.png",
             type: "image/png",
-            width: 1316,
-            height: 600,
+            width: 658,
+            height: 300,
             metadata: toJsonValue({}),
         },
     });
+
+    const scrollwiseScenes = [
+        ["gateway", "01-gateway", "Transformation gateway"],
+        ["discover", "02-discover", "Discover"],
+        ["design", "03-design", "Design"],
+        ["buildSecure", "04-build-secure", "Build and secure"],
+        ["oilGas", "05-oil-gas", "Oil and gas"],
+        ["petrochemical", "06-petrochemical", "Petrochemicals"],
+        ["connectedOperations", "07-connected-operations", "Connected energy"],
+        ["intelligence", "08-intelligence", "Intelligent enterprise"],
+        ["outcomes", "09-outcomes", "Durable outcomes"],
+    ] as const;
+    for (const [, filename, title] of scrollwiseScenes) {
+        for (const variant of ["desktop", "mobile"] as const) {
+            const dimensions = variant === "desktop" ? { width: 3200, height: 900 } : { width: 900, height: 1200 };
+            const url = `/media-generated/scrollwise/${filename}-${variant}.webp`;
+            await prisma.media.upsert({
+                where: { url },
+                update: {
+                    title: `Scrollwise · ${title} · ${variant}`,
+                    alt: `${title} — original illustrative industrial scene`,
+                    caption: "Original generated illustration for the Arandi Scrollwise theme; not a customer-site photograph.",
+                    type: "image/webp",
+                    ...dimensions,
+                    metadata: toJsonValue({ generated: true, theme: "scrollwise", variant }),
+                },
+                create: {
+                    url,
+                    title: `Scrollwise · ${title} · ${variant}`,
+                    alt: `${title} — original illustrative industrial scene`,
+                    caption: "Original generated illustration for the Arandi Scrollwise theme; not a customer-site photograph.",
+                    type: "image/webp",
+                    ...dimensions,
+                    metadata: toJsonValue({ generated: true, theme: "scrollwise", variant }),
+                },
+            });
+        }
+    }
 
     await prisma.media.upsert({
         where: { url: "/brand/arandi-symbol.png" },
@@ -947,8 +1010,8 @@ async function seedMediaAndSettings() {
             alt: "Arandi Bonyan symbol",
             caption: "Compact brand symbol",
             type: "image/png",
-            width: 1254,
-            height: 1254,
+            width: 384,
+            height: 384,
             metadata: toJsonValue({}),
         },
         create: {
@@ -957,8 +1020,8 @@ async function seedMediaAndSettings() {
             caption: "Compact brand symbol",
             url: "/brand/arandi-symbol.png",
             type: "image/png",
-            width: 1254,
-            height: 1254,
+            width: 384,
+            height: 384,
             metadata: toJsonValue({}),
         },
     });
@@ -987,7 +1050,23 @@ async function seedMediaAndSettings() {
             isPublic: true,
         },
         { key: "site.social", value: { instagram: "", telegram: "", whatsapp: "", bale: "" }, group: "social", isPublic: true },
-        { key: "site.heroMedia", value: { enabled: false, videoUrl: "/media-generated/arandi-hero-digital-infrastructure.webm", posterUrl: "/media-generated/arandi-bid-boland-energy.png" }, group: "hero", isPublic: true },
+        { key: "site.heroMedia", value: { enabled: false, videoUrl: "/media-generated/arandi-hero-digital-infrastructure.webm", posterUrl: "/media-generated/arandi-bid-boland-energy-poster.webp" }, group: "hero", isPublic: true },
+        {
+            key: "site.scrollwiseScenes",
+            value: Object.fromEntries(scrollwiseScenes.map(([key, filename]) => [key, {
+                desktopUrl: `/media-generated/scrollwise/${filename}-desktop.webp`,
+                mobileUrl: `/media-generated/scrollwise/${filename}-mobile.webp`,
+            }])),
+            group: "theme",
+            isPublic: false,
+        },
+        {
+            key: "site.scrollwiseExperience",
+            value: { motionPreset: "cinematic", headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 },
+            group: "theme",
+            isPublic: false,
+        },
+        { key: "site.scrollwiseCopy", value: defaultScrollwiseCopy, group: "theme", isPublic: false },
         { key: "site.seo", value: { title: "Arandi Bonyan" }, group: "seo", isPublic: true },
         {
             key: "site.contact",

@@ -4,6 +4,90 @@ All important project changes are recorded here.
 
 ---
 
+# Scrollwise narrative v2
+
+Date:
+
+2026-08-16
+
+## Implemented
+
+- Replaced the repetitive nine-equal-chapter sequence with an unnumbered disconnect prelude, six numbered transformation chapters, three shorter industry episodes inside chapter four, and an unnumbered looped finale.
+- Generated and inspected ten new versioned 32:9 desktop panoramas, ten independently art-directed 3:4 mobile images, and four 8:5 project-proof vignettes. Registered all 24 assets as governed Prisma Media while retaining prior assets for rollback.
+- Added distinct scene palettes and compositions while preserving one sparse graphite/ink-wash technical editorial language and generous negative space.
+- Changed Canvas scene selection from equal global-scroll partitions to measured chapter geometry, keeping images synchronized with unequal narrative sections. Shortened industry handoffs and limited the strong white veil to major chapter boundaries.
+- Reworked scene surfaces into prelude, signal, blueprint, foundation, episode, intelligence, proof, and finale treatments rather than one repeated white-card formula.
+- Kept proof titles, summaries, and routes sourced from Published Project Cards. Added only qualitative, source-backed outcomes and introduced no unsupported KPI.
+- Extended the existing private Scrollwise contracts to ten fixed scenes and six bilingual text fields per scene: chapter title/body, contextual title/body, bridge, and assistant suggestion. No Prisma schema or API boundary changed.
+- Extended Admin Theme editing to ten narrative groups, ten responsive Media pairs, bridges, and assistant prompts. The contextual assistant now follows the active chapter and collapses to a 44px mobile launcher.
+
+## Validation
+
+- In-app Browser QA passed FA/RTL at 390×844 and EN/LTR desktop: ten scene roles, exactly six numbered chapters, synchronized late scenes, all four proof illustrations, 24.8px mobile chapter titles, active-chapter assistant prompts, zero broken images, and zero horizontal overflow.
+- Admin Browser QA found all 20 progressive-disclosure groups, finale controls, bridge/prompt inputs, 21 selectors, and no alert state.
+- `npm test` (50/50), typecheck, zero-warning lint, production build (60 pages), Prisma validation/migration status, Theme/Settings and enterprise/fixed verifiers, production audit, diff check, and 24 responsive quality checks passed; every quality case had zero accessibility violations.
+- No commit, push, deployment, or public Scrollwise activation occurred.
+- Corrected the three compact industry contextual cards from `rounded-full` to a controlled 24px radius after Browser inspection confirmed the former class created unintended oval card surfaces. Revalidated all interlude radii in the live FA view; `npm test` (50/50), typecheck, lint, and production build passed.
+- Removed Scrollwise-driven placeholder updates from the floating assistant. The fixed approved copy is now FA `پرسش‌تان را مطرح کنید؛ پاسخ، همین‌جاست.` and EN `Ask your question—your answer is right here.`; live FA/EN scroll checks confirmed it remains unchanged and all test, typecheck, lint, and production-build checks passed.
+- Corrected the mobile Scrollwise Canvas to use the same governed 3200×900 panoramas and horizontal camera path as desktop. The 900×1200 portrait images remain first-paint fallbacks only; they no longer suppress cinematic pan/zoom/crossfade on mobile. Live mobile and desktop Browser checks confirmed scene changes, changing camera positions, loaded images, no console errors, and no document horizontal overflow; tests, typecheck, lint, and production build passed.
+
+---
+
+# Scrollwise loading, typography, and bilingual Theme editing
+
+Date:
+
+2026-08-16
+
+## Implemented
+
+- Replaced unreliable detached-image lazy loading with explicit progress-aware loading of the current and next two governed Canvas scenes, fixing the white Canvas after scene two without front-loading all nine images.
+- Reworked the complete Scrollwise title hierarchy to calm responsive ranges: chapters 26–48px, contextual interludes 18–32px, and closing summary 22–40px, with adjusted tracking and locale-specific line height.
+- Added Canvas image-state diagnostics and clipped transformed chapter panels at the Scrollwise root to prevent mobile horizontal overflow.
+- Added an integrated Scrollwise section to Admin Theme editing with 18 responsive image previews/selectors and bounded controls for heading scale (90–115%), camera movement, white-veil strength, story length, and interlude length.
+- Added the private, allowlisted `site.scrollwiseExperience` Setting with strict enum, numeric range, integer, extra-field, and secret-boundary validation. Initialized it idempotently in PostgreSQL without a schema migration.
+- Added bilingual Scrollwise narrative editing with Persian/English tabs, nine collapsible chapter groups, visible character counts, and separate title/body fields for chapter and contextual cards.
+- Added and initialized the private `site.scrollwiseCopy` Setting with an exact two-language/nine-scene/four-field contract, required trimming, 160/600 character limits, extra-structure rejection, and no schema migration.
+- Kept Scrollwise settings out of the generic Settings grid. Linked service, solution, industry, and project cards remain canonical Published CMS records rather than duplicated theme content.
+
+## Validation
+
+- Browser traversal verified all nine scenes as `loaded` in FA/RTL and EN/LTR, pause/resume behavior, scene nine rendering, zero broken images, and zero horizontal overflow.
+- Real Admin save feedback and a balanced-to-cinematic restore cycle passed.
+- Real FA and EN title save/display/restore cycles passed through Admin and the public Scrollwise renderer.
+- `npm test` (50/50), typecheck, lint, production build (60 pages), Theme/Settings verifier, Prisma validation/status, zero-vulnerability audit, diff check, and 24 responsive quality checks passed.
+- No commit, push, deployment, or public Scrollwise activation occurred.
+
+---
+
+# Scrollwise industrial narrative theme
+
+Date:
+
+2026-08-15
+
+## Implemented
+
+- Created branch `scrollwise` and added a third Prisma-backed theme without changing the published Classic default.
+- Built a bilingual nine-chapter Home narrative using native scroll, restrained Motion progress, a pause control, reduced-motion static behavior, minimal story navigation, and current Published CMS evidence.
+- Replaced the insufficient per-chapter image movement with one persistent scroll-driven Canvas. Each source image now receives continuous pan/zoom treatment and transitions to the next chapter through an eased crossfade, creating video-like continuity without shipping a video or copying the reference site's assets.
+- Strengthened the Canvas choreography after direct up/down reference comparison: near-wide starting frames now travel horizontally and zoom deeply in alternating directions, with deterministic reverse playback on upward scroll. Chapter panels enter laterally and alternate sides on desktop.
+- Replaced cream-on-cream chrome with brighter warm-white translucent Header, menu, content/highlight cards, scroll cue, and assistant launcher surfaces.
+- Generated nine original industrial technical scenes and produced eighteen independently composed WebP assets: 3200×900 panoramas for desktop and 900×1200 compositions for mobile. Added an idempotent importer, Prisma Media registration, and nine strict private `site.scrollwise.scene.*` Admin fields so every chapter image remains replaceable through the Media Library.
+- Added a semantic Published-content context menu after every scene and a scroll-driven warm-white veil that softens each image handoff. Desktop camera focus now traverses the full 32:9 panorama in alternating directions; mobile uses vertical art direction rather than a desktop crop.
+- Replaced the legacy 1.89 MB Hero poster path with optimized WebP assets, reduced brand raster dimensions, fixed a stale Hero content-cache key, and corrected the disabled Footer social icon ARIA role.
+- Applied migration `20260815170000_scrollwise_theme` and remediated all dependency-audit findings through bounded compatible overrides; production and complete audits now report zero known vulnerabilities.
+
+## Validation
+
+- `npm test` (48/48), `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit`, Theme/Settings runtime verification, enterprise/fixed-public verification, Prisma validation/migration status, and `git diff --check` passed.
+- The quality suite passed 24 EN/FA route/viewport checks at 390/768/1280px with zero accessibility violations; the cold mobile EN Home transfer is 734,850 bytes. In-app Browser private-preview QA verified nine chapters, scenes, interludes, and menus in FA/RTL and EN/LTR with one H1, no broken images, and no horizontal overflow.
+- Fresh Canvas QA also verified background-pixel changes inside one chapter, correct gateway/discover/design scene progression, static pause behavior, and a clean console after the HMR update.
+- Final cinematic QA measured camera X from `-0.0236` to `+0.0887` and zoom from `1.0550` to `1.2407`, confirmed reverse scroll response, and retained zero broken images, horizontal overflow, or fresh console errors.
+- Classic remains published. Scrollwise was not deployed, committed, pushed, or globally activated.
+
+---
+
 # Public theme variants and UI/UX Pro Max adoption
 
 Date:

@@ -32,7 +32,79 @@ async function readEnvelope<T>(response: Response): Promise<T> {
 function SettingEditor({ setting }: { setting: SettingItem }) {
     if (setting.key === "site.social") return <SocialSettingEditor setting={setting} />;
     if (setting.key === "site.heroMedia") return <HeroMediaSettingEditor setting={setting} />;
+    if (setting.key === "site.scrollwiseScenes") return <ScrollwiseScenesSettingEditor setting={setting} />;
     return <GenericSettingEditor setting={setting} />;
+}
+
+const scrollwiseSceneOptions = [
+    { key: "gateway", label: "01 · Transformation gateway" },
+    { key: "discover", label: "02 · Discover" },
+    { key: "design", label: "03 · Design" },
+    { key: "buildSecure", label: "04 · Build & secure" },
+    { key: "oilGas", label: "05 · Oil & gas" },
+    { key: "petrochemical", label: "06 · Petrochemicals" },
+    { key: "connectedOperations", label: "07 · Connected energy" },
+    { key: "intelligence", label: "08 · Intelligent enterprise" },
+    { key: "outcomes", label: "09 · Durable outcomes" },
+] as const;
+
+type ScrollwiseSceneKey = typeof scrollwiseSceneOptions[number]["key"];
+type ScrollwiseSceneValue = Record<ScrollwiseSceneKey, { desktopUrl: string; mobileUrl: string }>;
+
+function ScrollwiseScenesSettingEditor({ setting }: { setting: SettingItem }) {
+    const queryClient = useQueryClient();
+    const media = useMedia({ search: "", type: "all", sortBy: "updatedAt", sortDirection: "desc", page: 1, pageSize: 100 });
+    const images = media.items.filter((item) => item.type.toLowerCase().startsWith("image/"));
+    const initial = setting.value ?? {};
+    const [scenes, setScenes] = useState<ScrollwiseSceneValue>(() => Object.fromEntries(
+        scrollwiseSceneOptions.map(({ key }) => {
+            const value = initial[key];
+            const record = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+            return [key, {
+                desktopUrl: typeof record.desktopUrl === "string" ? record.desktopUrl : "",
+                mobileUrl: typeof record.mobileUrl === "string" ? record.mobileUrl : "",
+            }];
+        }),
+    ) as ScrollwiseSceneValue);
+    const [error, setError] = useState<string | null>(null);
+    const mutation = useMutation({
+        mutationFn: async () => readEnvelope<SettingItem>(await cmsFetch("/api/cms/settings", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: setting.key, value: scenes }),
+        })),
+        onSuccess: async () => { setError(null); await queryClient.invalidateQueries({ queryKey: ["admin-settings"] }); },
+        onError: (mutationError) => setError(mutationError instanceof Error ? mutationError.message : "Unable to save Scrollwise scenes."),
+    });
+    const updateScene = (key: ScrollwiseSceneKey, field: "desktopUrl" | "mobileUrl", url: string) => {
+        setScenes((current) => ({ ...current, [key]: { ...current[key], [field]: url } }));
+    };
+    const isComplete = scrollwiseSceneOptions.every(({ key }) => scenes[key].desktopUrl && scenes[key].mobileUrl);
+
+    return (
+        <article className="rounded-2xl border border-border/70 bg-card p-4 shadow-[var(--elevation-1)] lg:col-span-2">
+            <h2 className="font-semibold">Scrollwise narrative scenes</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Select a 32:9 desktop panorama and a separately art-directed mobile image for each fixed story chapter. Only safe local Media Library paths are accepted.</p>
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                {scrollwiseSceneOptions.map(({ key, label }) => <fieldset key={key} className="rounded-xl border border-border/70 p-3">
+                    <legend className="px-1 text-sm font-semibold">{label}</legend>
+                    <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                        {(["desktopUrl", "mobileUrl"] as const).map((field) => <label key={field} className="grid gap-1.5 text-xs font-medium">{field === "desktopUrl" ? "Desktop" : "Mobile"}
+                            <select value={scenes[key][field]} onChange={(event) => updateScene(key, field, event.target.value)} className="h-10 min-w-0 rounded-xl border border-border/70 bg-background px-2 text-xs">
+                                <option value="">Select image…</option>
+                                {scenes[key][field] && !images.some((item) => item.url === scenes[key][field]) ? <option value={scenes[key][field]}>{scenes[key][field]}</option> : null}
+                                {images.map((item) => <option key={item.id} value={item.url}>{item.title}</option>)}
+                            </select>
+                        </label>)}
+                    </div>
+                </fieldset>)}
+            </div>
+            {media.isLoading ? <p className="mt-3 text-xs text-muted-foreground">Loading Media Library…</p> : null}
+            {media.isError ? <p role="alert" className="mt-3 text-xs text-destructive">Media Library could not be loaded.</p> : null}
+            {error ? <p role="alert" className="mt-3 text-sm text-destructive">{error}</p> : null}
+            <div className="mt-4 flex justify-end"><Button size="sm" disabled={mutation.isPending || !isComplete} onClick={() => mutation.mutate()}>{mutation.isPending ? "Saving…" : "Save Scrollwise scenes"}</Button></div>
+        </article>
+    );
 }
 
 function GenericSettingEditor({ setting }: { setting: SettingItem }) {
@@ -182,7 +254,7 @@ export function AdminSettingsManagement() {
             {settingsQuery.isLoading ? <p className="text-sm text-muted-foreground">Loading settings…</p> : null}
             {settingsQuery.error ? <p role="alert" className="text-sm text-destructive">{settingsQuery.error.message}</p> : null}
             <div className="grid gap-4 lg:grid-cols-2">
-                {settingsQuery.data?.map((setting) => <SettingEditor key={setting.id} setting={setting} />)}
+                {settingsQuery.data?.filter((setting) => !setting.key.startsWith("site.scrollwise")).map((setting) => <SettingEditor key={setting.id} setting={setting} />)}
             </div>
         </div>
     );

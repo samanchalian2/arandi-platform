@@ -171,7 +171,7 @@ const loadPublishedHeroMedia = unstable_cache(
         where: { key: "site.heroMedia", isPublic: true },
         select: { value: true },
     }),
-    ["arandi-public-hero-media-v2"],
+    ["arandi-public-hero-media-v3"],
     {
         tags: [PUBLIC_CONTENT_TAG, PUBLIC_HOME_TAG, PUBLIC_SETTINGS_TAG],
         revalidate: 3_600,

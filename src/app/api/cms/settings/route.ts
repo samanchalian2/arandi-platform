@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-    if (requestBodyTooLarge(request, 12_288)) {
+    if (requestBodyTooLarge(request, 49_152)) {
         return failure("BAD_REQUEST", "Request is too large.", 413);
     }
     const forbidden = await requirePermission(request, "setting.write");
@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest) {
     try {
         const body = await readJson(request);
         const key = parseEditableSettingKey(body.key);
-        const value = parsePublicSettingValue(key, parseSettingValue(body.value));
+        const value = parsePublicSettingValue(key, parseSettingValue(body.value, key === "site.scrollwiseCopy" ? 32_000 : 8_000));
         if (key === "ai.runtime") parseAIRuntimeSelection(value);
         const existing = await prisma.setting.findUnique({ where: { key } });
         if (!existing) return failure("NOT_FOUND", "Setting not found.", 404);

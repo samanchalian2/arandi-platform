@@ -31,8 +31,10 @@ import {
 import {
     isSecretBearingSettingKey,
     parseEditableSettingKey,
+    parsePublicSettingValue,
     parseSettingValue,
 } from "../src/app/api/cms/_lib/setting-input";
+import { defaultScrollwiseCopy } from "../src/lib/scrollwise-copy";
 import {
     parsePageCreateInput,
     parsePageRoute,
@@ -744,6 +746,102 @@ test("Settings allowlist rejects secret-bearing keys and nested secret fields", 
     assert.throws(() => parseEditableSettingKey("site.smtp"), /not editable/);
     assert.throws(() => parseSettingValue({ apiKey: "never" }), /forbidden field/);
     assert.throws(() => parseSettingValue({ nested: { password: "never" } }), /forbidden field/);
+});
+
+test("Scrollwise scene settings accept only the fixed local image map", () => {
+    const value = Object.fromEntries([
+        "gateway", "discover", "design", "buildSecure", "oilGas", "petrochemical", "connectedOperations", "intelligence", "outcomes", "finale",
+    ].map((key, index) => [key, {
+        desktopUrl: `/media-generated/scrollwise/0${index + 1}-scene-desktop.webp`,
+        mobileUrl: `/media-generated/scrollwise/0${index + 1}-scene-mobile.webp`,
+    }]));
+    assert.deepEqual(parsePublicSettingValue("site.scrollwiseScenes", value), value);
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseScenes", { ...value, extra: value.gateway }),
+        /unsupported scene/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseScenes", {
+            ...value,
+            gateway: { desktopUrl: "https://evil.example/scene.webp", mobileUrl: value.gateway.mobileUrl },
+        }),
+        /safe media path/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseScenes", {
+            ...value,
+            gateway: { desktopUrl: value.gateway.desktopUrl, mobileUrl: "/media/generated/script.svg" },
+        }),
+        /unsupported file type/,
+    );
+});
+
+test("Scrollwise experience settings are bounded and reject arbitrary fields", () => {
+    const value = { motionPreset: "cinematic", headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 };
+    assert.deepEqual(parsePublicSettingValue("site.scrollwiseExperience", value), value);
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, motionPreset: "extreme" }),
+        /motionPreset is invalid/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, veilOpacity: 1 }),
+        /veilOpacity is invalid/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, headingScale: 80 }),
+        /headingScale is invalid/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, script: "alert(1)" }),
+        /unsupported field/,
+    );
+});
+
+test("Scrollwise bilingual card copy is complete, bounded, and rejects arbitrary structure", () => {
+    assert.deepEqual(parsePublicSettingValue("site.scrollwiseCopy", defaultScrollwiseCopy), defaultScrollwiseCopy);
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseCopy", { ...defaultScrollwiseCopy, de: defaultScrollwiseCopy.en }),
+        /unsupported language/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseCopy", {
+            ...defaultScrollwiseCopy,
+            en: { ...defaultScrollwiseCopy.en, gateway: { ...defaultScrollwiseCopy.en.gateway, title: "" } },
+        }),
+        /must contain 2-160 characters/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseCopy", {
+            ...defaultScrollwiseCopy,
+            fa: { ...defaultScrollwiseCopy.fa, gateway: { ...defaultScrollwiseCopy.fa.gateway, script: "never" } },
+        }),
+        /unsupported field/,
+    );
+});
+
+test("Scrollwise ships ten governed v2 panoramic and mobile scene pairs plus four proof vignettes", async () => {
+    const filenames = [
+        "v2-01-gateway",
+        "v2-02-discover",
+        "v2-03-design",
+        "v2-04-build-secure",
+        "v2-05-oil-gas",
+        "v2-06-petrochemical",
+        "v2-07-connected-operations",
+        "v2-08-intelligence",
+        "v2-09-outcomes",
+        "v2-10-finale",
+    ];
+    for (const filename of filenames) {
+        const desktop = await sharp(path.join(process.cwd(), "public", "media-generated", "scrollwise", `${filename}-desktop.webp`)).metadata();
+        const mobile = await sharp(path.join(process.cwd(), "public", "media-generated", "scrollwise", `${filename}-mobile.webp`)).metadata();
+        assert.deepEqual({ format: desktop.format, width: desktop.width, height: desktop.height }, { format: "webp", width: 3200, height: 900 });
+        assert.deepEqual({ format: mobile.format, width: mobile.width, height: mobile.height }, { format: "webp", width: 900, height: 1200 });
+    }
+    for (const filename of ["v2-proof-bid-boland", "v2-proof-sonqor", "v2-proof-negin-zafar", "v2-proof-noorin-bonyad"]) {
+        const proof = await sharp(path.join(process.cwd(), "public", "media-generated", "scrollwise", `${filename}.webp`)).metadata();
+        assert.deepEqual({ format: proof.format, width: proof.width, height: proof.height }, { format: "webp", width: 1600, height: 1000 });
+    }
 });
 
 test("Page creation catalog is allowlisted, bilingual, and Draft-only", () => {

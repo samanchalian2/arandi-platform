@@ -1,5 +1,59 @@
 # Session Log
 
+## 2026-08-16 — Scrollwise Loading, Typography, and Admin Theme Controls
+
+Objective
+
+- Fix the reported loss of imagery after scene two and place Scrollwise image/presentation controls inside Admin Theme editing.
+
+Verified cause and implementation
+
+- Confirmed that scenes three through nine were detached programmatic `Image` objects marked lazy; their downloads were not reliably initiated.
+- Changed the bounded nine-scene Canvas sequence to explicit preload and added current image-state diagnostics.
+- Added overflow clipping for laterally transformed story panels.
+- Added 18 Media Library image previews/selectors and bounded heading-scale, motion, veil, story-length, and interlude-length controls to the Scrollwise Theme editor.
+- Added and initialized the private `site.scrollwiseExperience` Setting; no schema migration or secret-bearing field was introduced.
+- Rebalanced the complete Scrollwise heading hierarchy after stakeholder review: chapter titles render at 26–48px, contextual interludes at 18–32px, and the closing title at 22–40px at the 100% default; Admin can scale the hierarchy from 90–115%.
+- Changed Canvas loading from all-scene eager download to progress-aware loading of the active and next two governed scenes; production quality transfer budgets now pass while late scenes still load on navigation.
+- Added a bilingual narrative-card editor to the Scrollwise Theme panel. Persian and English each expose the chapter title/body and contextual-card title/body for all nine scenes through progressive disclosure and character counts.
+- Added and initialized the private, fixed-shape `site.scrollwiseCopy` Setting. Linked evidence cards continue to resolve from Published CMS Cards, avoiding duplicate business content.
+
+Validation
+
+- Browser traversed all nine scenes in Persian and English and reported `loaded` for gateway through outcomes, correct RTL/LTR, pause/resume, no broken image, and no horizontal overflow.
+- Admin save feedback, FA/EN public rendering, and exact test-value restoration passed against PostgreSQL.
+- 50/50 tests, typecheck, lint, build, Theme/Settings runtime verification, Prisma validation/status, dependency audit, diff check, and 24 responsive quality checks passed.
+- Classic remains published. Scrollwise remains uncommitted, unpublished, and available through private preview only.
+
+## 2026-08-15 — Scrollwise Theme Implementation
+
+Objective
+
+- Implement the approved Scrollwise plan as an additive Admin-switchable theme inspired by scroll-led editorial storytelling while keeping every visual and text asset original and preserving CMS, Prisma, security, and production boundaries.
+
+Implemented
+
+- Created branch `scrollwise`, added the `Arandi Scrollwise` Prisma theme, and retained Classic as the only public default.
+- Built a nine-chapter bilingual Home experience across three narrative acts with native scroll, Motion progress, pause/reduced-motion controls, semantic headings, contextual Published-content menus, and the existing floating assistant entry point.
+- After direct comparison with the reference, replaced isolated sticky chapter images with a single persistent Canvas that continuously pans/zooms each governed scene and crossfades into the next as native scroll advances.
+- Repeated the reference inspection in both scroll directions, then increased Arandi's wide-frame zoom depth and left/right travel, added deterministic reverse choreography, alternated desktop panel placement, and changed cream UI surfaces to translucent warm white.
+- Generated nine original graphite/ivory industrial scenes with restrained Arandi blue/cyan accents; produced eighteen independently composed 3200×900 desktop and 900×1200 mobile WebP assets, registered them as Media, and added an idempotent importer plus nine fixed private Admin scene fields.
+- Reworked every handoff into a 90svh semantic context-menu interlude with a warm-white veil, and tuned the Canvas for full-width alternating panorama focus travel with restrained zoom.
+- Optimized the legacy Hero/project poster and supplied brand rasters, versioned the stale Hero content cache, and reduced cold mobile EN Home transfer from approximately 2.5 MB to 734,850 bytes.
+- Hardened the new Setting boundary against extra chapters, remote URLs, unsafe extensions, and arbitrary object shapes. Remediated dependency-audit findings with compatible package overrides.
+
+Validation
+
+- PostgreSQL migration is applied and all seven migrations are current. Theme runtime and public bridge verifiers passed.
+- 48 focused tests, strict TypeScript, lint, production build, complete dependency audit, Prisma validation, and whitespace validation passed.
+- The automated quality suite passed all 24 EN/FA route checks at 390/768/1280px with zero accessibility violations. In-app Browser QA at 479×585 verified nine chapters/scenes/interludes/menus in both directions, one H1, no broken images, and no horizontal overflow.
+- A fresh Canvas run verified nine semantic chapters, one H1, continuous deterministic camera movement, complete gateway-to-outcomes progression, context-menu visibility, and active veil opacity.
+- Final browser sampling measured a `1.0550 → 1.2407` zoom and `-0.0236 → +0.0887` horizontal camera path, then observed the values retreat on upward scroll. The bright-surface version retained zero broken images, overflow, and fresh console errors.
+
+Readiness
+
+- The implementation is architecture-approved as a private theme candidate. It remains uncommitted and unpublished on branch `scrollwise`; stakeholder visual review should precede any global theme activation or merge.
+
 ## 2026-08-15 — Public Theme Variants
 
 Objective
@@ -1618,3 +1672,17 @@ Continue with:
 - The launcher is excluded from the Assistant, Admin, account, and recovery routes. `/assistant` is `noindex, follow` and has no permanent Header navigation item.
 - Corrected Home section loading so a disabled Chat Section remains valid source data with `{ enabled: false }`; the existing Admin Section switch can now hide the embedded Home chat without breaking the page.
 - Validation passed: strict typecheck, ESLint, 46 focused tests, enterprise/fixed public bridge checks, production build, and whitespace validation. Browser QA verified FA handoff and one automatic user message, no launcher on `/assistant`, `noindex, follow`, EN launcher visibility, and no horizontal overflow.
+
+# 2026-08-16 — Scrollwise Narrative v2 Execution
+
+- Implemented the approved stakeholder analysis as an unnumbered disconnect prelude, six numbered chapters, three shorter industry episodes within chapter four, and a looped finale.
+- Generated, visually inspected, normalized, registered, and activated 24 new versioned assets: ten desktop panoramas, ten independent mobile compositions, and four project-proof vignettes. Prior Scrollwise assets remain available for rollback.
+- Kept the approved Next.js, Prisma, CMS, Theme, Settings, authentication, routing, and infrastructure boundaries. No Prisma schema migration or new persistence subsystem was introduced.
+- Extended the existing private Scrollwise scene/copy contracts and Admin editor to ten states, six EN/FA narrative fields, 20 image selectors, bridges, and assistant prompts.
+- Reworked scene rhythm and surfaces, synchronized Canvas state to measured chapter geometry, limited strong veils to major boundaries, and preserved native scrolling, pause, and reduced-motion behavior.
+- Kept proof copy/links in Published Project Cards, used only approved qualitative outcomes, and introduced no unsupported number.
+- Made the floating assistant chapter-aware and 44px-collapsed by default on mobile while preserving the existing bounded session handoff and same-origin AI route.
+- PostgreSQL accepted the idempotent Media/Setting importer and remains current at seven migrations.
+- Validation passed: 50/50 tests, typecheck, zero-warning lint, production build (60 pages), Prisma validation/status, Theme/Settings and enterprise/fixed verifiers, zero-vulnerability production audit, diff check, and 24 responsive quality checks with zero accessibility violations.
+- In-app Browser QA passed FA 390×844 and EN desktop, all ten states, exactly six numbered chapters, late-scene Canvas synchronization, active assistant prompts, four proof images, Admin editing controls, zero broken images, and zero horizontal overflow.
+- Classic remains public. Scrollwise was not committed, pushed, deployed, or globally activated.

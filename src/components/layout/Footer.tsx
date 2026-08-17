@@ -56,8 +56,8 @@ export function Footer({ content, company, navigation, lang }: FooterProps) {
             <Image
               src="/brand/arandi-lockup.png"
               alt={company.name}
-              width={1316}
-              height={600}
+              width={658}
+              height={300}
               className="h-auto w-48 object-contain object-start sm:w-52"
               sizes="(max-width: 640px) 192px, 208px"
               loading="eager"
@@ -102,7 +102,7 @@ export function Footer({ content, company, navigation, lang }: FooterProps) {
 
 function SocialLink({ label, href, unavailableLabel, icon }: { label: string; href: string | null; unavailableLabel: string; icon: ReactNode }) {
   const className = "inline-flex size-10 items-center justify-center rounded-xl border border-border/70 bg-background/70 text-muted-foreground transition-colors hover:border-primary/35 hover:text-primary";
-  return href ? <a className={className} href={href} target="_blank" rel="noreferrer" aria-label={label}>{icon}</a> : <span className={`${className} cursor-not-allowed opacity-45`} aria-label={`${label}: ${unavailableLabel}`} title={`${label}: ${unavailableLabel}`}>{icon}</span>;
+  return href ? <a className={className} href={href} target="_blank" rel="noreferrer" aria-label={label}>{icon}</a> : <span role="img" className={`${className} cursor-not-allowed opacity-45`} aria-label={`${label}: ${unavailableLabel}`} title={`${label}: ${unavailableLabel}`}>{icon}</span>;
 }
 
 function toTel(value: string): string {

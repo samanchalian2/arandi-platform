@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cmsFetch } from "@/lib/admin/cms-fetch";
 
 import { AdminToolbar } from "./AdminToolbar";
+import { ScrollwiseThemeSettings } from "./ScrollwiseThemeSettings";
 
 type ThemeData = {
     id: string; slug: string; name: string; isDefault: boolean;
@@ -40,12 +41,15 @@ function ThemeEditor({ theme }: { theme: ThemeData }) {
         onError: (mutationError) => setError(mutationError instanceof SyntaxError ? "Every token field must contain valid JSON." : mutationError instanceof Error ? mutationError.message : "Unable to save theme."),
     });
 
-    return <form onSubmit={(event) => { event.preventDefault(); mutation.mutate(); }} className="space-y-5">
+    return <div className="space-y-8">
+    <form onSubmit={(event) => { event.preventDefault(); mutation.mutate(); }} className="space-y-5">
         <label className="block rounded-2xl border border-border/70 bg-card p-4"><span className="text-sm font-medium">Theme name</span><input value={name} minLength={2} maxLength={100} required onChange={(event) => setName(event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm" /><span className="mt-2 block text-xs text-muted-foreground">Slug: {theme.slug} {theme.isDefault ? "- Published public theme" : "- Draft public theme"}</span></label>
         <div className="grid gap-4 lg:grid-cols-2">{(Object.keys(fields) as Array<keyof typeof fields>).map((field) => <label key={field} className="block rounded-2xl border border-border/70 bg-card p-4"><span className="text-sm font-semibold">{field}</span><textarea aria-label={`${field} JSON`} value={fields[field]} onChange={(event) => setFields((current) => ({ ...current, [field]: event.target.value }))} rows={field === "componentOverrides" ? 8 : 6} spellCheck={false} className="mt-2 w-full resize-y rounded-xl border border-border/70 bg-background p-3 font-mono text-xs leading-5" /></label>)}</div>
         {error ? <p role="alert" className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p> : null}
         <div className="sticky bottom-4 flex justify-end rounded-2xl border border-border/70 bg-card/95 p-3 shadow-[var(--elevation-2)] backdrop-blur"><Button type="submit" disabled={mutation.isPending}>{mutation.isPending ? "Saving..." : "Save theme"}</Button></div>
-    </form>;
+    </form>
+    {theme.slug === "scrollwise" ? <ScrollwiseThemeSettings /> : null}
+    </div>;
 }
 
 export function AdminThemeManagement() {

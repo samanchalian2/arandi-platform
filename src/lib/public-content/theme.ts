@@ -53,8 +53,8 @@ const cachedPublishedTheme = unstable_cache(
             componentOverrides: true,
         },
     }),
-    ["public-theme:published"],
-    { tags: [PUBLIC_THEME_TAG] },
+    ["public-theme:published:multi-variant-v1"],
+    { tags: [PUBLIC_THEME_TAG], revalidate: 3_600 },
 );
 
 function isSafeThemeSlug(value: string | undefined): value is string {

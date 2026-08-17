@@ -1,14 +1,16 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 
 import { ChatInterface } from "@/components/ai/ChatInterface";
 import { Features } from "@/components/sections/Features";
 import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
 import { Hero } from "@/components/sections/Hero";
+import { ScrollwiseStory } from "@/components/scrollwise/ScrollwiseStory";
 import type { EditableHomepageSection } from "@/content";
 import { buildLocalizedMetadata } from "@/lib/pageMetadata";
-import { getPublicEnterprisePage, getPublicHomepageContent } from "@/lib/public-content";
+import { getPublicEnterprisePage, getPublicHomepageContent, getPublicTheme, getScrollwiseExperience, THEME_PREVIEW_COOKIE } from "@/lib/public-content";
 
 type PageProps = {
   searchParams?: Promise<{ lang?: string }> | { lang?: string };
@@ -40,6 +42,12 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
 export default async function Home({ searchParams }: PageProps) {
   const lang = await resolvePageLanguage(searchParams);
+  const cookieStore = await cookies();
+  const publicTheme = await getPublicTheme(cookieStore.get(THEME_PREVIEW_COOKIE)?.value);
+  if (publicTheme.slug === "scrollwise") {
+    const experience = await getScrollwiseExperience(lang).catch(() => notFound());
+    return <ScrollwiseStory experience={experience} />;
+  }
   const [pageContent, projects, services, industries] = await Promise.all([
     getPublicHomepageContent(lang),
     getPublicEnterprisePage("projects", lang),

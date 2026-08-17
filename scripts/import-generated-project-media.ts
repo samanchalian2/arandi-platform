@@ -16,7 +16,7 @@ type ProjectMedia = {
 const projectMedia: ProjectMedia[] = [
     {
         cardKey: "enterprise:projects:bid-boland-gas-gathering",
-        filename: "arandi-bid-boland-energy.png",
+        filename: "arandi-bid-boland-energy-card.webp",
         title: "Bid Boland energy infrastructure — generated cover",
         alt: "A generic energy facility at dusk with secure network infrastructure and technical staff",
         caption: "Illustrative generated cover image; replaceable from the Admin Media Library.",
@@ -151,13 +151,36 @@ async function main() {
         },
     });
 
+    await prisma.media.upsert({
+        where: { url: "/media-generated/arandi-bid-boland-energy-poster.webp" },
+        update: {
+            title: "Arandi hero poster — optimized",
+            alt: "A generic energy facility with secure digital infrastructure",
+            caption: "Optimized generated poster for the public Home hero; replaceable from Admin Settings.",
+            type: "image/webp",
+            width: 1672,
+            height: 941,
+            metadata: { source: "generated-hero-poster", editableInAdmin: true } as Prisma.InputJsonValue,
+        },
+        create: {
+            title: "Arandi hero poster — optimized",
+            alt: "A generic energy facility with secure digital infrastructure",
+            caption: "Optimized generated poster for the public Home hero; replaceable from Admin Settings.",
+            url: "/media-generated/arandi-bid-boland-energy-poster.webp",
+            type: "image/webp",
+            width: 1672,
+            height: 941,
+            metadata: { source: "generated-hero-poster", editableInAdmin: true } as Prisma.InputJsonValue,
+        },
+    });
+
     await prisma.setting.upsert({
         where: { key: "site.heroMedia" },
         update: {
             value: {
                 enabled: true,
                 videoUrl: "/media-generated/arandi-hero-digital-infrastructure.webm",
-                posterUrl: "/media-generated/arandi-bid-boland-energy.png",
+                posterUrl: "/media-generated/arandi-bid-boland-energy-poster.webp",
             } as Prisma.InputJsonValue,
         },
         create: {
@@ -167,7 +190,7 @@ async function main() {
             value: {
                 enabled: true,
                 videoUrl: "/media-generated/arandi-hero-digital-infrastructure.webm",
-                posterUrl: "/media-generated/arandi-bid-boland-energy.png",
+                posterUrl: "/media-generated/arandi-bid-boland-energy-poster.webp",
             } as Prisma.InputJsonValue,
         },
     });

@@ -93,6 +93,7 @@ Validated application scope:
 ### Phase 10 — Quality and Production
 
 - SEO, accessibility, performance, 390/768/1280 responsive, RTL/LTR, security-header, bounded-JSON, and dependency remediation are validated.
+- The additive Scrollwise v2 candidate is implemented and locally validated as an unnumbered prelude, six numbered chapters, three shorter industry episodes, and a looped finale. It uses ten new governed 32:9/mobile scene pairs, four illustrative proof vignettes backed by Published Project copy/links, geometry-synchronized native-scroll Canvas motion, chapter-aware assistant prompts, full bilingual Admin editing, and the unchanged Classic production default. Stakeholder review, commit/CI, and explicit publication remain separate gates.
 - Release-based standalone deployment, loopback Nginx, Nginx Media, ClamAV, PostgreSQL policy, systemd hardening, backups/isolated restore, readiness monitoring, log retention, SSH hardening, staging TLS, and rollback are validated on the approved VPS.
 - Public cutover remains gated by public DNS, trusted renewable TLS, provider credentials, external alert/off-host backup destinations, observed GitHub CI, and stakeholder content approval.
 

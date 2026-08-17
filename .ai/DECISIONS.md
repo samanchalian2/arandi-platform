@@ -643,3 +643,53 @@ Status:
 Approved and implemented for Phase 10 staging. Public cutover is not approved.
 
 ---
+
+# Decision 008
+
+## Keep Scrollwise additive, original, governed, and privately previewable
+
+Date:
+
+2026-08-15
+
+Decision:
+
+- Add `scrollwise` as a third Prisma-backed public theme; do not replace or automatically publish Classic or Arandi Pro.
+- Limit the Scrollwise structural divergence to the Home storytelling experience. Detail routes continue to use the shared published-content and public-chrome architecture.
+- Use native document scrolling with progressive Motion transforms, a visible pause control, and a static reduced-motion path; never hijack wheel or touch navigation.
+- Use only original Arandi industrial illustrations and CMS-derived copy/evidence. A reference website may inform interaction principles but not artwork, wording, brand assets, or exact composition.
+- Store scene assets as governed Prisma Media and resolve them through nine private, explicitly allowlisted scene Settings editable from Admin. Only the fixed local desktop/mobile raster paths are accepted.
+- Use nine chapters across three narrative acts. Desktop source art is 32:9 (3200×900); mobile receives separately composed 3:4 art (900×1200), not an automatic crop.
+- Follow every scene with a semantic context menu derived only from current Published CMS routes, and use a scroll-driven warm-white veil to soften transitions without replacing native scrolling.
+- Require authenticated private preview and explicit global publication through the existing canonical Theme workflow.
+
+Reason:
+
+This delivers the requested immersive narrative without creating a parallel CMS, leaking Draft/private data, copying third-party creative work, weakening accessibility, or destabilizing the approved public default and rollback boundary.
+
+Status:
+
+Approved and implemented on branch `scrollwise`. Stakeholder visual approval, commit/CI, and explicit publication remain separate gates.
+
+Amendment — 2026-08-16:
+
+- The fixed nine-scene Canvas sequence must explicitly load its current and next two programmatic raster images as progress changes; browser-native lazy loading must not be relied on for detached Canvas sources, and all nine must not be transferred at first paint.
+- Scrollwise media and presentation controls belong inside the Scrollwise Theme editor. Business copy and linked evidence continue to belong to Published CMS Pages/Sections/Cards.
+- Runtime presentation tuning is limited to the private `site.scrollwiseExperience` contract: heading scale `90–115%`, `subtle|balanced|cinematic`, veil opacity `0.50–0.98`, story height `120–220svh`, and interlude height `60–140svh`.
+- Scrollwise-specific chapter and contextual-card narrative copy belongs to the private `site.scrollwiseCopy` contract and is editable in EN/FA from the Theme editor. The contract is limited to nine fixed scenes and four bounded text fields per language/scene. Linked service, solution, industry, and project cards remain Published CMS records and must not be copied into this Setting.
+
+Amendment — Scrollwise narrative v2, 2026-08-16:
+
+- Replace the nine equal public chapters with an unnumbered prelude, six numbered chapters, three shorter industry episodes nested conceptually inside chapter four, and an unnumbered looped finale. Ten internal scene states remain necessary for Canvas art direction, but they are not ten equal navigation chapters.
+- Use measured chapter geometry for Canvas synchronization because intentionally unequal story/interlude heights invalidate equal global-scroll partitions.
+- Use a strong white veil only at major chapter boundaries. Industry episodes use shorter crossfades and compact bridge surfaces.
+- Replace every active Scrollwise scene asset with a new versioned desktop/mobile pair and add four Scrollwise-only project vignettes. Preserve prior files for rollback; never present generated artwork as customer-site photography.
+- Project proof text and routes remain Published CMS Cards. Do not invent KPI values; show only qualitative outcomes or exact facts already present in the approved company profile.
+- Extend the existing private `site.scrollwiseCopy` Setting—not Prisma schema or a parallel CMS—to ten fixed scene keys and six bounded fields per language/scene: title, description, contextual title/body, bridge, and assistant prompt.
+- The floating assistant may observe only public DOM chapter context, use it as a suggested prompt, and retain the existing bounded `sessionStorage` handoff. On mobile it defaults to a 44px collapsed control.
+
+Status:
+
+Implemented and validated on the private `scrollwise` branch. Stakeholder acceptance, commit/CI, and publication remain separate gates.
+
+---
