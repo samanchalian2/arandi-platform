@@ -6,6 +6,7 @@
 - Installed WordPress on the approved VPS using a new dedicated MariaDB database; no Next.js PostgreSQL data was accessed or modified.
 - Switched `arandi.ir` from the Next.js reverse proxy to the verified WordPress vhost after preserving a named Nginx rollback configuration.
 - Seeded and attached the seven-page primary navigation to both GeneratePress child themes.
+- Added Customizer controls for contact details and Instagram, Telegram, WhatsApp, and Bale URLs; syntax and runtime hook validation passed on the VPS.
 
 All important project changes are recorded here.
 
