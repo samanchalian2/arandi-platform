@@ -1,0 +1,3 @@
+<?php get_header(); ?>
+<main id="main"><section class="arandi-hero"><p>ARANDI</p><h1>شریک تحول دیجیتال</h1><p>مسئله را پیش از انتخاب فناوری تعریف می‌کنیم؛ سپس از داده، فرآیند و معماری برای ساختن عملیاتی پایدار بهره می‌بریم.</p><a class="arandi-button" href="<?php echo esc_url(home_url('/contact/'));?>">شروع گفتگو</a></section><section class="arandi-home"><h2>از مسئله تا نتیجه</h2><div class="arandi-grid"><?php foreach(get_posts(array('post_type'=>'arandi_service','numberposts'=>3)) as $post):setup_postdata($post);?><article class="arandi-card"><h3><a href="<?php the_permalink();?>"><?php the_title();?></a></h3><p><?php echo esc_html(get_the_excerpt());?></p></article><?php endforeach;wp_reset_postdata();?></div></section></main>
+<?php get_footer();
