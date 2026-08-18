@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-18 — WordPress Edition
+
+- Added the independent `webwordpress` delivery structure: Arandi Core plugin, GeneratePress-based Default Enterprise and Scrollwise child themes, original governed Scrollwise scene assets, and repeatable server installer.
+- Installed WordPress on the approved VPS using a new dedicated MariaDB database; no Next.js PostgreSQL data was accessed or modified.
+- Switched `arandi.ir` from the Next.js reverse proxy to the verified WordPress vhost after preserving a named Nginx rollback configuration.
+
 All important project changes are recorded here.
 
 ---

@@ -1,5 +1,13 @@
 # Current State
 
+## WordPress Edition — 2026-08-18
+
+- Branch `webwordpress` is an independent WordPress delivery branch created directly from `main`; it does not modify the Next.js runtime, its Prisma/PostgreSQL database, or the `scrollwise` branch.
+- VPS WordPress is installed under `/srv/arandi-wordpress/site` with the separate local MariaDB database `arandi_wordpress`; its credential file is root-readable only and no connection value is committed.
+- GeneratePress 3.6.1, `Arandi Core`, `Arandi Default Enterprise`, and `Arandi Scrollwise` are installed. The Default Enterprise child theme is active; both themes use shared WordPress editorial content and can be selected from Appearance → Themes.
+- Nginx now serves the WordPress site for `arandi.ir` over port 80. The prior Next.js vhost is copied to `/etc/arandi-platform/nginx-backups/arandi-platform-internal.before-wordpress-20260818`, and the Next.js release/service remains untouched for rollback.
+- Direct HTTP, PHP lint, WordPress checksums, active-plugin/theme checks, default and Scrollwise live render checks, and the public browser check passed. `arandi.ir` is currently HTTP-only: trusted public TLS cannot be issued while the origin remains a private `172.20.190.16` address without publicly reachable ACME validation or DNS-API credentials.
+
 Last verified: 2026-08-15
 
 ## Current Phase
