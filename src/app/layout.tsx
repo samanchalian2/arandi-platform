@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { AppChrome } from "@/components/layout/AppChrome";
 import { DirectionProvider } from "@/components/layout/DirectionProvider";
 import { getSiteOrigin } from "@/lib/pageMetadata";
-import { getPublicChromeContent, getPublicTheme, THEME_PREVIEW_COOKIE } from "@/lib/public-content";
+import { getPublicChromeContent, getPublicTheme, getScrollwiseHeaderDisplay, THEME_PREVIEW_COOKIE } from "@/lib/public-content";
 import "./globals.css";
 
 const exo = Exo({
@@ -48,10 +48,11 @@ type RootLayoutProps = Readonly<{
 export default async function RootLayout({ children }: RootLayoutProps) {
   const lang = "en" as const;
   const cookieStore = await cookies();
-  const [englishContent, persianContent, publicTheme] = await Promise.all([
+  const [englishContent, persianContent, publicTheme, scrollwiseHeaderDisplay] = await Promise.all([
     getPublicChromeContent("en"),
     getPublicChromeContent("fa"),
     getPublicTheme(cookieStore.get(THEME_PREVIEW_COOKIE)?.value),
+    getScrollwiseHeaderDisplay(),
   ]);
   const organizationJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -93,6 +94,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             }}
             lang={lang}
             publicTheme={publicTheme}
+            scrollwiseShowMotionControl={scrollwiseHeaderDisplay.showMotionControl}
+            scrollwiseMenuMode={scrollwiseHeaderDisplay.menuMode}
           >
             {children}
           </AppChrome>

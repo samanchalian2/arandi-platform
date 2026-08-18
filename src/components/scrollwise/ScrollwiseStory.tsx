@@ -66,7 +66,6 @@ function StoryScene({ chapter, index, lang, staticMotion, storyHeight, headingSc
             <m.div className={cn("relative z-10 mx-auto flex w-full max-w-[94rem] px-5 py-28 sm:px-8 lg:px-12", chapter.role === "finale" && "justify-center")} style={staticMotion ? undefined : { opacity, x, y }}>
                 <div className={cn("w-full max-w-[34rem] self-center rounded-[1.75rem] border p-6 backdrop-blur-xl sm:p-8", panelClass, alignStart ? "lg:me-auto" : "lg:ms-auto", chapter.role === "finale" && "lg:mx-auto lg:text-center", fa ? "text-right" : "text-left")}>
                     <div className={cn("flex items-center gap-3 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-primary", chapter.role === "finale" && "justify-center")}>
-                        {chapter.chapterNumber ? <span className="text-foreground/45">{chapter.chapterNumber}</span> : null}
                         <span aria-hidden="true" className="h-px w-9 bg-primary/45" />
                         <span>{chapter.eyebrow}</span>
                     </div>

@@ -777,7 +777,7 @@ test("Scrollwise scene settings accept only the fixed local image map", () => {
 });
 
 test("Scrollwise experience settings are bounded and reject arbitrary fields", () => {
-    const value = { motionPreset: "cinematic", headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 };
+    const value = { motionPreset: "cinematic", showMotionControl: false, menuMode: "narrative", headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 };
     assert.deepEqual(parsePublicSettingValue("site.scrollwiseExperience", value), value);
     assert.throws(
         () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, motionPreset: "extreme" }),
@@ -790,6 +790,14 @@ test("Scrollwise experience settings are bounded and reject arbitrary fields", (
     assert.throws(
         () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, headingScale: 80 }),
         /headingScale is invalid/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, showMotionControl: "yes" }),
+        /showMotionControl is invalid/,
+    );
+    assert.throws(
+        () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, menuMode: "freeform" }),
+        /menuMode is invalid/,
     );
     assert.throws(
         () => parsePublicSettingValue("site.scrollwiseExperience", { ...value, script: "alert(1)" }),

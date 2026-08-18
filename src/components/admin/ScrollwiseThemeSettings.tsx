@@ -36,6 +36,8 @@ type SceneKey = typeof sceneOptions[number]["key"];
 type SceneMap = Record<SceneKey, { desktopUrl: string; mobileUrl: string }>;
 type ExperienceSettings = {
     motionPreset: "subtle" | "balanced" | "cinematic";
+    showMotionControl: boolean;
+    menuMode: "narrative" | "classic";
     headingScale: number;
     veilOpacity: number;
     storyHeight: number;
@@ -44,6 +46,8 @@ type ExperienceSettings = {
 
 const defaultExperience: ExperienceSettings = {
     motionPreset: "cinematic",
+    showMotionControl: false,
+    menuMode: "narrative",
     headingScale: 100,
     veilOpacity: 0.94,
     storyHeight: 150,
@@ -72,6 +76,8 @@ function initialExperience(setting: SettingItem): ExperienceSettings {
     const value = setting.value ?? {};
     return {
         motionPreset: value.motionPreset === "subtle" || value.motionPreset === "balanced" || value.motionPreset === "cinematic" ? value.motionPreset : defaultExperience.motionPreset,
+        showMotionControl: typeof value.showMotionControl === "boolean" ? value.showMotionControl : defaultExperience.showMotionControl,
+        menuMode: value.menuMode === "classic" ? "classic" : defaultExperience.menuMode,
         headingScale: typeof value.headingScale === "number" ? value.headingScale : defaultExperience.headingScale,
         veilOpacity: typeof value.veilOpacity === "number" ? value.veilOpacity : defaultExperience.veilOpacity,
         storyHeight: typeof value.storyHeight === "number" ? value.storyHeight : defaultExperience.storyHeight,
@@ -176,6 +182,17 @@ function ScrollwiseThemeSettingsForm({ sceneSetting, experienceSetting, copySett
                             <option value="cinematic">Cinematic</option>
                         </select>
                         <span className="text-xs font-normal text-muted-foreground">Controls horizontal travel and zoom depth. Reduced-motion visitors still receive static scenes.</span>
+                    </label>
+                    <label className="flex min-h-11 items-start gap-3 rounded-xl border border-border/70 bg-background px-3 py-3 text-sm font-medium">
+                        <input type="checkbox" checked={experience.showMotionControl} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, showMotionControl: event.target.checked })); }} className="mt-0.5 size-4 accent-primary" />
+                        <span>Show pause/play control <span className="mt-1 block text-xs font-normal text-muted-foreground">Keep this hidden for a cleaner public header; enable it when visitors should control cinematic motion.</span></span>
+                    </label>
+                    <label className="grid gap-2 text-sm font-medium">Navigation menu
+                        <select value={experience.menuMode} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, menuMode: event.target.value as ExperienceSettings["menuMode"] })); }} className="h-11 rounded-xl border border-border/70 bg-background px-3">
+                            <option value="narrative">Scrollwise story chapters</option>
+                            <option value="classic">Classic public pages</option>
+                        </select>
+                        <span className="text-xs font-normal text-muted-foreground">Choose the story anchors or the CMS-managed Company, Services, Solutions, Industries, Projects, Contact and Articles menu.</span>
                     </label>
                     <label className="grid gap-2 text-sm font-medium">Heading size <output>{experience.headingScale}%</output>
                         <input type="range" min="90" max="115" step="5" value={experience.headingScale} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headingScale: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />

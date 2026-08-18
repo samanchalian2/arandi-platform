@@ -12,9 +12,12 @@ import { getPublicHomepageContent } from "./home";
 export type { ScrollwiseSceneKey } from "@/lib/scrollwise-copy";
 
 export type ScrollwiseMotionPreset = "subtle" | "balanced" | "cinematic";
+export type ScrollwiseMenuMode = "narrative" | "classic";
 
 export type ScrollwiseDisplaySettings = {
     motionPreset: ScrollwiseMotionPreset;
+    showMotionControl: boolean;
+    menuMode: ScrollwiseMenuMode;
     headingScale: number;
     veilOpacity: number;
     storyHeight: number;
@@ -54,6 +57,8 @@ export type ScrollwiseExperience = {
 
 const defaultDisplay: ScrollwiseDisplaySettings = {
     motionPreset: "cinematic",
+    showMotionControl: false,
+    menuMode: "narrative",
     headingScale: 100,
     veilOpacity: 0.94,
     storyHeight: 150,
@@ -160,11 +165,25 @@ async function resolveScrollwiseSettings() {
         copy,
         display: {
             motionPreset,
+            showMotionControl: rawDisplay.showMotionControl === true,
+            menuMode: rawDisplay.menuMode === "classic" ? "classic" : defaultDisplay.menuMode,
             headingScale: Math.round(boundedNumber(rawDisplay.headingScale, defaultDisplay.headingScale, 90, 115)),
             veilOpacity: boundedNumber(rawDisplay.veilOpacity, defaultDisplay.veilOpacity, 0.5, 0.98),
             storyHeight: Math.round(boundedNumber(rawDisplay.storyHeight, defaultDisplay.storyHeight, 120, 220)),
             interludeHeight: Math.round(boundedNumber(rawDisplay.interludeHeight, defaultDisplay.interludeHeight, 60, 140)),
         } satisfies ScrollwiseDisplaySettings,
+    };
+}
+
+export async function getScrollwiseHeaderDisplay(): Promise<Pick<ScrollwiseDisplaySettings, "showMotionControl" | "menuMode">> {
+    const settings = await loadScrollwiseSettings();
+    const displaySetting = settings.find((setting) => setting.key === "site.scrollwiseExperience");
+    const display = displaySetting?.value && typeof displaySetting.value === "object" && !Array.isArray(displaySetting.value)
+        ? displaySetting.value as Record<string, unknown>
+        : {};
+    return {
+        showMotionControl: display.showMotionControl === true,
+        menuMode: display.menuMode === "classic" ? "classic" : defaultDisplay.menuMode,
     };
 }
 

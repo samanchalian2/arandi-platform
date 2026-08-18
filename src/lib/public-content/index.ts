@@ -8,10 +8,12 @@ export {
 } from "./cache";
 export { getPublicTheme, THEME_PREVIEW_COOKIE, type PublicTheme } from "./theme";
 export {
+    getScrollwiseHeaderDisplay,
     getScrollwiseExperience,
     type ScrollwiseChapter,
     type ScrollwiseDisplaySettings,
     type ScrollwiseExperience,
+    type ScrollwiseMenuMode,
     type ScrollwiseMotionPreset,
     type ScrollwiseSceneKey,
 } from "./scrollwise";

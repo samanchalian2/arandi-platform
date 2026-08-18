@@ -6,15 +6,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
+import { buildEnterpriseNavigationItems, type NavigationContent } from "@/content/navigation";
 import { cn } from "@/lib/utils";
 import { setScrollwiseMotionPaused, useScrollwiseMotionPreference } from "./motion-preference";
 
 type ScrollwiseHeaderProps = {
     companyName: string;
+    navigation: NavigationContent;
     lang: "en" | "fa";
+    showMotionControl: boolean;
+    menuMode: "narrative" | "classic";
 };
 
-export function ScrollwiseHeader({ companyName, lang }: ScrollwiseHeaderProps) {
+export function ScrollwiseHeader({ companyName, navigation, lang, showMotionControl, menuMode }: ScrollwiseHeaderProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [menuOpen, setMenuOpen] = useState(false);
@@ -26,6 +30,14 @@ export function ScrollwiseHeader({ companyName, lang }: ScrollwiseHeaderProps) {
     const nextLanguage = fa ? "en" : "fa";
     const params = new URLSearchParams(searchParams.toString());
     params.set("lang", nextLanguage);
+    const classicItems = [
+        ...buildEnterpriseNavigationItems(navigation.enterpriseLinks, lang),
+        { path: "/articles", href: `/articles?lang=${lang}`, label: fa ? "مقالات" : "Articles" },
+    ];
+    const isClassicMenu = menuMode === "classic";
+    const menuLabel = isClassicMenu
+        ? (fa ? "صفحات اصلی" : "Primary pages")
+        : (fa ? "فصل‌های روایت" : "Story chapters");
 
     const toggleMotion = () => {
         const next = !motionPaused;
@@ -40,14 +52,16 @@ export function ScrollwiseHeader({ companyName, lang }: ScrollwiseHeaderProps) {
                     <span className={cn("hidden text-xs font-semibold sm:inline", fa ? "tracking-normal" : "uppercase tracking-[0.2em]")}>{companyName}</span>
                 </Link>
 
-                <nav aria-label={fa ? "فصل‌های روایت" : "Story chapters"} className="hidden items-center gap-0.5 xl:flex">
-                    {chapters.map(([id, label], index) => <a key={id} href={`#${id}`} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground"><span className="me-1 text-foreground/38">{String(index + 1).padStart(2, "0")}</span>{label}</a>)}
+                <nav aria-label={menuLabel} className="hidden items-center gap-0.5 xl:flex">
+                    {isClassicMenu
+                        ? classicItems.map((item) => <Link key={item.path} href={item.href} aria-current={pathname === item.path || (item.path === "/articles" && pathname.startsWith("/articles/")) ? "page" : undefined} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground">{item.label}</Link>)
+                        : chapters.map(([id, label]) => <a key={id} href={`#${id}`} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground">{label}</a>)}
                 </nav>
 
                 <div className="flex items-center gap-1.5">
-                    <button type="button" onClick={toggleMotion} aria-pressed={motionPaused} aria-label={motionPaused ? (fa ? "فعال‌کردن حرکت" : "Enable motion") : (fa ? "توقف حرکت" : "Pause motion")} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-foreground hover:bg-white">
+                    {showMotionControl ? <button type="button" onClick={toggleMotion} aria-pressed={motionPaused} aria-label={motionPaused ? (fa ? "فعال‌کردن حرکت" : "Enable motion") : (fa ? "توقف حرکت" : "Pause motion")} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-foreground hover:bg-white">
                         {motionPaused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
-                    </button>
+                    </button> : null}
                     <Link href={`${pathname}?${params.toString()}`} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-xs font-bold uppercase text-foreground hover:bg-white" lang={nextLanguage}>
                         {nextLanguage}
                     </Link>
@@ -56,9 +70,13 @@ export function ScrollwiseHeader({ companyName, lang }: ScrollwiseHeaderProps) {
                     </button>
                 </div>
             </div>
-            {menuOpen ? <nav id="scrollwise-mobile-menu" aria-label={fa ? "فصل‌های روایت" : "Story chapters"} className="pointer-events-auto mx-auto mt-2 max-h-[calc(100svh-6rem)] max-w-[94rem] overflow-y-auto rounded-2xl border border-slate-900/8 bg-white/96 p-2 shadow-[0_1rem_4rem_rgb(28_37_48_/_0.08)] backdrop-blur-xl xl:hidden">
-                {chapters.map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} className="ds-focus-visible min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">{label}</a>)}
-                <Link href={`/projects?lang=${lang}`} className="ds-focus-visible min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-primary hover:bg-muted">{fa ? "مشاهده پروژه‌ها" : "View projects"}</Link>
+            {menuOpen ? <nav id="scrollwise-mobile-menu" aria-label={menuLabel} className="pointer-events-auto mx-auto mt-2 max-h-[calc(100svh-6rem)] max-w-[94rem] overflow-y-auto rounded-2xl border border-slate-900/8 bg-white/96 p-2 shadow-[0_1rem_4rem_rgb(28_37_48_/_0.08)] backdrop-blur-xl xl:hidden">
+                {isClassicMenu
+                    ? classicItems.map((item) => <Link key={item.path} href={item.href} aria-current={pathname === item.path || (item.path === "/articles" && pathname.startsWith("/articles/")) ? "page" : undefined} onClick={() => setMenuOpen(false)} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">{item.label}</Link>)
+                    : <>
+                        {chapters.map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">{label}</a>)}
+                        <Link href={`/projects?lang=${lang}`} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-primary hover:bg-muted">{fa ? "مشاهده پروژه‌ها" : "View projects"}</Link>
+                    </>}
             </nav> : null}
         </header>
     );
