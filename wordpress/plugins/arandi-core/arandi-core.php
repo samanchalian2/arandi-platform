@@ -9,12 +9,17 @@ defined( 'ABSPATH' ) || exit;
 final class Arandi_Core {
   public static function boot() : void {
     add_action( 'init', array( __CLASS__, 'types' ) );
+    add_action( 'customize_register', array( __CLASS__, 'customize' ) );
     add_shortcode( 'arandi_listing', array( __CLASS__, 'listing' ) );
     add_action( 'admin_post_nopriv_arandi_contact', array( __CLASS__, 'contact' ) );
     add_action( 'admin_post_arandi_contact', array( __CLASS__, 'contact' ) );
   }
   public static function types() : void {
     foreach ( array( 'service'=>'خدمات', 'solution'=>'راهکارها', 'industry'=>'صنایع', 'project'=>'پروژه‌ها', 'article'=>'مقالات' ) as $key=>$label ) register_post_type( 'arandi_'.$key, array( 'labels'=>array('name'=>$label), 'public'=>true, 'show_in_rest'=>true, 'has_archive'=>$key.'s', 'rewrite'=>array('slug'=>$key.'s'), 'supports'=>array('title','editor','excerpt','thumbnail'), 'menu_icon'=>'dashicons-portfolio' ) );
+  }
+  public static function customize( WP_Customize_Manager $customize ) : void {
+    $customize->add_section('arandi_company',array('title'=>'اطلاعات آرندی','priority'=>30));
+    foreach(array('phone'=>'تلفن','email'=>'ایمیل','address'=>'نشانی','instagram'=>'Instagram URL','telegram'=>'Telegram URL','whatsapp'=>'WhatsApp URL','bale'=>'Bale URL') as $key=>$label){$setting='arandi_company_'.$key;$customize->add_setting($setting,array('sanitize_callback'=>in_array($key,array('instagram','telegram','whatsapp','bale'),true)?'esc_url_raw':'sanitize_text_field'));$customize->add_control($setting,array('section'=>'arandi_company','label'=>$label,'type'=>in_array($key,array('instagram','telegram','whatsapp','bale'),true)?'url':'text'));}
   }
   public static function listing() : string {
     $map=array('services'=>'arandi_service','solutions'=>'arandi_solution','industries'=>'arandi_industry','projects'=>'arandi_project','articles'=>'arandi_article'); $slug=get_post_field('post_name',get_queried_object_id());
