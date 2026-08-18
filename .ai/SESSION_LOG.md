@@ -5,6 +5,7 @@
 - Created and used the isolated `webwordpress` worktree based on `main`.
 - Validated PHP syntax on the VPS, WordPress core checksums, GeneratePress, Arandi Core, both child themes, internal Nginx staging, all public WordPress paths, and a real browser render of `arandi.ir`.
 - The production domain is now served by WordPress over HTTP. TLS remains explicitly outstanding because the current private origin cannot satisfy public HTTP ACME validation.
+- Verified the seeded seven-link primary navigation in WP-CLI and in the live browser.
 
 ## 2026-08-15 — Public Theme Variants
 
