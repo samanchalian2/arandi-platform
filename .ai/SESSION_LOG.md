@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-08-19 — Account-switch handoff
+
+- Confirmed clean local worktrees and synchronized remote branches before account migration.
+- Confirmed VPS WordPress Scrollwise activation, PHP syntax, Home HTTP 200, and deployed motion asset presence.
+- Browser verified ten scenes, one main landmark, the Scrollwise motion script, and no horizontal overflow.
+- Remaining product work is explicitly Canvas-engine parity, not server/database/Git continuity.
+
 ## 2026-08-18 — WordPress deployment
 
 - Created and used the isolated `webwordpress` worktree based on `main`.

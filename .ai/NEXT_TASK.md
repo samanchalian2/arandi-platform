@@ -1,5 +1,13 @@
 # Active Task
 
+## Account-switch continuation — WordPress Scrollwise parity
+
+1. Work only in `C:\Users\samanchalian\Documents\GitHub\arandi-platform-webwordpress` on branch `webwordpress`; keep `main` and `scrollwise` untouched.
+2. Inspect `src/components/scrollwise/ScrollwiseCanvas.tsx`, `ScrollwiseStory.tsx`, and their public-content contracts in the `scrollwise` worktree before coding.
+3. Replace the lightweight WordPress background-position enhancement with an independently implemented Canvas engine: bounded preloading, deterministic ten-scene crossfades, camera travel, pause/reduced-motion behavior, and responsive assets.
+4. Preserve the existing WordPress data/database boundary, active theme, public routes, server backup, and no-secret policy.
+5. Validate with live Browser traversal forward/reverse at mobile and desktop; run PHP lint, WordPress theme/runtime checks, direct HTTP route checks, inspect Git diff, commit, push `webwordpress`, and append the verified result to existing `.ai` files.
+
 Phase 10 — Controlled Production Cutover
 
 ## Verified Starting Point

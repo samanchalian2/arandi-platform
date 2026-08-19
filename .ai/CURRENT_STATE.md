@@ -1,5 +1,12 @@
 # Current State
 
+## Account-switch handoff — 2026-08-19
+
+- GitHub branches are synchronized: `main` at `09d054e`, `scrollwise` at `db06045`, and the independent WordPress branch `webwordpress` at `be4f0cc` before this handoff record.
+- WordPress is live on `http://arandi.ir` with `Arandi Scrollwise` active. Its independent MariaDB database and `/srv/arandi-wordpress/site` remain separate from the Next.js/PostgreSQL release.
+- Verified server state: active Scrollwise theme, PHP syntax pass, HTTP Home `200`, ten `.scrollwise-scene` sections, no horizontal browser overflow, and the WordPress Scrollwise files match the deployed release set.
+- Important limitation: the WordPress implementation now carries the ten canonical scene assets/copy and a lightweight camera-motion script, but is not yet a byte-for-byte port of the React `ScrollwiseCanvas` engine. The next account must not claim full Canvas/crossfade parity until it ports and visually verifies `src/components/scrollwise/ScrollwiseCanvas.tsx` and its supporting behavior from the `scrollwise` branch.
+
 ## WordPress Edition — 2026-08-18
 
 - Branch `webwordpress` is an independent WordPress delivery branch created directly from `main`; it does not modify the Next.js runtime, its Prisma/PostgreSQL database, or the `scrollwise` branch.
