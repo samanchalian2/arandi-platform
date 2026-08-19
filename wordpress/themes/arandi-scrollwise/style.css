@@ -1,5 +1,301 @@
-/* Theme Name: Arandi Scrollwise
+/*
+ * Theme Name: Arandi Scrollwise
  * Description: Arandi narrative scroll experience. Requires GeneratePress.
  * Template: generatepress
- * Version: 1.0.0 */
-:root{--paper:#fffefa;--ink:#172033;--blue:#075ea6}html,body{max-width:100%;overflow-x:hidden}body{background:var(--paper);color:var(--ink);font-family:Vazirmatn,Arial,sans-serif}.scrollwise-scene{min-height:100svh;display:grid;align-items:end;padding:clamp(1.25rem,5vw,5rem);background:linear-gradient(100deg,#fffefaed 8%,#fffefa33 72%),var(--scene) var(--camera-x,50%) center/calc(var(--camera-scale,1)*100%) auto no-repeat}.scrollwise-card{max-width:620px;background:#fffffff0;border:1px solid #fff;border-radius:1.5rem;padding:clamp(1.3rem,4vw,3rem);box-shadow:0 18px 55px #0c192829;backdrop-filter:blur(12px)}.scrollwise-scene h1,.scrollwise-scene h2{font-size:clamp(2rem,4.2vw,4.4rem);line-height:1.18;margin:.5rem 0}.scrollwise-scene p{font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.9}.scrollwise-cta{display:inline-flex;min-height:44px;align-items:center;margin-top:1rem;padding:.65rem 1rem;border-radius:.55rem;background:var(--blue);color:#fff;text-decoration:none;font-weight:700}@media(prefers-reduced-motion:no-preference){.scrollwise-scene{transition:background-position .55s ease,background-size .55s ease}.scrollwise-card{opacity:.82;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}.scrollwise-scene.is-active .scrollwise-card{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.scrollwise-scene{background-position:center!important}}
+ * Version: 1.1.0
+ */
+
+:root {
+	--scrollwise-paper: #fffefa;
+	--scrollwise-ink: #172033;
+	--scrollwise-blue: #075ea6;
+}
+
+html,
+body {
+	max-width: 100%;
+	overflow-x: clip;
+}
+
+body {
+	background: var(--scrollwise-paper);
+	color: var(--scrollwise-ink);
+	font-family: Vazirmatn, Arial, sans-serif;
+}
+
+.scrollwise-story {
+	position: relative;
+	background: var(--scrollwise-paper);
+	color: var(--scrollwise-ink);
+	overflow: clip;
+	isolation: isolate;
+}
+
+.scrollwise-stage {
+	position: sticky;
+	z-index: 0;
+	top: 0;
+	height: 100svh;
+	overflow: hidden;
+	background: #fbfcfd;
+}
+
+.scrollwise-stage-fallback,
+.scrollwise-stage-fallback img,
+.scrollwise-canvas,
+.scrollwise-stage-wash,
+.scrollwise-veil {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.scrollwise-stage-fallback img {
+	object-fit: cover;
+}
+
+.scrollwise-canvas {
+	display: block;
+}
+
+.scrollwise-stage-wash {
+	background:
+		linear-gradient(180deg, rgb(255 255 255 / 24%) 0%, transparent 18%, transparent 80%, rgb(255 255 255 / 34%) 100%),
+		linear-gradient(90deg, rgb(255 254 250 / 20%), transparent 45%, rgb(255 254 250 / 16%));
+	pointer-events: none;
+}
+
+.scrollwise-veil {
+	z-index: 2;
+	background: #fffefa;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.scrollwise-track {
+	position: relative;
+	z-index: 3;
+	margin-top: -100svh;
+}
+
+.scrollwise-chapter {
+	position: relative;
+	min-height: 220svh;
+	border-top: 1px solid rgb(23 32 51 / 5%);
+}
+
+.scrollwise-chapter.is-finale {
+	min-height: 160svh;
+}
+
+.scrollwise-scene {
+	position: relative;
+	display: flex;
+	min-height: 150svh;
+	align-items: center;
+}
+
+.scrollwise-static-image {
+	display: none;
+}
+
+.scrollwise-panel-wrap {
+	display: flex;
+	width: min(100%, 94rem);
+	margin-inline: auto;
+	padding: clamp(6rem, 10vw, 9rem) clamp(1.25rem, 5vw, 4rem);
+}
+
+.scrollwise-chapter:nth-child(odd) .scrollwise-panel-wrap {
+	justify-content: flex-start;
+}
+
+.scrollwise-chapter:nth-child(even) .scrollwise-panel-wrap {
+	justify-content: flex-end;
+}
+
+.scrollwise-card {
+	width: min(100%, 35rem);
+	padding: clamp(1.5rem, 4vw, 2.5rem);
+	border: 1px solid rgb(255 255 255 / 80%);
+	border-radius: 1.75rem;
+	background: rgb(255 255 255 / 84%);
+	box-shadow: 0 1.5rem 5rem rgb(28 37 48 / 10%);
+	backdrop-filter: blur(18px);
+}
+
+.scrollwise-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0;
+	color: var(--scrollwise-blue);
+	font-size: 0.7rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.scrollwise-eyebrow span {
+	width: 2.25rem;
+	height: 1px;
+	background: rgb(7 94 166 / 50%);
+}
+
+.scrollwise-card h1,
+.scrollwise-card h2 {
+	margin: 1.1rem 0 0;
+	font-size: clamp(2rem, 4vw, 4rem);
+	font-weight: 650;
+	line-height: 1.25;
+	letter-spacing: -0.02em;
+}
+
+.scrollwise-story[dir="rtl"] .scrollwise-card h1,
+.scrollwise-story[dir="rtl"] .scrollwise-card h2 {
+	line-height: 1.5;
+	letter-spacing: normal;
+}
+
+.scrollwise-description {
+	margin: 1.25rem 0 0;
+	font-size: clamp(1rem, 1.4vw, 1.15rem);
+	line-height: 1.9;
+	color: rgb(23 32 51 / 76%);
+}
+
+.scrollwise-bridge {
+	margin: 1.4rem 0 0;
+	padding-inline-start: 1rem;
+	border-inline-start: 2px solid rgb(7 94 166 / 35%);
+	font-size: 0.93rem;
+	line-height: 1.8;
+	color: rgb(23 32 51 / 64%);
+}
+
+.scrollwise-interlude {
+	display: flex;
+	min-height: 70svh;
+	align-items: center;
+	padding: 3rem 1.25rem;
+}
+
+.scrollwise-interlude-card {
+	width: min(100%, 54rem);
+	margin-inline: auto;
+	padding: clamp(1.5rem, 4vw, 3rem);
+	border: 1px solid rgb(23 32 51 / 8%);
+	border-radius: 2rem;
+	background: rgb(255 255 255 / 82%);
+	box-shadow: 0 2rem 7rem rgb(28 37 48 / 8%);
+	text-align: center;
+	backdrop-filter: blur(24px);
+}
+
+.scrollwise-interlude-card p {
+	margin: 0;
+	color: var(--scrollwise-blue);
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.scrollwise-interlude-card h3 {
+	margin: 1rem 0 0;
+	font-size: clamp(1.3rem, 2.2vw, 2.1rem);
+	line-height: 1.55;
+}
+
+.scrollwise-cta {
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
+	margin-top: 1.5rem;
+	padding: 0.7rem 1.2rem;
+	border-radius: 999px;
+	background: var(--scrollwise-blue);
+	color: #fff;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.scrollwise-cta:hover,
+.scrollwise-cta:focus-visible {
+	background: #064d87;
+	color: #fff;
+}
+
+.scrollwise-cta:focus-visible {
+	outline: 3px solid rgb(7 94 166 / 30%);
+	outline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+	.scrollwise-card h1,
+	.scrollwise-card h2 {
+		font-size: clamp(1.8rem, 8.5vw, 3rem);
+	}
+
+	.scrollwise-panel-wrap {
+		align-items: flex-end;
+		padding-top: 8rem;
+		padding-bottom: 4rem;
+	}
+
+	.scrollwise-card {
+		border-radius: 1.35rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.scrollwise-stage {
+		display: none;
+	}
+
+	.scrollwise-track {
+		margin-top: 0;
+	}
+
+	.scrollwise-chapter,
+	.scrollwise-chapter.is-finale {
+		min-height: auto;
+	}
+
+	.scrollwise-scene {
+		min-height: 100svh;
+		overflow: hidden;
+	}
+
+	.scrollwise-static-image,
+	.scrollwise-static-image img {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.scrollwise-static-image img {
+		object-fit: cover;
+	}
+
+	.scrollwise-scene::after {
+		position: absolute;
+		inset: 0;
+		content: "";
+		background: linear-gradient(100deg, rgb(255 254 250 / 84%) 8%, rgb(255 254 250 / 20%) 72%);
+	}
+
+	.scrollwise-panel-wrap {
+		position: relative;
+		z-index: 1;
+	}
+
+	.scrollwise-interlude {
+		min-height: auto;
+		padding-block: 4rem;
+		background: var(--scrollwise-paper);
+	}
+}
