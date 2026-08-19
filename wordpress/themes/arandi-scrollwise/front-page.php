@@ -1,6 +1,15 @@
 <?php
 get_header();
 
+$requested_language = isset($_GET['lang']) ? sanitize_key(wp_unslash($_GET['lang'])) : '';
+$is_english = 'en' === $requested_language;
+$language = $is_english ? 'en' : 'fa';
+$direction = $is_english ? 'ltr' : 'rtl';
+$contact_url = $is_english
+    ? add_query_arg('lang', 'en', home_url('/contact/'))
+    : home_url('/contact/');
+$contact_label = $is_english ? 'Start a conversation' : 'شروع گفتگو';
+
 $scenes = array(
     array(
         'gateway',
@@ -64,13 +73,78 @@ $scenes = array(
     ),
 );
 
+if ($is_english) {
+    $scenes = array(
+        array(
+            'gateway',
+            'When data, processes and decisions drift apart',
+            'Siloed systems, limited visibility and disconnected workflows slow decisions and growth—even when technology is present everywhere.',
+            "Where is your organization's real constraint?",
+        ),
+        array(
+            'discover',
+            'Transformation begins with a precise understanding',
+            'Field observation, stakeholder dialogue and current-state analysis separate the real operating problem from its symptoms.',
+            'Define the problem before choosing technology',
+        ),
+        array(
+            'design',
+            'Architecture that connects technology to operations',
+            'Business needs, infrastructure, networks, data, software and security become one coherent, phased delivery blueprint.',
+            'From strategy to an executable program',
+        ),
+        array(
+            'build-secure',
+            'Controlled delivery, from communications to platform',
+            'Networks, data centers, cloud, software and layered security create a resilient, observable foundation for the next stage.',
+            'Durable transformation needs a secure foundation',
+        ),
+        array(
+            'oil-gas',
+            'One trusted information flow from field to operations',
+            'Secure instrumentation, industrial communications and IT/OT integration turn field data into timely operational decisions.',
+            'Visibility and reliability for oil and gas operations',
+        ),
+        array(
+            'petrochemical',
+            'Quality, maintenance and production on one data foundation',
+            'Laboratory, asset and production-planning data form a shared view that reduces downtime, rework and uncertainty.',
+            'From quality control to integrated planning',
+        ),
+        array(
+            'connected-operations',
+            'One operating view from generation to resource management',
+            'Grid monitoring, generation assets and diverse energy resources form a common operational picture for everyday coordination.',
+            'A shared view for a complex ecosystem',
+        ),
+        array(
+            'intelligence',
+            'AI in service of decisions and delivery',
+            'Digital twins, predictive insight, enterprise assistants and automation extend expert capability within a governed operating model.',
+            'People remain at the center of the intelligent enterprise',
+        ),
+        array(
+            'outcomes',
+            'A lifecycle that continues beyond handover',
+            "Each project becomes a lasting capability for operations, learning and the organization's next stage of growth.",
+            'Transformation is a capability, not a destination',
+        ),
+        array(
+            'finale',
+            'Transformation is not a project; it is a capability that remains',
+            'The opening picture is now complete, and the end of this story begins your transformation conversation.',
+            '',
+        ),
+    );
+}
+
 $first_image = get_stylesheet_directory_uri() . '/assets/scenes/' . $scenes[0][0] . '.webp';
 ?>
 <main
     id="main"
     class="scrollwise-story"
-    dir="<?php echo esc_attr(is_rtl() ? 'rtl' : 'ltr'); ?>"
-    lang="<?php echo esc_attr(get_bloginfo('language')); ?>"
+    dir="<?php echo esc_attr($direction); ?>"
+    lang="<?php echo esc_attr($language); ?>"
     data-scrollwise-story
     data-scene-count="<?php echo esc_attr((string) count($scenes)); ?>"
 >
@@ -120,8 +194,8 @@ $first_image = get_stylesheet_directory_uri() . '/assets/scenes/' . $scenes[0][0
                         <?php endif; ?>
                         <p><?php echo esc_html($scene[2]); ?></p>
                         <?php if ($is_last) : ?>
-                            <a class="scrollwise-cta" href="<?php echo esc_url(home_url('/contact/')); ?>">
-                                شروع گفتگو
+                            <a class="scrollwise-cta" href="<?php echo esc_url($contact_url); ?>">
+                                <?php echo esc_html($contact_label); ?>
                             </a>
                         <?php endif; ?>
                     </div>

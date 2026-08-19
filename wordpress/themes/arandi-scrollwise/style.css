@@ -31,6 +31,10 @@ body {
     color: var(--ink);
 }
 
+.scrollwise-story[dir="ltr"] {
+    font-family: Arial, sans-serif;
+}
+
 .scrollwise-stage {
     position: sticky;
     top: 0;
