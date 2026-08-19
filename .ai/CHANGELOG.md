@@ -1,20 +1,12 @@
 # Changelog
 
-## 2026-08-19 — WordPress Scrollwise Node parity
-
-- Completed the Story and Header layers around the existing Canvas with canonical scene copy, narrative navigation, responsive mobile menu, chapter/episode/finale layout, interlude highlights, summary, and closing footer.
-- Added safe theme-level English/LTR and Persian/RTL presentation through `?lang=en|fa`, without changing WordPress locale or persistent data.
-- Matched the Node Canvas handoff, veil, camera, preload, and motion-preference behavior; isolated GeneratePress chrome only on the Scrollwise home route.
-- Deployed the three changed theme files after a restorable backup at `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`; live desktop/mobile/English/reduced-motion QA passed.
-
 ## 2026-08-19 — WordPress Scrollwise Canvas
 
-- Ported the canonical Scrollwise visual engine to the GeneratePress child theme using plain PHP, CSS, and JavaScript.
-- Added a sticky Canvas stage, ten deterministic scenes, current-plus-two image loading, horizontal camera motion, restrained zoom, nine crossfades, and warm-white veil/interludes without scroll hijacking.
-- Added ten canonical mobile scene assets and a meaningful lazy static presentation for `prefers-reduced-motion`.
-- Added locale-aware Persian/RTL and English/LTR copy while preserving all WordPress routes, navigation, Customizer settings, MariaDB boundary, theme switching, and contact behavior.
-- Deployed version `1.1.0` after a restorable active-theme/Nginx backup; server and live Persian desktop/mobile browser acceptance passed.
-- Live English verification remains pending because the active WordPress locale layer currently resolves requests as `fa-IR`.
+- Replaced the CSS background-position enhancement with a dependency-free sticky Canvas engine for the ten canonical scenes.
+- Added current/next-only loading with first-scene priority, deterministic scroll-derived camera progress, restrained zoom, scene crossfades, warm-white veil/interludes, and a static reduced-motion state without scroll hijacking.
+- Added safe theme-local Persian/RTL and English/LTR presentation while retaining GeneratePress navigation, WordPress routes, Customizer settings, MariaDB, theme switching, and the contact form.
+- Backed up the complete active theme and Nginx vhost, then deployed only the four changed theme files with safe ownership and permissions; Nginx was not modified.
+- Server lint/syntax/checksum/route/asset checks and Browser-canvas desktop/mobile forward/reverse acceptance passed.
 
 ## 2026-08-18 — WordPress Edition
 

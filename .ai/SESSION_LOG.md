@@ -1,22 +1,13 @@
 # Session Log
 
-## 2026-08-19 — WordPress Scrollwise Node parity
-
-- Re-read the current Node.js Canvas, Story, Header, content contract, copy, and motion-preference sources before extending the deployed Canvas.
-- Rebuilt the WordPress narrative with canonical ten-scene copy, chapter/episode/finale geometry, full narrative Header/menu, language presentation switch, signal and intelligence lists, interlude highlight cards, summary, and footer.
-- Aligned the Canvas to Node semantics: cinematic camera settings, episode-aware `0.93` handoff, standard `0.86` handoff, chapter-derived warm-white veil, bounded preload, and the shared localStorage motion-preference contract.
-- Created `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`, deployed only the three changed theme files, and retained the prior backup.
-- Server PHP lint, Nginx test, Home/English/Contact/Articles checks, JavaScript syntax, whitespace validation, and live Chrome QA passed. English/LTR now renders directly through the safe theme-level query parameter; no database or locale configuration changed.
-
 ## 2026-08-19 — WordPress Scrollwise Canvas port
 
 - Re-read the complete project brain and canonical `ScrollwiseCanvas`, story, header, content contract, copy, and motion-preference behavior from the protected `scrollwise` source without modifying it.
-- Confirmed the ten existing WordPress desktop assets exactly match the canonical v2 Git blobs and added the ten canonical mobile assets.
-- Replaced the lightweight background-position script with a dependency-free Canvas engine, sticky narrative stage, bounded current-plus-two loading, scene-aware camera track, zoom, crossfades, warm-white veil, and reduced-motion static scenes.
-- Created and checksum-verified the active-theme/Nginx backup at `/srv/arandi-wordpress/backups/scrollwise-canvas-20260819T101154Z`, then deployed only the 14 changed theme files with safe ownership and permissions.
-- PHP lint, JavaScript syntax, diff checks, Nginx syntax, 14/14 file hashes, all public routes, all 20 assets, and contact-form preservation passed.
-- Live Chrome QA passed Persian desktop/mobile, all nine handoffs, deterministic forward/reverse motion, Canvas pixels, warm-white veil, reduced motion, one `main`, no horizontal overflow, and zero runtime errors.
-- English/LTR remains runtime-unverified because active WordPress resolves `?lang=en` to `fa-IR`; no production locale setting was changed.
+- Replaced the lightweight background-position script with a dependency-free Canvas engine, one sticky stage, exactly ten scenes, current/next-only requests, deterministic camera track, restrained zoom, crossfades, warm-white veil/interludes, and reduced-motion static behavior.
+- Kept GeneratePress Header/navigation and all WordPress/MariaDB/Customizer/contact boundaries intact. Added theme-local English/LTR copy through `?lang=en` without changing locale or persistence.
+- Created `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z/arandi-scrollwise` and `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z/arandi-wordpress.nginx`, then deployed only `functions.php`, `front-page.php`, `style.css`, and `assets/scrollwise.js`.
+- Server PHP/JavaScript/Nginx checks, local-to-active file hashes, unchanged Nginx checksum, nine routes, ten image assets, ownership, navigation, and contact form passed.
+- Browser-canvas QA passed at 1280×721 and 390×844: all ten scenes forward/reverse with zero camera-state drift, current/next request growth, loaded images, camera/zoom motion, crossfades, warm-white veil, reduced motion, Persian/RTL, English/LTR, one `main`, no overflow, and no captured runtime errors.
 
 ## 2026-08-19 — Account-switch handoff
 

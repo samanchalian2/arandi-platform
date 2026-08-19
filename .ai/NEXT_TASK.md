@@ -1,11 +1,11 @@
 # Active Task
 
-## Owner review and merge — WordPress Scrollwise Node parity
+## Owner review and merge — WordPress Scrollwise Canvas
 
-1. Review the deployed canonical Node-parity `Arandi Scrollwise` experience at `http://arandi.ir/` in Persian and `http://arandi.ir/?lang=en` in English.
+1. Review the deployed `Arandi Scrollwise` Canvas experience at `http://arandi.ir/` in Persian and `http://arandi.ir/?lang=en` in English.
 2. Merge the reviewed `copilot/scrollwise-canvas-port` pull request into `webwordpress`; do not merge into or modify `main` or `scrollwise`.
-3. If visual revisions are requested, implement them only on the isolated branch and preserve the restorable backup at `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`.
-4. Keep the theme-level `?lang=en|fa` presentation resolver isolated from WordPress locale, MariaDB, Next.js/PostgreSQL, route, menu, Customizer, theme-switching, and contact-form boundaries.
+3. If visual revisions are requested, implement them only on the isolated branch and preserve the restorable backups under `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z`.
+4. Preserve current/next-only loading, native scrolling, deterministic reverse progress, reduced motion, GeneratePress navigation, WordPress locale/MariaDB, Customizer, theme switching, routes, and contact-form boundaries.
 
 Phase 10 — Controlled Production Cutover
 

@@ -2,22 +2,24 @@
 
 ## WordPress Scrollwise Canvas — 2026-08-19
 
-- The isolated `copilot/scrollwise-canvas-port` remote branch is based exactly on `webwordpress` at `fd2571f`; `main`, `scrollwise`, and `webwordpress` were not modified.
-- The theme now independently recreates the complete visible Node.js Scrollwise contract in PHP/CSS/plain JavaScript: canonical copy, chapter roles and heights, sticky Canvas, bounded current-plus-two preloading, cinematic camera, episode-aware handoffs, crossfades, veil, Header, narrative menu, highlights, summary, and footer.
-- The theme-level `?lang=en|fa` resolver now renders live English/LTR or Persian/RTL without altering the WordPress locale, database, menus, Customizer, or plugins.
-- Before this deployment, the active theme and Nginx vhost were backed up at `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`. Only `front-page.php`, `style.css`, and `assets/scrollwise.js` were installed with `www-data:www-data` and mode `0644`.
-- Server PHP lint, Nginx syntax, Home/English/Contact/Articles HTTP checks, JavaScript syntax, and diff whitespace checks passed.
-- Live Chrome QA passed at 1280×900 and 390×844: one `main`, ten chapters, a real Canvas, no horizontal overflow, zero console/page errors, camera movement, handoff crossfade, deterministic reverse scroll, mobile narrative menu, English/LTR, static reduced-motion scenes, and preserved non-Scrollwise WordPress chrome on `/company/`.
+- Work was completed only on the isolated `copilot/scrollwise-canvas-port` branch; `main`, `scrollwise`, and `webwordpress` were not modified.
+- The active GeneratePress child theme now uses a dependency-free sticky Canvas engine for exactly ten canonical scenes. Image requests are limited to the current and next scene, with the first scene prioritized and no `+2` preload.
+- Native scrolling drives deterministic local progress, alternating horizontal camera travel, restrained zoom, current/next crossfades, and warm-white interludes. Reduced motion fixes the camera and disables crossfade/veil motion.
+- Existing GeneratePress Header/navigation, routes, Customizer settings, MariaDB boundary, theme switching, and contact form remain in place. Theme-local `?lang=en` presentation renders the supported Scrollwise copy in English/LTR without changing the WordPress locale or persistent data.
+- Fresh restorable backups are `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z/arandi-scrollwise` and `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z/arandi-wordpress.nginx`.
+- Only `functions.php`, `front-page.php`, `style.css`, and `assets/scrollwise.js` were deployed from this implementation, with `www-data:www-data` ownership and mode `0644`. The Nginx file remains checksum-identical to its backup.
+- Server PHP lint, JavaScript syntax, Nginx syntax, active-file checksums, all nine preserved public routes, and all ten scene assets passed.
+- Browser-canvas QA passed at 1280×721 and a real 390×844 iframe viewport: one `main`, no horizontal overflow, sticky Canvas pixels, current/next-only request growth, all ten scenes forward and reverse with zero camera-state drift, camera/zoom changes, crossfades, warm-white veil, reduced-motion static state, Persian/RTL, English/LTR, visible GeneratePress navigation, preserved contact form, and no captured runtime errors.
 
 ## WordPress Edition — 2026-08-18
 
 - Branch `webwordpress` is an independent WordPress delivery branch created directly from `main`; it does not modify the Next.js runtime, its Prisma/PostgreSQL database, or the `scrollwise` branch.
 - VPS WordPress is installed under `/srv/arandi-wordpress/site` with the separate local MariaDB database `arandi_wordpress`; its credential file is root-readable only and no connection value is committed.
-- GeneratePress 3.6.1, `Arandi Core`, `Arandi Default Enterprise`, and `Arandi Scrollwise` are installed. The Default Enterprise child theme is active; both themes use shared WordPress editorial content and can be selected from Appearance → Themes.
+- GeneratePress 3.6.1, `Arandi Core`, `Arandi Default Enterprise`, and `Arandi Scrollwise` are installed. The Scrollwise child theme is active; both child themes use shared WordPress editorial content and can be selected from Appearance → Themes.
 - Nginx now serves the WordPress site for `arandi.ir` over port 80. The prior Next.js vhost is copied to `/etc/arandi-platform/nginx-backups/arandi-platform-internal.before-wordpress-20260818`, and the Next.js release/service remains untouched for rollback.
 - Direct HTTP, PHP lint, WordPress checksums, active-plugin/theme checks, default and Scrollwise live render checks, and the public browser check passed. `arandi.ir` is currently HTTP-only: trusted public TLS cannot be issued while the origin remains a private `172.20.190.16` address without publicly reachable ACME validation or DNS-API credentials.
 
-Last verified: 2026-08-15
+Last verified: 2026-08-19
 
 ## Current Phase
 
