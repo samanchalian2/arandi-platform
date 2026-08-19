@@ -1,12 +1,11 @@
 # Active Task
 
-## Account-switch continuation — WordPress Scrollwise parity
+## Owner review and merge — WordPress Scrollwise Canvas
 
-1. Work only in `C:\Users\samanchalian\Documents\GitHub\arandi-platform-webwordpress` on branch `webwordpress`; keep `main` and `scrollwise` untouched.
-2. Inspect `src/components/scrollwise/ScrollwiseCanvas.tsx`, `ScrollwiseStory.tsx`, and their public-content contracts in the `scrollwise` worktree before coding.
-3. Replace the lightweight WordPress background-position enhancement with an independently implemented Canvas engine: bounded preloading, deterministic ten-scene crossfades, camera travel, pause/reduced-motion behavior, and responsive assets.
-4. Preserve the existing WordPress data/database boundary, active theme, public routes, server backup, and no-secret policy.
-5. Validate with live Browser traversal forward/reverse at mobile and desktop; run PHP lint, WordPress theme/runtime checks, direct HTTP route checks, inspect Git diff, commit, push `webwordpress`, and append the verified result to existing `.ai` files.
+1. Review the deployed `Arandi Scrollwise` version `1.1.0` at `http://arandi.ir/`.
+2. Merge the reviewed `copilot/scrollwise-canvas-port` pull request into `webwordpress`; do not merge into or modify `main` or `scrollwise`.
+3. If visual revisions are requested, implement them only on the isolated branch and preserve the restorable backup at `/srv/arandi-wordpress/backups/scrollwise-canvas-20260819T101154Z`.
+4. When the WordPress locale/content layer exposes English, run the pending desktop English/LTR browser check without changing the MariaDB, Next.js/PostgreSQL, route, menu, Customizer, theme-switching, or contact-form boundaries.
 
 Phase 10 — Controlled Production Cutover
 

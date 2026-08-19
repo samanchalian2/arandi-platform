@@ -1,5 +1,15 @@
 # Session Log
 
+## 2026-08-19 — WordPress Scrollwise Canvas port
+
+- Re-read the complete project brain and canonical `ScrollwiseCanvas`, story, header, content contract, copy, and motion-preference behavior from the protected `scrollwise` source without modifying it.
+- Confirmed the ten existing WordPress desktop assets exactly match the canonical v2 Git blobs and added the ten canonical mobile assets.
+- Replaced the lightweight background-position script with a dependency-free Canvas engine, sticky narrative stage, bounded current-plus-two loading, scene-aware camera track, zoom, crossfades, warm-white veil, and reduced-motion static scenes.
+- Created and checksum-verified the active-theme/Nginx backup at `/srv/arandi-wordpress/backups/scrollwise-canvas-20260819T101154Z`, then deployed only the 14 changed theme files with safe ownership and permissions.
+- PHP lint, JavaScript syntax, diff checks, Nginx syntax, 14/14 file hashes, all public routes, all 20 assets, and contact-form preservation passed.
+- Live Chrome QA passed Persian desktop/mobile, all nine handoffs, deterministic forward/reverse motion, Canvas pixels, warm-white veil, reduced motion, one `main`, no horizontal overflow, and zero runtime errors.
+- English/LTR remains runtime-unverified because active WordPress resolves `?lang=en` to `fa-IR`; no production locale setting was changed.
+
 ## 2026-08-19 — Account-switch handoff
 
 - Confirmed clean local worktrees and synchronized remote branches before account migration.

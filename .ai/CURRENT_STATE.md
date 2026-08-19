@@ -1,11 +1,14 @@
 # Current State
 
-## Account-switch handoff — 2026-08-19
+## WordPress Scrollwise Canvas — 2026-08-19
 
-- GitHub branches are synchronized: `main` at `09d054e`, `scrollwise` at `db06045`, and the independent WordPress branch `webwordpress` at `be4f0cc` before this handoff record.
-- WordPress is live on `http://arandi.ir` with `Arandi Scrollwise` active. Its independent MariaDB database and `/srv/arandi-wordpress/site` remain separate from the Next.js/PostgreSQL release.
-- Verified server state: active Scrollwise theme, PHP syntax pass, HTTP Home `200`, ten `.scrollwise-scene` sections, no horizontal browser overflow, and the WordPress Scrollwise files match the deployed release set.
-- Important limitation: the WordPress implementation now carries the ten canonical scene assets/copy and a lightweight camera-motion script, but is not yet a byte-for-byte port of the React `ScrollwiseCanvas` engine. The next account must not claim full Canvas/crossfade parity until it ports and visually verifies `src/components/scrollwise/ScrollwiseCanvas.tsx` and its supporting behavior from the `scrollwise` branch.
+- The isolated `copilot/scrollwise-canvas-port` remote branch is based exactly on `webwordpress` at `fd2571f`; `main`, `scrollwise`, and `webwordpress` were not modified.
+- Commit `e04e9b0` independently ports the canonical Scrollwise behavior to plain WordPress PHP/CSS/JavaScript: a viewport-sticky Canvas, current-plus-two bounded preloading, scene-aware horizontal camera travel, restrained zoom, nine deterministic crossfades, warm-white interludes, and a static reduced-motion path.
+- The active `Arandi Scrollwise` theme at `http://arandi.ir/` is version `1.1.0`. Before deployment, the active theme and Nginx vhost were backed up under `/srv/arandi-wordpress/backups/scrollwise-canvas-20260819T101154Z`; its checksum manifest passes.
+- Server verification passed: active PHP lint, 14/14 deployed-file checksums, `www-data:www-data` ownership with mode `0644`, Nginx syntax, Home `200`, all seven preserved public routes `200`, all 20 desktop/mobile scene assets `200`, and the existing contact form remains present.
+- Live Chrome verification passed at 1280×900 and 390×844: one `main`, ten chapters, one real Canvas, zero horizontal overflow, zero console/page/request errors, camera values changing across scroll positions, deterministic reverse-scroll values, loaded Canvas pixels, all nine scene handoffs crossfading, and a visible warm-white veil.
+- Reduced-motion verification passed at desktop and mobile: the Canvas stage is absent, meaningful lazy static scenes remain visible, mobile uses `gateway-mobile.webp`, and no overflow or runtime error occurs.
+- WordPress currently resolves `?lang=en` as `fa-IR`; therefore live English/LTR QA is unavailable without changing the active locale/content layer. English copy and LTR rendering are implemented and remain pending runtime verification when WordPress exposes an English locale.
 
 ## WordPress Edition — 2026-08-18
 
