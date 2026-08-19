@@ -3,12 +3,11 @@
 ## WordPress Scrollwise Canvas — 2026-08-19
 
 - The isolated `copilot/scrollwise-canvas-port` remote branch is based exactly on `webwordpress` at `fd2571f`; `main`, `scrollwise`, and `webwordpress` were not modified.
-- Commit `e04e9b0` independently ports the canonical Scrollwise behavior to plain WordPress PHP/CSS/JavaScript: a viewport-sticky Canvas, current-plus-two bounded preloading, scene-aware horizontal camera travel, restrained zoom, nine deterministic crossfades, warm-white interludes, and a static reduced-motion path.
-- The active `Arandi Scrollwise` theme at `http://arandi.ir/` is version `1.1.0`. Before deployment, the active theme and Nginx vhost were backed up under `/srv/arandi-wordpress/backups/scrollwise-canvas-20260819T101154Z`; its checksum manifest passes.
-- Server verification passed: active PHP lint, 14/14 deployed-file checksums, `www-data:www-data` ownership with mode `0644`, Nginx syntax, Home `200`, all seven preserved public routes `200`, all 20 desktop/mobile scene assets `200`, and the existing contact form remains present.
-- Live Chrome verification passed at 1280×900 and 390×844: one `main`, ten chapters, one real Canvas, zero horizontal overflow, zero console/page/request errors, camera values changing across scroll positions, deterministic reverse-scroll values, loaded Canvas pixels, all nine scene handoffs crossfading, and a visible warm-white veil.
-- Reduced-motion verification passed at desktop and mobile: the Canvas stage is absent, meaningful lazy static scenes remain visible, mobile uses `gateway-mobile.webp`, and no overflow or runtime error occurs.
-- WordPress currently resolves `?lang=en` as `fa-IR`; therefore live English/LTR QA is unavailable without changing the active locale/content layer. English copy and LTR rendering are implemented and remain pending runtime verification when WordPress exposes an English locale.
+- The theme now independently recreates the complete visible Node.js Scrollwise contract in PHP/CSS/plain JavaScript: canonical copy, chapter roles and heights, sticky Canvas, bounded current-plus-two preloading, cinematic camera, episode-aware handoffs, crossfades, veil, Header, narrative menu, highlights, summary, and footer.
+- The theme-level `?lang=en|fa` resolver now renders live English/LTR or Persian/RTL without altering the WordPress locale, database, menus, Customizer, or plugins.
+- Before this deployment, the active theme and Nginx vhost were backed up at `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`. Only `front-page.php`, `style.css`, and `assets/scrollwise.js` were installed with `www-data:www-data` and mode `0644`.
+- Server PHP lint, Nginx syntax, Home/English/Contact/Articles HTTP checks, JavaScript syntax, and diff whitespace checks passed.
+- Live Chrome QA passed at 1280×900 and 390×844: one `main`, ten chapters, a real Canvas, no horizontal overflow, zero console/page errors, camera movement, handoff crossfade, deterministic reverse scroll, mobile narrative menu, English/LTR, static reduced-motion scenes, and preserved non-Scrollwise WordPress chrome on `/company/`.
 
 ## WordPress Edition — 2026-08-18
 

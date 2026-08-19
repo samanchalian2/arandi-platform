@@ -1,5 +1,13 @@
 # Session Log
 
+## 2026-08-19 — WordPress Scrollwise Node parity
+
+- Re-read the current Node.js Canvas, Story, Header, content contract, copy, and motion-preference sources before extending the deployed Canvas.
+- Rebuilt the WordPress narrative with canonical ten-scene copy, chapter/episode/finale geometry, full narrative Header/menu, language presentation switch, signal and intelligence lists, interlude highlight cards, summary, and footer.
+- Aligned the Canvas to Node semantics: cinematic camera settings, episode-aware `0.93` handoff, standard `0.86` handoff, chapter-derived warm-white veil, bounded preload, and the shared localStorage motion-preference contract.
+- Created `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`, deployed only the three changed theme files, and retained the prior backup.
+- Server PHP lint, Nginx test, Home/English/Contact/Articles checks, JavaScript syntax, whitespace validation, and live Chrome QA passed. English/LTR now renders directly through the safe theme-level query parameter; no database or locale configuration changed.
+
 ## 2026-08-19 — WordPress Scrollwise Canvas port
 
 - Re-read the complete project brain and canonical `ScrollwiseCanvas`, story, header, content contract, copy, and motion-preference behavior from the protected `scrollwise` source without modifying it.

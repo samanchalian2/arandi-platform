@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-19 — WordPress Scrollwise Node parity
+
+- Completed the Story and Header layers around the existing Canvas with canonical scene copy, narrative navigation, responsive mobile menu, chapter/episode/finale layout, interlude highlights, summary, and closing footer.
+- Added safe theme-level English/LTR and Persian/RTL presentation through `?lang=en|fa`, without changing WordPress locale or persistent data.
+- Matched the Node Canvas handoff, veil, camera, preload, and motion-preference behavior; isolated GeneratePress chrome only on the Scrollwise home route.
+- Deployed the three changed theme files after a restorable backup at `/srv/arandi-wordpress/backups/scrollwise-node-parity-20260819T130951Z`; live desktop/mobile/English/reduced-motion QA passed.
+
 ## 2026-08-19 — WordPress Scrollwise Canvas
 
 - Ported the canonical Scrollwise visual engine to the GeneratePress child theme using plain PHP, CSS, and JavaScript.
