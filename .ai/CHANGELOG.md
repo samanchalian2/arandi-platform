@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-19 — WordPress Scrollwise Canvas
+
+- Replaced the CSS background-position enhancement with a dependency-free sticky Canvas engine for the ten canonical scenes.
+- Added current/next-only loading with first-scene priority, deterministic scroll-derived camera progress, restrained zoom, scene crossfades, warm-white veil/interludes, and a static reduced-motion state without scroll hijacking.
+- Added safe theme-local Persian/RTL and English/LTR presentation while retaining GeneratePress navigation, WordPress routes, Customizer settings, MariaDB, theme switching, and the contact form.
+- Backed up the complete active theme and Nginx vhost, then deployed only the four changed theme files with safe ownership and permissions; Nginx was not modified.
+- Server lint/syntax/checksum/route/asset checks and Browser-canvas desktop/mobile forward/reverse acceptance passed.
+
 ## 2026-08-18 — WordPress Edition
 
 - Added the independent `webwordpress` delivery structure: Arandi Core plugin, GeneratePress-based Default Enterprise and Scrollwise child themes, original governed Scrollwise scene assets, and repeatable server installer.

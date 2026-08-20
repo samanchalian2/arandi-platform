@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-08-19 — WordPress Scrollwise Canvas port
+
+- Re-read the complete project brain and canonical `ScrollwiseCanvas`, story, header, content contract, copy, and motion-preference behavior from the protected `scrollwise` source without modifying it.
+- Replaced the lightweight background-position script with a dependency-free Canvas engine, one sticky stage, exactly ten scenes, current/next-only requests, deterministic camera track, restrained zoom, crossfades, warm-white veil/interludes, and reduced-motion static behavior.
+- Kept GeneratePress Header/navigation and all WordPress/MariaDB/Customizer/contact boundaries intact. Added theme-local English/LTR copy through `?lang=en` without changing locale or persistence.
+- Created `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z/arandi-scrollwise` and `/srv/arandi-wordpress/backups/scrollwise-canvas-port-20260819T140034Z/arandi-wordpress.nginx`, then deployed only `functions.php`, `front-page.php`, `style.css`, and `assets/scrollwise.js`.
+- Server PHP/JavaScript/Nginx checks, local-to-active file hashes, unchanged Nginx checksum, nine routes, ten image assets, ownership, navigation, and contact form passed.
+- Browser-canvas QA passed at 1280×721 and 390×844: all ten scenes forward/reverse with zero camera-state drift, current/next request growth, loaded images, camera/zoom motion, crossfades, warm-white veil, reduced motion, Persian/RTL, English/LTR, one `main`, no overflow, and no captured runtime errors.
+
 ## 2026-08-19 — Account-switch handoff
 
 - Confirmed clean local worktrees and synchronized remote branches before account migration.
