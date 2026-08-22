@@ -1,12 +1,21 @@
 # Current State
 
-Last verified: 2026-08-17
+Last verified: 2026-08-22
 
 ## Current Phase
 
 Phase 10 — Quality and Production
 
-Status: the application and production-like VPS staging boundary are validated. Release `20260803T093000Z-phase10-r6` is active behind loopback Nginx without replacing the existing WordPress public server block. Public production cutover remains unapproved until public DNS, a trusted renewable certificate, provider credentials, external alerting/off-host backup, and observed GitHub CI are available.
+Status: the application and production-like VPS staging boundary are validated. The current Node.js Scrollwise branch (`db06045`) is deployed as release `20260822T123000Z-scrollwise-r2` on the approved VPS. Nginx now serves the Next.js application for `arandi.ir` and the server IP over HTTP; the prior WordPress public and loopback staging vhosts are disabled, while their files, MariaDB database, Nginx configuration, and a fresh cutover snapshot remain available for rollback. Trusted public TLS, independent public-DNS verification, provider activation, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-22 — Node.js Scrollwise HTTP cutover
+
+- The VPS release `20260822T123000Z-scrollwise-r2` was built from the clean local `scrollwise` branch at `db06045` and activated through the canonical release script. Prisma reported seven current migrations and no pending migration.
+- A rollback snapshot of the prior WordPress site, its MariaDB database, the relevant Nginx configuration, and the prior Next.js target was created under the protected VPS cutover-backup directory before the vhost change. No credential is recorded in source or documentation.
+- `/etc/nginx/sites-enabled` now contains the Node.js public vhost plus the existing loopback staging/TLS vhosts. The WordPress public port-80 vhost and its loopback staging vhost are disabled; MariaDB and the WordPress files remain retained solely for rollback.
+- VPS checks passed: application readiness `200`, eight public Persian routes `200`, Scrollwise markup present, expected public security headers present, WordPress loopback listener closed, and the repaired release-local health and backup systemd jobs both exited successfully.
+- Local validation before deployment passed: 50 focused tests, strict typecheck, zero-warning lint, and the 60-route production build.
+- This is an HTTP cutover only. It does not establish publicly resolvable DNS, a trusted renewable certificate, HTTPS redirect/HSTS, live provider delivery, external alerts, off-host recovery, or observed GitHub CI.
 
 Local development verification on 2026-08-09: the public mobile navigation is interactive again at `http://127.0.0.1:3000/?lang=fa` and follows logical content-start placement (right in Persian/RTL, left in English/LTR). Next.js development assets/HMR had rejected the explicit loopback origin, preventing Client Component hydration; `allowedDevOrigins` now permits only `127.0.0.1`, and the development-only CSP exceptions required by Next.js tooling do not apply to production.
 

@@ -4,6 +4,15 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-22 — Node.js Scrollwise HTTP cutover
+
+- Deployed clean branch `scrollwise` commit `db06045` as VPS release `20260822T123000Z-scrollwise-r2`.
+- Replaced the public WordPress and WordPress-staging Nginx vhosts with the Node.js public vhost; WordPress files, MariaDB data, prior Nginx configuration, and a fresh rollback snapshot remain retained.
+- Confirmed 50 focused tests, typecheck, lint, production build, current Prisma migrations, readiness, eight public Persian routes, Scrollwise markup, security headers, closed WordPress listener, and successful health/backup job execution.
+- The release is HTTP-only. Trusted TLS, public DNS validation, provider delivery, external alerting/off-host backup, and observed CI remain outstanding.
+
+---
+
 # Scrollwise narrative v2
 
 Date:

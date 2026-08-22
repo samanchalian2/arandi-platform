@@ -1686,3 +1686,12 @@ Continue with:
 - Validation passed: 50/50 tests, typecheck, zero-warning lint, production build (60 pages), Prisma validation/status, Theme/Settings and enterprise/fixed verifiers, zero-vulnerability production audit, diff check, and 24 responsive quality checks with zero accessibility violations.
 - In-app Browser QA passed FA 390×844 and EN desktop, all ten states, exactly six numbered chapters, late-scene Canvas synchronization, active assistant prompts, four proof images, Admin editing controls, zero broken images, and zero horizontal overflow.
 - Classic remains public. Scrollwise was not committed, pushed, deployed, or globally activated.
+
+# 2026-08-22 — Scrollwise VPS cutover
+
+- Re-read the project state and active cutover task, inspected the clean `scrollwise` branch, server listeners, Nginx vhosts, systemd unit, release layout, disk capacity, and rollback boundary before changing any public routing.
+- Validated the local release with 50 focused tests, strict typecheck, lint, and a 60-route production build.
+- Built and activated `20260822T123000Z-scrollwise-r2` from `db06045`; Prisma reported no pending migration and application readiness passed.
+- Took a protected cutover snapshot of the WordPress site, its MariaDB database, relevant Nginx configuration, and the previous Next.js target. Disabled only the WordPress web vhosts; retained WordPress data and services for rollback.
+- Verified eight public Persian routes, Scrollwise markup, public security headers, closed WordPress loopback listener, and successful health/backup systemd job runs. No secret was written to project files or documentation.
+- Public delivery remains HTTP-only pending trusted TLS and independently verified public DNS.
