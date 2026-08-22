@@ -12,6 +12,7 @@ export const EDITABLE_SETTING_KEYS = [
     "site.contact",
     "site.logo",
     "ai.runtime",
+    "contact.notifications",
 ] as const;
 
 export type EditableSettingKey = typeof EDITABLE_SETTING_KEYS[number];
@@ -96,6 +97,13 @@ function parseOptionalHttpsUrl(value: unknown, field: string, hosts: readonly st
 }
 
 export function parsePublicSettingValue(key: EditableSettingKey, value: Record<string, unknown>): Record<string, unknown> {
+    if (key === "contact.notifications") {
+        const recipient = value.recipient;
+        if (typeof recipient !== "string" || recipient.trim().length < 5 || recipient.trim().length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient.trim())) {
+            throw new Error("contact.notifications.recipient is invalid.");
+        }
+        return { recipient: recipient.trim().toLowerCase() };
+    }
     if (key === "site.social") {
         const extra = Object.keys(value).filter((name) => !Object.hasOwn(SOCIAL_HOSTS, name));
         if (extra.length > 0) throw new Error("site.social contains an unsupported network.");
@@ -194,5 +202,5 @@ export function parsePublicSettingValue(key: EditableSettingKey, value: Record<s
 }
 
 export function isPrivateEditableSettingKey(key: EditableSettingKey): boolean {
-    return key === "ai.runtime" || key === "site.scrollwiseScenes" || key === "site.scrollwiseExperience" || key === "site.scrollwiseCopy";
+    return key === "ai.runtime" || key === "site.scrollwiseScenes" || key === "site.scrollwiseExperience" || key === "site.scrollwiseCopy" || key === "contact.notifications";
 }

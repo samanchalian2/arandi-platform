@@ -221,11 +221,73 @@ model ContactSubmission {
   ipHash            String?
   userAgentHash     String?
   dedupeHash        String    @unique
+  replies           ContactReply[]
 
   @@index([createdAt])
   @@index([status, createdAt])
   @@index([deliveryState, createdAt])
   @@index([ipHash, createdAt])
+}
+
+model ContactReply {
+  id                String   @id @default(uuid()) @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  submissionId      String   @db.Uuid
+  authorId          String?  @db.Uuid
+  recipient         String
+  subject           String
+  body              String
+  deliveryState     String   @default("pending")
+  deliveryAttempts  Int      @default(0)
+  lastDeliveryAt    DateTime?
+  deliveryProvider  String?
+  providerMessageId String?
+  submission        ContactSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  author            User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([submissionId, createdAt])
+  @@index([deliveryState, createdAt])
+}
+
+model AnalyticsVisitor {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+  tokenHash   String   @unique
+  sessions    AnalyticsSession[]
+}
+
+model AnalyticsSession {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  lastSeenAt     DateTime @default(now())
+  visitorId      String   @db.Uuid
+  languageCode   String
+  referrerHost   String?
+  sourceCategory String
+  deviceCategory String
+  browserFamily  String
+  osFamily       String
+  visitor        AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  pageViews      AnalyticsPageView[]
+
+  @@index([createdAt])
+  @@index([visitorId, createdAt])
+  @@index([sourceCategory, createdAt])
+}
+
+model AnalyticsPageView {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  sessionId   String   @db.Uuid
+  path        String
+  languageCode String
+  session     AnalyticsSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+  @@index([sessionId, createdAt])
 }
 
 model User {
@@ -246,6 +308,7 @@ model User {
   serviceRequests ServiceRequest[]
   credential      UserCredential?
   roles           UserRole[]
+  contactReplies  ContactReply[]
 
   @@index([status])
 }
