@@ -248,15 +248,15 @@
 
 /* Scrollwise reserves its warm taupe for the final panel and narrative footer only. */
 [data-theme="scrollwise"] .ds-scrollwise-footer {
-  --scrollwise-taupe-ink: #ffffff;
+  --scrollwise-taupe-ink: #121010;
   --scrollwise-taupe-muted: var(--scrollwise-taupe-ink);
-  --scrollwise-taupe-line: rgb(255 255 255 / 30%);
+  --scrollwise-taupe-line: color-mix(in oklch, var(--scrollwise-taupe-ink) 20%, transparent);
   border-color: var(--scrollwise-taupe-line);
   background: linear-gradient(
     135deg,
-    color-mix(in oklch, #847d7b 90%, black 10%) 0%,
-    color-mix(in oklch, #847d7b 94%, black 6%) 52%,
-    color-mix(in oklch, #847d7b 90%, black 10%) 100%
+    color-mix(in oklch, #847d7b 96%, white 4%) 0%,
+    #847d7b 52%,
+    color-mix(in oklch, #847d7b 96%, black 4%) 100%
   );
   color: var(--scrollwise-taupe-ink);
 }
@@ -286,9 +286,9 @@
   outline-offset: 3px;
 }
 [data-theme="scrollwise"] .ds-scrollwise-footer-cta {
-  background: #121010;
-  color: #ffffff;
-  box-shadow: 0 0.55rem 1.5rem rgb(18 16 16 / 22%);
+  background: var(--scrollwise-taupe-ink);
+  color: #f9f7f5;
+  box-shadow: 0 0.55rem 1.5rem rgb(18 16 16 / 16%);
   transition: transform 160ms var(--ease-standard), box-shadow 160ms var(--ease-standard);
 }
 [data-theme="scrollwise"] .ds-scrollwise-footer-cta:hover {
@@ -301,7 +301,7 @@
   color: var(--scrollwise-taupe-ink);
 }
 [data-theme="scrollwise"] .ds-scrollwise-footer-social:hover {
-  border-color: rgb(255 255 255 / 72%);
+  border-color: color-mix(in oklch, var(--scrollwise-taupe-ink) 44%, transparent);
   background: rgb(255 255 255 / 28%);
 }
 [data-theme="scrollwise"] .ds-scrollwise-footer-bottom {
