@@ -4,6 +4,28 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-25 — Scrollwise professional footer and Taupe refinement
+
+- Replaced the minimal Scrollwise Home footer with a four-column CMS-backed footer in shared App Chrome; it contains brand/contact CTA, company/service/solution routes, industry/project/article routes, contact/map/socials, and privacy/consent controls.
+- Kept Classic and Arandi Pro footer behavior unchanged. Only configured social profiles render; no Prisma schema, admin setting, or secret-bearing configuration changed.
+- Scoped the `#847D7B` soft Taupe gradient to the Scrollwise footer and finale panel only, with explicit FA RTL / EN LTR footer direction, visible focus treatment, 44px social targets, and a bottom safe area for the fixed assistant.
+- Local Browser QA passed FA/EN at 390/768/1280px with no horizontal overflow or missing links; text contrast over the Taupe base is 4.7:1. Prisma status, 51 tests, typecheck, lint, diff check, and the 63-route production build passed. This change remains local and is not a production deployment.
+
+---
+
+# 2026-08-22 — Consent analytics and contact inbox
+
+- Added consent-gated first-party analytics for page views, unique visitors, referral source, language, and aggregated device information; raw IP and raw User-Agent values are not stored for analytics.
+- Added bilingual public privacy controls, a privacy-preferences reopen action, DNT handling, and updated privacy-notice content.
+- Replaced placeholder Admin Dashboard cards with live 7/30/90-day analytics and converted Contact requests into a protected inbox with filters, status changes, reply history, SMTP reply composition, and notification retry.
+- Added private editable `contact.notifications` recipient configuration, defaulting to `info@arandi.io`; SMTP credentials remain server-only.
+- Added Prisma migration `20260822170000_analytics_session_privacy`, reply/analytics verification, RBAC/CSRF/audit enforcement, Nodemailer SMTP transport, and validated migration status, tests, typecheck, lint, and production build.
+- Deployed the verified slice as VPS release `20260822T1430Z-contact-inbox-r2`. Fixed the temporary HTTP/HTTPS canonical-origin mismatch that returned `Invalid request` on the public contact form, while retaining a strict configured-host and reverse-proxy-protocol check. Restored the least-privilege application grants required for the new inbox/analytics tables before release backup and activation.
+- Added the initial audited, verified `SuperAdmin` bootstrap account for the approved operational email without persisting its credential in project files. Deployed `20260822T1615Z-consent-fix`, replacing consent's render-time local-storage read with a hydration-safe subscription and accessible storage-failure feedback. Live Admin login, analytics (`202`), health, Browser page load, and console checks passed.
+- Deployed `20260823T1630Z-crypto-fix` after correcting an in-app Browser compatibility failure: analytics token generation now falls back from `crypto.randomUUID` to secure `crypto.getRandomValues`, and skips tracking rather than crashing if browser cryptography is unavailable. The previously failing browser tab then rendered the live Scrollwise page successfully.
+
+---
+
 # 2026-08-22 — Node.js Scrollwise HTTP cutover
 
 - Deployed clean branch `scrollwise` commit `db06045` as VPS release `20260822T123000Z-scrollwise-r2`.

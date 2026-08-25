@@ -8,7 +8,21 @@ export function isSameOrigin(request: Request): boolean {
         const expectedOrigin = configuredSiteUrl
             ? new URL(configuredSiteUrl).origin
             : new URL(request.url).origin;
-        return new URL(origin).origin === expectedOrigin;
+        const actualOrigin = new URL(origin).origin;
+        if (actualOrigin === expectedOrigin) return true;
+
+        // The public host is currently served over HTTP while its canonical URL
+        // remains HTTPS-ready. Only the reverse proxy may attest the externally
+        // observed protocol; this keeps the accepted host pinned to configuration.
+        const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase();
+        const expected = new URL(expectedOrigin);
+        const received = new URL(actualOrigin);
+        return (
+            (forwardedProto === "http" || forwardedProto === "https")
+            && forwardedProto === received.protocol.slice(0, -1)
+            && received.hostname === expected.hostname
+            && received.port === expected.port
+        );
     } catch {
         return false;
     }

@@ -1,5 +1,45 @@
 # Session Log
 
+## 2026-08-25 — Scrollwise footer and Taupe refinement
+
+Objective
+
+- Replace the small narrative closing footer with a more complete corporate footer while retaining the active Scrollwise visual language and not expanding CMS/Prisma/Admin scope.
+
+Verified implementation
+
+- Moved the Scrollwise Home footer responsibility to `AppChrome` and removed the duplicate footer from `ScrollwiseStory`.
+- Added a scoped footer variant using existing CMS company/contact/navigation/social data, with enabled-only social links and bilingual semantic navigation/contact labels.
+- Added a very low-contrast-span Taupe gradient around `#847D7B` only to the footer and finale panel; all other Scrollwise surfaces and both other public themes retain their prior treatments.
+- Corrected an observed RTL gap by setting `dir`/`lang` on both footer variants. Preserved a 128px mobile/tablet-safe lower area so the fixed assistant does not obscure the footer bottom bar.
+
+Validation
+
+- PostgreSQL port connectivity and Prisma migration status confirmed (9 applied). `npm test` passed 51/51, strict typecheck and zero-warning lint passed, `git diff --check` passed, and the production build generated all 63 routes.
+- Local Browser QA passed Persian RTL and English LTR at 390, 768, and 1280px: no document horizontal overflow, valid footer hrefs, only the configured Instagram social profile rendered, map href present, and final Taupe/text contrast measured 4.7:1.
+- No commit, push, deployment, database mutation, Admin contract change, or server configuration change was made in this slice.
+
+## 2026-08-22 — Consent Analytics and Contact Inbox
+
+Objective
+
+- Add consented visitor analytics, operational contact-form response handling, and server-only SMTP support without exposing credentials.
+
+Verified implementation
+
+- Applied the ninth PostgreSQL migration, preserving contact data and adding session-token indexing plus updated privacy notice copy.
+- Added consent/DNT-gated first-party analytics, hashed random identifiers, bounded route/referrer handling, and aggregate Admin reports.
+- Added Admin/SuperAdmin inbox RBAC, CSRF-protected status/reply/retry routes, response history, security-event audit entries, and private recipient configuration.
+- Implemented SMTP transport through Nodemailer; real provider credentials and live delivery remain intentionally unconfigured.
+
+Validation
+
+- Database migration status is current; contact inbox/analytics and contact persistence verifiers passed; 50 focused tests, typecheck, zero-warning lint, and the 63-route production build passed.
+- Playwright visual QA is blocked on this workstation because its browser executable is absent; local application health returned 200 after the development server restart.
+- The VPS release `20260822T1430Z-contact-inbox-r2` then passed backup, Prisma status, production build, activation, and healthcheck. A public HTTP contact request initially failed same-origin validation because the canonical URL is HTTPS-ready; the fix permits only the configured host when Nginx supplies the matching forwarded protocol. A live honeypot request with the real public Origin returned `202` and created no submission/email. Missing DML grants for the application role on the four newly migrated tables were corrected before the successful release.
+- Production contained no persisted privileged account, so an audited, verified `SuperAdmin` bootstrap account was created for the approved operational email. Its credential was handled only in-memory during the secure server session and validated through the real password endpoint; no credential was persisted in source or documentation. The reported consent page failure was traced to a render-time browser-storage read that could mismatch the server render after a prior decision. Release `20260822T1615Z-consent-fix` moves consent persistence to a hydration-safe external-store subscription, includes accessible recovery feedback for blocked storage, and passed live health, login, analytics, Browser DOM, and console verification.
+- A subsequent Browser inspection found the remaining exact fault: that Browser lacks `crypto.randomUUID`, so accepted analytics could crash the client tree. Release `20260823T1630Z-crypto-fix` provides secure `getRandomValues` token generation with a no-tracking fallback where browser cryptography is unavailable. Tests, typecheck, lint, local production build, release backup/build/healthcheck, and reloading the previously failed live tab all passed.
+
 ## 2026-08-16 — Scrollwise Loading, Typography, and Admin Theme Controls
 
 Objective

@@ -263,6 +263,7 @@ model AnalyticsSession {
   createdAt      DateTime @default(now())
   lastSeenAt     DateTime @default(now())
   visitorId      String   @db.Uuid
+  tokenHash      String   @unique
   languageCode   String
   referrerHost   String?
   sourceCategory String

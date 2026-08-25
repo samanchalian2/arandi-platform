@@ -30,10 +30,24 @@ async function readEnvelope<T>(response: Response): Promise<T> {
 }
 
 function SettingEditor({ setting }: { setting: SettingItem }) {
+    if (setting.key === "contact.notifications") return <ContactNotificationSettingEditor setting={setting} />;
     if (setting.key === "site.social") return <SocialSettingEditor setting={setting} />;
     if (setting.key === "site.heroMedia") return <HeroMediaSettingEditor setting={setting} />;
     if (setting.key === "site.scrollwiseScenes") return <ScrollwiseScenesSettingEditor setting={setting} />;
     return <GenericSettingEditor setting={setting} />;
+}
+
+function ContactNotificationSettingEditor({ setting }: { setting: SettingItem }) {
+    const queryClient = useQueryClient();
+    const initial = setting.value ?? {};
+    const [recipient, setRecipient] = useState(typeof initial.recipient === "string" ? initial.recipient : "info@arandi.io");
+    const [error, setError] = useState<string | null>(null);
+    const mutation = useMutation({
+        mutationFn: async () => readEnvelope<SettingItem>(await cmsFetch("/api/cms/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: setting.key, value: { recipient } }) })),
+        onSuccess: async () => { setError(null); await queryClient.invalidateQueries({ queryKey: ["admin-settings"] }); },
+        onError: (value) => setError(value instanceof Error ? value.message : "Unable to save recipient."),
+    });
+    return <article className="rounded-2xl border border-border/70 bg-card p-4 shadow-[var(--elevation-1)]"><h2 className="font-semibold">Contact notifications</h2><p className="mt-1 text-xs text-muted-foreground">Private destination for new contact-form notifications. SMTP credentials remain server-only.</p><label className="mt-4 grid gap-1.5 text-sm font-medium">Recipient email<input type="email" value={recipient} onChange={(event) => setRecipient(event.target.value)} required maxLength={254} className="h-10 rounded-xl border border-border/70 bg-background px-3" /></label>{error ? <p role="alert" className="mt-3 text-sm text-destructive">{error}</p> : null}<div className="mt-4 flex justify-end"><Button size="sm" disabled={mutation.isPending} onClick={() => mutation.mutate()}>{mutation.isPending ? "Saving…" : "Save recipient"}</Button></div></article>;
 }
 
 const scrollwiseSceneOptions = [

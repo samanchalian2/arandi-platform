@@ -60,3 +60,5 @@ export * from "./AdminNavigationManagement";
 export * from "./AdminThemeManagement";
 export * from "./AdminSettingsManagement";
 export * from "./AdminPageCreateDialog";
+export * from "./AdminAnalyticsDashboard";
+export * from "./AdminContactInbox";

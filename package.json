@@ -25,6 +25,7 @@
     "fixed-public:verify": "tsx scripts/verify-public-fixed-pages.ts",
     "public-documents:verify": "tsx scripts/verify-public-documents.ts",
     "contact:verify": "tsx scripts/verify-contact-submissions.ts",
+    "contact-inbox-analytics:verify": "tsx scripts/verify-contact-inbox-analytics.ts",
     "ai:verify": "tsx scripts/verify-ai-chat.ts",
     "quality:verify": "tsx scripts/verify-quality.ts"
   },
@@ -39,7 +40,7 @@
     "lucide-react": "^1.28.0",
     "motion": "^12.43.0",
     "next": "^16.2.12",
-    "nodemailer": "^7.0.13",
+    "nodemailer": "^9.0.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "server-only": "^0.0.1",

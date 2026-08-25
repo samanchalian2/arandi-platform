@@ -6,6 +6,7 @@ import { NextRequest } from "next/server";
 
 import type {
     ContactNotificationEmail,
+    ContactReplyEmail,
     EmailGateway,
     RecoveryEmail,
 } from "../src/integrations/email/gateway";
@@ -47,6 +48,11 @@ class CapturingEmailGateway implements EmailGateway {
     }
 
     async sendContactNotification(_message: ContactNotificationEmail) {
+        void _message;
+        return { provider: this.provider, providerMessageId: randomUUID() };
+    }
+
+    async sendContactReply(_message: ContactReplyEmail) {
         void _message;
         return { provider: this.provider, providerMessageId: randomUUID() };
     }

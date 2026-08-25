@@ -1,12 +1,34 @@
 # Current State
 
-Last verified: 2026-08-22
+Last verified: 2026-08-25
 
 ## Current Phase
 
 Phase 10 — Quality and Production
 
-Status: the application and production-like VPS staging boundary are validated. The current Node.js Scrollwise branch (`db06045`) is deployed as release `20260822T123000Z-scrollwise-r2` on the approved VPS. Nginx now serves the Next.js application for `arandi.ir` and the server IP over HTTP; the prior WordPress public and loopback staging vhosts are disabled, while their files, MariaDB database, Nginx configuration, and a fresh cutover snapshot remain available for rollback. Trusted public TLS, independent public-DNS verification, provider activation, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the application and production-like VPS staging boundary are validated. The current Node.js Scrollwise worktree is deployed as release `20260822T1430Z-contact-inbox-r2` on the approved VPS. Nginx now serves the Next.js application for `arandi.ir` and the server IP over HTTP; the prior WordPress public and loopback staging vhosts are disabled, while their files, MariaDB database, Nginx configuration, and a fresh cutover snapshot remain available for rollback. Trusted public TLS, independent public-DNS verification, provider activation, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-25 — Scrollwise footer and Taupe surfaces (local, not deployed)
+
+- The Scrollwise Home now receives a dedicated CMS-backed four-column organization footer through `AppChrome`; the previous minimal footer inside `ScrollwiseStory` was removed. Classic and Arandi Pro retain the existing standard Footer structure.
+- The new footer uses existing public company, contact, navigation, map, and social settings only. It provides brand/tagline/contact CTA, Company/Services/Solutions, Industries/Projects/Articles, contact/map, an enabled-only social group, copyright, Privacy, and analytics-preference controls. No Prisma model, Admin form, or public-settings contract changed.
+- Only the Scrollwise footer and the Scrollwise finale panel use the scoped `#847D7B` Taupe gradient. Header, cards, chat launcher, Canvas, scene media, Classic, and Arandi Pro are unchanged. Persian footer rendering is explicitly RTL and English is LTR.
+- Browser QA on the local app passed FA/RTL and EN/LTR at 390, 768, and 1280px: Footer present, no horizontal overflow, no missing hrefs, one configured Instagram link only, map link valid, and the bottom bar remains clear of the fixed chat/back-to-top controls. Taupe base against `#121010` text measured 4.7:1. Visible focus outlines are provided for footer links, CTA, social controls, and privacy preferences.
+- Local validation passed: Prisma migration status (9 applied), 51 focused tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. This local worktree change has not been committed, pushed, or deployed; it must remain distinct from the active VPS release until an explicit release step.
+
+## 2026-08-22 — Consent analytics and contact inbox
+
+- The PostgreSQL schema is now at nine applied migrations. `ContactReply`, consented first-party analytics tables, and the private `contact.notifications` Setting are present; existing contact submissions remain intact.
+- The public site presents a bilingual accept/decline analytics notice. Only after acceptance does it record hashed random visitor/session identifiers, a path without query data, referrer host, language, and aggregated device classification. Raw IP and raw User-Agent values are not persisted for analytics; DNT is respected.
+- Admin/SuperAdmin Dashboard reads live 7/30/90-day first-party metrics. The protected Contact inbox supports search/filtering, status changes, delivery visibility, notification retry, SMTP reply composition, reply history, CSRF, RBAC, and security-event audit records.
+- SMTP transport is implemented but not yet configured or network-tested with a real provider. Credentials remain server-only; the editable non-secret notification recipient defaults to `info@arandi.io` in Admin Settings.
+- The feature slice and its contact-origin repair are deployed as `20260822T1430Z-contact-inbox-r2`. During the HTTP-only cutover, same-origin validation now accepts only the configured `arandi.ir` host when Nginx attests the matching forwarded protocol; arbitrary origins remain rejected. A live honeypot contact request with the real HTTP Origin returned `202` without persisting a message or sending email.
+- The release backup initially exposed missing application-role grants on four tables created by the development migration. Least-privilege DML grants were applied to the application role for `ContactReply` and the three consented analytics tables; the canonical release backup, Prisma status, build, activation, and healthcheck then passed.
+- A verified `SuperAdmin` bootstrap account now exists in the production database with the approved `info@arandi.io` email. Its credential is not recorded in source, documentation, logs, or Git; the account has an audit event and a successful password-login verification.
+- Release `20260822T1615Z-consent-fix` is active. The consent UI no longer reads browser storage during its initial render, preventing a server/client hydration mismatch after a prior choice. It uses a subscription-safe storage bridge and an accessible inline error only when browser storage cannot persist the preference. Live health (`200`), password login (`200`), analytics recording (`202`), and a Browser contact-page load without console errors were verified.
+- Release `20260823T1630Z-crypto-fix` is active. The in-app Browser lacks `crypto.randomUUID`, which caused the analytics-consent client component to crash the entire page. Token creation now uses `randomUUID` when available, a cryptographically secure `getRandomValues` fallback otherwise, and fails closed by skipping analytics if neither capability exists. The previously failing live tab was reloaded and rendered full Scrollwise content with no error page.
+- Verified locally against the configured PostgreSQL instance: current migration status, contact/analytics persistence verifier, contact verifier, 50 focused tests, strict typecheck, zero-warning lint, and 63-route production build. Headless visual QA is blocked locally because the Playwright browser binary is unavailable.
+- `npm audit --omit=dev` still reports three high-severity Prisma/deepmerge advisory entries. The suggested fix is a potentially incompatible Prisma version change and was not applied in this feature slice; it remains a production security-review item.
 
 ## 2026-08-22 — Node.js Scrollwise HTTP cutover
 

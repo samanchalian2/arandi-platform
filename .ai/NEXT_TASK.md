@@ -4,7 +4,7 @@ Phase 10 — Controlled Production Cutover
 
 ## Verified Starting Point
 
-- Release `20260822T123000Z-scrollwise-r2`, built from clean branch `scrollwise` at `db06045`, is active on the approved VPS. Nginx serves the Node.js application for `arandi.ir` and the server IP over HTTP.
+- Release `20260823T1630Z-crypto-fix`, including the verified contact/inbox/analytics slice, hydration-safe consent handling, and browser-compatible analytics tokens, is active on the approved VPS. Nginx serves the Node.js application for `arandi.ir` and the server IP over HTTP.
 - The Scrollwise v2 theme is the active public appearance. Its governed images and presentation controls remain Admin-editable through the existing private Settings contracts.
 - The 2026-08-16 v2 correction verifies geometry-synchronized Canvas progression, major-boundary veils, shorter episode handoffs, calmer typography, 44px mobile assistant collapse, active-chapter assistant prompts, and bounded Persian/English editing for title/body/context/bridge/prompt across all ten states. Images and presentation controls live in Admin Theme editing through private Settings; proof links/copy remain Published CMS Project Cards. Stakeholder visual acceptance remains required before publication.
 - The WordPress public and loopback staging vhosts are disabled. Its files, MariaDB data, Nginx configuration, and a fresh cutover snapshot remain retained for rollback; they must not be removed without explicit acceptance.
@@ -13,13 +13,15 @@ Phase 10 — Controlled Production Cutover
 
 ## Next Implementation Slice
 
-1. Obtain stakeholder acceptance or a concrete revision list from the active HTTP Scrollwise site; preserve the current release and WordPress rollback artifacts until acceptance.
-2. Commit the verified deployment documentation on `scrollwise`, push it intentionally, and observe GitHub CI on that exact commit.
-3. Obtain explicit public DNS authority and create the required public A/AAAA records for the VPS.
-4. Issue a trusted certificate, validate its chain and renewal timer, then prepare an HTTP-to-HTTPS redirect and HSTS only for the trusted production hostname.
-5. Obtain and independently runtime-test approved OpenAI, SMTP, and SMS.ir credentials; keep every unavailable provider fail-closed.
-6. Configure an external health/incident alert destination and encrypted off-host backup replication, then exercise both.
-7. After DNS/TLS readiness, rerun health, Prisma, Media, SEO, accessibility, responsive, TLS, and provider smoke checks on the public hostname.
+1. Obtain stakeholder visual acceptance for the local Scrollwise footer/Taupe change, then make one intentional commit, push it on `scrollwise`, observe GitHub CI, and deploy through the established rollback-aware release process. Do not claim the footer is live before that release verification.
+2. Add approved SMTP credentials only to the server environment, set `EMAIL_PROVIDER=smtp`, and send a controlled notification/reply test to the configured `info@arandi.io` destination without exposing credentials.
+3. Perform authenticated browser QA of the new Admin Dashboard, Settings recipient control, Contact inbox, reply/retry workflow, and public EN/FA consent preference at mobile/tablet/desktop viewports; install an approved Playwright browser locally if headless QA is required.
+4. Obtain stakeholder acceptance or a concrete revision list from the active HTTP Scrollwise site; preserve the current release and WordPress rollback artifacts until acceptance.
+5. Review the three remaining high-severity Prisma/deepmerge audit entries in an isolated dependency-upgrade slice before production approval; do not use a forced upgrade without compatibility validation.
+6. Obtain explicit public DNS authority and create the required public A/AAAA records for the VPS.
+7. Issue a trusted certificate, validate its chain and renewal timer, then prepare an HTTP-to-HTTPS redirect and HSTS only for the trusted production hostname.
+8. Configure an external health/incident alert destination and encrypted off-host backup replication, then exercise both.
+9. After DNS/TLS readiness, rerun health, Prisma, Media, SEO, accessibility, responsive, TLS, provider, analytics, and inbox smoke checks on the public hostname.
 
 ## Constraints
 

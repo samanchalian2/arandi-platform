@@ -9,6 +9,7 @@ import { FloatingChatLauncher } from "@/components/ai/FloatingChatLauncher";
 import { BackToTopButton } from "@/components/ui/BackToTopButton";
 import { MotionProvider } from "@/components/ui/MotionProvider";
 import { ScrollwiseHeader } from "@/components/scrollwise/ScrollwiseHeader";
+import { AnalyticsConsent } from "@/components/analytics/AnalyticsConsent";
 import type { PublicTheme, ScrollwiseMenuMode } from "@/lib/public-content";
 
 type NavigationContent = Parameters<typeof Header>[0]["content"];
@@ -61,9 +62,10 @@ export function AppChrome({ children, contentByLanguage, lang, publicTheme, scro
                 ? <ScrollwiseHeader companyName={content.company.shortName} navigation={content.navigation} lang={currentLanguage} showMotionControl={scrollwiseShowMotionControl} menuMode={scrollwiseMenuMode} />
                 : <Header content={content.navigation} company={content.company} lang={currentLanguage} />}
             <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
-            {!isScrollwiseHome ? <Footer content={content.footer} company={content.company} navigation={content.navigation} lang={currentLanguage} /> : null}
+            <Footer content={content.footer} company={content.company} navigation={content.navigation} lang={currentLanguage} variant={isScrollwiseHome ? "scrollwise" : "standard"} />
             {!hideFloatingChat ? <FloatingChatLauncher lang={currentLanguage} /> : null}
             {!hideFloatingChat ? <BackToTopButton lang={currentLanguage} /> : null}
+            <AnalyticsConsent lang={currentLanguage} />
         </div>
         </MotionProvider>
     );

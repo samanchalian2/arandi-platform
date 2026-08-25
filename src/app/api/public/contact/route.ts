@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 
 import { getEmailGateway } from "@/integrations/email/gateway";
-import { normalizeEmail } from "@/lib/auth/identifiers";
 import { requireAuthPepper } from "@/lib/auth/secrets";
 import {
     ContactRateLimitError,
     ContactValidationError,
     acceptContactSubmission,
     parseContactSubmissionInput,
+    getContactNotificationRecipient,
 } from "@/lib/contact";
-import { prisma } from "@/lib/prisma";
 
 import {
     isSameOrigin,
@@ -23,21 +22,6 @@ function asRecord(value: unknown): Record<string, unknown> | null {
     return value && typeof value === "object" && !Array.isArray(value)
         ? value as Record<string, unknown>
         : null;
-}
-
-async function notificationRecipient(language: "en" | "fa"): Promise<string> {
-    const configured = process.env.CONTACT_NOTIFICATION_EMAIL?.trim();
-    if (configured) return normalizeEmail(configured);
-    const setting = await prisma.setting.findUnique({
-        where: { key: "site.contact" },
-        select: { isPublic: true, value: true },
-    });
-    const root = setting?.isPublic ? asRecord(setting.value) : null;
-    const localized = root ? asRecord(root[language]) : null;
-    if (!localized || typeof localized.email !== "string") {
-        throw new Error("Contact notification recipient is unavailable.");
-    }
-    return normalizeEmail(localized.email);
 }
 
 export async function POST(request: Request) {
@@ -70,7 +54,7 @@ export async function POST(request: Request) {
                 pepper: requireAuthPepper(),
             },
             getEmailGateway(),
-            await notificationRecipient(input.language),
+            await getContactNotificationRecipient(),
         );
         return NextResponse.json({
             ok: true,

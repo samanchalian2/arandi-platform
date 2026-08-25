@@ -2,7 +2,7 @@ import type { AdminRole } from "./types";
 
 export const ADMIN_ROUTE_ROLES = {
     root: ["SuperAdmin", "Admin", "Editor", "Translator", "Viewer"],
-    dashboard: ["SuperAdmin", "Admin", "Editor", "Translator", "Viewer"],
+    dashboard: ["SuperAdmin", "Admin"],
     pages: ["SuperAdmin", "Admin", "Editor", "Translator", "Viewer"],
     sections: ["SuperAdmin", "Admin", "Editor", "Translator", "Viewer"],
     cards: ["SuperAdmin", "Admin", "Editor", "Translator", "Viewer"],
@@ -11,6 +11,7 @@ export const ADMIN_ROUTE_ROLES = {
     theme: ["SuperAdmin", "Admin"],
     settings: ["SuperAdmin", "Admin"],
     users: ["SuperAdmin", "Admin"],
+    contactSubmissions: ["SuperAdmin", "Admin"],
 } as const satisfies Record<string, AdminRole[]>;
 
 export function hasRequiredRole(current: AdminRole[], required: AdminRole[]): boolean {
@@ -34,6 +35,7 @@ export function getRequiredRolesForPath(pathname: string): AdminRole[] | null {
         ["/admin/theme", ADMIN_ROUTE_ROLES.theme],
         ["/admin/settings", ADMIN_ROUTE_ROLES.settings],
         ["/admin/users", ADMIN_ROUTE_ROLES.users],
+        ["/admin/contact-submissions", ADMIN_ROUTE_ROLES.contactSubmissions],
     ];
 
     for (const [prefix, roles] of routePolicies) {

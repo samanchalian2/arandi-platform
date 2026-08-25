@@ -270,6 +270,28 @@ test("same-origin validation uses the configured public origin behind a reverse 
     }
 });
 
+test("same-origin validation permits the reverse-proxy attested HTTP origin during TLS cutover only", async () => {
+    const previousSiteUrl = process.env.ARANDI_SITE_URL;
+    process.env.ARANDI_SITE_URL = "https://arandi.ir";
+    try {
+        const proxiedHttp = await passwordLoginRoute(new Request("http://127.0.0.1:3000/api/auth/password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Origin: "http://arandi.ir", "X-Forwarded-Proto": "http" },
+            body: "{}",
+        }));
+        assert.equal(proxiedHttp.status, 401);
+        const attacker = await passwordLoginRoute(new Request("http://127.0.0.1:3000/api/auth/password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Origin: "http://attacker.example", "X-Forwarded-Proto": "http" },
+            body: "{}",
+        }));
+        assert.equal(attacker.status, 403);
+    } finally {
+        if (previousSiteUrl === undefined) delete process.env.ARANDI_SITE_URL;
+        else process.env.ARANDI_SITE_URL = previousSiteUrl;
+    }
+});
+
 test("Admin user inputs enforce bounded identifiers, roles, and status", () => {
     assert.equal(parseDisplayName("  Test User  "), "Test User");
     assert.equal(parseOptionalEmail(" USER@Example.COM "), "user@example.com");

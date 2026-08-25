@@ -58,7 +58,7 @@ function StoryScene({ chapter, index, lang, staticMotion, storyHeight, headingSc
                 : chapter.key === "intelligence"
                     ? "border-violet-900/12 bg-[#faf8ff]/88 shadow-[0_1.5rem_5rem_rgb(65_40_110_/_0.08)]"
                     : chapter.role === "finale"
-                        ? "border-amber-900/10 bg-[#fffdf7]/86 shadow-[0_1.5rem_5rem_rgb(92_70_22_/_0.08)]"
+                        ? "ds-scrollwise-finale-panel border-amber-900/10 shadow-[0_1.5rem_5rem_rgb(92_70_22_/_0.08)]"
                         : "border-slate-900/8 bg-white/84 shadow-[0_1.5rem_5rem_rgb(28_37_48_/_0.07)]";
 
     return (
@@ -173,7 +173,6 @@ export function ScrollwiseStory({ experience }: { experience: ScrollwiseExperien
                 </div>
             </div>
             <aside aria-label={fa ? "خلاصه تجربه آرندی" : "Arandi experience summary"} className="relative border-y border-foreground/10 bg-foreground px-5 py-14 text-background sm:px-8"><div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[1fr_auto] md:items-center"><div><p className="text-xs font-bold uppercase tracking-[0.25em] text-accent">{fa ? "از گسست تا قابلیت پایدار" : "From disconnect to durable capability"}</p><h2 className="mt-4 max-w-2xl font-semibold leading-[1.35] rtl:leading-[1.6]" style={{ fontSize: responsiveHeadingSize(experience.display.headingScale, 1.25, 2.2, 2.2) }}>{fa ? "یک شریک فنی برای تمام چرخه تحول" : "One technical partner across the transformation lifecycle"}</h2></div><dl className="grid grid-cols-3 gap-6 text-center">{[{ icon: Workflow, value: experience.metrics.projects, label: fa ? "پروژه" : "Projects" }, { icon: Layers3, value: experience.metrics.services, label: fa ? "خدمت" : "Services" }, { icon: Factory, value: experience.metrics.industries, label: fa ? "صنعت" : "Industries" }].map(({ icon: Icon, value, label }) => <div key={label}><Icon className="mx-auto size-4 text-accent" aria-hidden="true" /><dt className="mt-2 text-xs text-background/65">{label}</dt><dd className="mt-1 text-2xl font-bold">{value}</dd></div>)}</dl></div></aside>
-            <footer className="bg-background px-5 pb-32 pt-12 text-sm text-foreground/65 sm:px-8"><div className="mx-auto flex max-w-[94rem] flex-col justify-between gap-5 border-t border-foreground/10 pt-6 sm:flex-row sm:items-center"><p>© {new Date().getFullYear()} Arandi Bonyan</p><nav aria-label={fa ? "پیوندهای پایانی" : "Closing links"} className="flex flex-wrap gap-x-5 gap-y-3"><Link href={`/projects?lang=${experience.language}`} className="hover:text-primary">{fa ? "پروژه‌ها" : "Projects"}</Link><Link href={`/contact?lang=${experience.language}`} className="hover:text-primary">{fa ? "تماس" : "Contact"}</Link><Link href={`/legal/privacy?lang=${experience.language}`} className="hover:text-primary">{fa ? "حریم خصوصی" : "Privacy"}</Link></nav></div></footer>
         </div>
     );
 }

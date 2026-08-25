@@ -37,7 +37,10 @@ export type CmsPermission =
     | "navigation.translate"
     | "navigation.delete"
     | "setting.read"
-    | "setting.write";
+    | "setting.write"
+    | "contact.read"
+    | "contact.write"
+    | "analytics.read";
 
 export type CmsPrincipal = {
     userId: string;
@@ -68,6 +71,9 @@ const rolePermissions: Record<string, CmsPermission[]> = {
         "navigation.delete",
         "setting.read",
         "setting.write",
+        "contact.read",
+        "contact.write",
+        "analytics.read",
     ],
     cms_admin: [
         "page.read",
@@ -89,6 +95,9 @@ const rolePermissions: Record<string, CmsPermission[]> = {
         "navigation.delete",
         "setting.read",
         "setting.write",
+        "contact.read",
+        "contact.write",
+        "analytics.read",
     ],
     editor: ["page.read", "page.write", "section.read", "section.write", "card.read", "card.write", "media.read", "theme.read", "navigation.read", "navigation.write"],
     translator: ["page.read", "section.read", "section.write", "card.read", "card.translate", "theme.read", "media.read", "navigation.read", "navigation.translate"],
