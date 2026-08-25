@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-25 — Scrollwise footer light surface
+
+- Changed only the Scrollwise footer background to exact `#EDE9E1`; retained dark footer text, light finale panel, existing CMS data, and both other public themes.
+- Local 51-test, typecheck, zero-warning lint, diff-check, and 63-route production-build validation passed. Commit `e8a54c1` was pushed to `origin/scrollwise`.
+- After retaining the active and immediate rollback releases, three obsolete releases were removed to provide safe build capacity. Release `20260825T142500Z-scrollwise-ede9e1` was activated; VPS readiness and Home returned `200`, and live Browser inspection confirmed `rgb(237, 233, 225)` with no gradient.
+
 # 2026-08-25 — Scrollwise professional footer and Taupe refinement
 
 - Replaced the minimal Scrollwise Home footer with a four-column CMS-backed footer in shared App Chrome; it contains brand/contact CTA, company/service/solution routes, industry/project/article routes, contact/map/socials, and privacy/consent controls.

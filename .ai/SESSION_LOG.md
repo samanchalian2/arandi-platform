@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-08-25 — Scrollwise footer exact EDE9E1 deployment
+
+Objective
+
+- Apply the stakeholder-approved exact `#EDE9E1` footer color to the live Scrollwise site.
+
+Verified implementation
+
+- Commit `e8a54c1` changes the scoped `.ds-scrollwise-footer` background to `#ede9e1`; no other theme, finale panel, content, or admin contract changed.
+
+Validation
+
+- Local tests passed 51/51; typecheck, zero-warning lint, diff check, and the 63-route production build passed.
+- Three obsolete immutable releases were removed only after confirming the active and immediate rollback releases were retained. Release `20260825T142500Z-scrollwise-ede9e1` passed Prisma migration status, Linux build, readiness, and Home `200` checks.
+- Live in-app Browser inspection at `http://arandi.ir/?lang=fa` measured footer `backgroundColor: rgb(237, 233, 225)`, `backgroundImage: none`, and dark text `rgb(18, 16, 16)`.
+
 ## 2026-08-25 — Scrollwise footer and Taupe refinement
 
 Objective
