@@ -8,13 +8,13 @@ Phase 10 — Quality and Production
 
 Status: the application and production-like VPS staging boundary are validated. The current Node.js Scrollwise worktree is deployed as release `20260822T1430Z-contact-inbox-r2` on the approved VPS. Nginx now serves the Next.js application for `arandi.ir` and the server IP over HTTP; the prior WordPress public and loopback staging vhosts are disabled, while their files, MariaDB database, Nginx configuration, and a fresh cutover snapshot remain available for rollback. Trusted public TLS, independent public-DNS verification, provider activation, external alerting/off-host backup, and observed GitHub CI remain unapproved.
 
-## 2026-08-25 — Scrollwise footer and Taupe surfaces (local, not deployed)
+## 2026-08-25 — Scrollwise footer and Taupe surfaces (deployed)
 
 - The Scrollwise Home now receives a dedicated CMS-backed four-column organization footer through `AppChrome`; the previous minimal footer inside `ScrollwiseStory` was removed. Classic and Arandi Pro retain the existing standard Footer structure.
 - The new footer uses existing public company, contact, navigation, map, and social settings only. It provides brand/tagline/contact CTA, Company/Services/Solutions, Industries/Projects/Articles, contact/map, an enabled-only social group, copyright, Privacy, and analytics-preference controls. No Prisma model, Admin form, or public-settings contract changed.
 - Only the Scrollwise footer and the Scrollwise finale panel use the scoped `#847D7B` Taupe gradient. Header, cards, chat launcher, Canvas, scene media, Classic, and Arandi Pro are unchanged. Persian footer rendering is explicitly RTL and English is LTR.
 - Browser QA on the local app passed FA/RTL and EN/LTR at 390, 768, and 1280px: Footer present, no horizontal overflow, no missing hrefs, one configured Instagram link only, map link valid, and the bottom bar remains clear of the fixed chat/back-to-top controls. Taupe base against `#121010` text measured 4.7:1. Visible focus outlines are provided for footer links, CTA, social controls, and privacy preferences.
-- Local validation passed: Prisma migration status (9 applied), 51 focused tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. This local worktree change has not been committed, pushed, or deployed; it must remain distinct from the active VPS release until an explicit release step.
+- Local validation passed: Prisma migration status (9 applied), 51 focused tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. Commit `cf4cd8e` was pushed to `origin/scrollwise` and deployed as VPS release `20260825T123724Z-scrollwise-footer` through the rollback-aware release script. Backup, Linux build, Prisma deployment (no pending migration), service activation, readiness, Home, Contact, Projects, Articles, Legal, and sitemap checks passed. The active service points to this release; 3.9GB disk remains available.
 
 ## 2026-08-22 — Consent analytics and contact inbox
 

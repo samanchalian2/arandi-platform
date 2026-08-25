@@ -9,7 +9,8 @@ All important project changes are recorded here.
 - Replaced the minimal Scrollwise Home footer with a four-column CMS-backed footer in shared App Chrome; it contains brand/contact CTA, company/service/solution routes, industry/project/article routes, contact/map/socials, and privacy/consent controls.
 - Kept Classic and Arandi Pro footer behavior unchanged. Only configured social profiles render; no Prisma schema, admin setting, or secret-bearing configuration changed.
 - Scoped the `#847D7B` soft Taupe gradient to the Scrollwise footer and finale panel only, with explicit FA RTL / EN LTR footer direction, visible focus treatment, 44px social targets, and a bottom safe area for the fixed assistant.
-- Local Browser QA passed FA/EN at 390/768/1280px with no horizontal overflow or missing links; text contrast over the Taupe base is 4.7:1. Prisma status, 51 tests, typecheck, lint, diff check, and the 63-route production build passed. This change remains local and is not a production deployment.
+- Local Browser QA passed FA/EN at 390/768/1280px with no horizontal overflow or missing links; text contrast over the Taupe base is 4.7:1. Prisma status, 51 tests, typecheck, lint, diff check, and the 63-route production build passed.
+- Pushed commit `cf4cd8e` to `origin/scrollwise` and deployed it as VPS release `20260825T123724Z-scrollwise-footer`. The release script created a checksummed backup, completed the Linux build, found no pending Prisma migration, activated atomically, and passed readiness plus Home, Contact, Projects, Articles, Legal, and sitemap `200` checks. Four explicitly approved obsolete releases were removed beforehand; the active release and two recent rollback releases were retained.
 
 ---
 

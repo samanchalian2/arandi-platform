@@ -17,7 +17,7 @@ Validation
 
 - PostgreSQL port connectivity and Prisma migration status confirmed (9 applied). `npm test` passed 51/51, strict typecheck and zero-warning lint passed, `git diff --check` passed, and the production build generated all 63 routes.
 - Local Browser QA passed Persian RTL and English LTR at 390, 768, and 1280px: no document horizontal overflow, valid footer hrefs, only the configured Instagram social profile rendered, map href present, and final Taupe/text contrast measured 4.7:1.
-- No commit, push, deployment, database mutation, Admin contract change, or server configuration change was made in this slice.
+- Commit `cf4cd8e` was pushed to `origin/scrollwise` and deployed as `20260825T123724Z-scrollwise-footer`. Before deployment, four approved obsolete immutable releases were removed after confirming none was active; free disk increased from about 858MB to 5GB. The official release process then created a backup, performed the Linux build, found no pending migration, activated the release, and passed readiness plus the public Home, Contact, Projects, Articles, Legal, and sitemap route checks. The active release and two recent rollback releases remain intact.
 
 ## 2026-08-22 — Consent Analytics and Contact Inbox
 
