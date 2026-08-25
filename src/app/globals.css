@@ -252,12 +252,7 @@
   --scrollwise-taupe-muted: var(--scrollwise-taupe-ink);
   --scrollwise-taupe-line: color-mix(in oklch, var(--scrollwise-taupe-ink) 20%, transparent);
   border-color: var(--scrollwise-taupe-line);
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklch, #847d7b 96%, white 4%) 0%,
-    #847d7b 52%,
-    color-mix(in oklch, #847d7b 96%, black 4%) 100%
-  );
+  background: #ede9e1;
   color: var(--scrollwise-taupe-ink);
 }
 
