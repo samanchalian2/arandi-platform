@@ -13,7 +13,7 @@ Phase 10 — Controlled Production Cutover
 
 ## Next Implementation Slice
 
-1. Obtain stakeholder visual acceptance for the live Scrollwise footer/Taupe release `20260825T123724Z-scrollwise-footer`, then observe GitHub CI for commit `cf4cd8e`. Preserve the current release and the retained rollback releases until acceptance.
+1. Obtain stakeholder visual acceptance for the live Scrollwise footer/Taupe release `20260825T124756Z-scrollwise-light-surfaces`, then observe GitHub CI for commits `cf4cd8e` and `98785ef`. Preserve the current release and the retained rollback releases until acceptance.
 2. Add approved SMTP credentials only to the server environment, set `EMAIL_PROVIDER=smtp`, and send a controlled notification/reply test to the configured `info@arandi.io` destination without exposing credentials.
 3. Perform authenticated browser QA of the new Admin Dashboard, Settings recipient control, Contact inbox, reply/retry workflow, and public EN/FA consent preference at mobile/tablet/desktop viewports; install an approved Playwright browser locally if headless QA is required.
 4. Obtain stakeholder acceptance or a concrete revision list from the active HTTP Scrollwise site; preserve the current release and WordPress rollback artifacts until acceptance.

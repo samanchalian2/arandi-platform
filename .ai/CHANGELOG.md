@@ -11,6 +11,7 @@ All important project changes are recorded here.
 - Scoped the `#847D7B` soft Taupe gradient to the Scrollwise footer and finale panel only, with explicit FA RTL / EN LTR footer direction, visible focus treatment, 44px social targets, and a bottom safe area for the fixed assistant.
 - Local Browser QA passed FA/EN at 390/768/1280px with no horizontal overflow or missing links; text contrast over the Taupe base is 4.7:1. Prisma status, 51 tests, typecheck, lint, diff check, and the 63-route production build passed.
 - Pushed commit `cf4cd8e` to `origin/scrollwise` and deployed it as VPS release `20260825T123724Z-scrollwise-footer`. The release script created a checksummed backup, completed the Linux build, found no pending Prisma migration, activated atomically, and passed readiness plus Home, Contact, Projects, Articles, Legal, and sitemap `200` checks. Four explicitly approved obsolete releases were removed beforehand; the active release and two recent rollback releases were retained.
+- Follow-up commit `98785ef` changes the footer’s text/icons to white on a slightly deeper Taupe surface and returns the finale panel to a light warm-white treatment. It was deployed as `20260825T124756Z-scrollwise-light-surfaces`; active-release Browser inspection confirmed the white footer text, bright finale panel, and RTL Persian rendering.
 
 ---
 
