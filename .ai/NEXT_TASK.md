@@ -4,22 +4,22 @@ Phase 10 — Controlled Production Cutover
 
 ## Verified Starting Point
 
-- Release `20260823T1630Z-crypto-fix`, including the verified contact/inbox/analytics slice, hydration-safe consent handling, and browser-compatible analytics tokens, is active on the approved VPS. Nginx serves the Node.js application for `arandi.ir` and the server IP over HTTP.
+- Release `20260826T154500Z-arandivps-initial`, sourced from reviewed commit `d8187cc`, is active on `arandivps` for the canonical `https://arandi.io` hostname. DNS, HTTPS, HSTS, canonical redirects, CMS/Media migration, readiness, public-route checks, and FA/EN Browser QA are directly verified. The prior VPS remains a rollback source and is not modified by this deployment.
 - The Scrollwise v2 theme is the active public appearance. Its governed images and presentation controls remain Admin-editable through the existing private Settings contracts.
 - The 2026-08-16 v2 correction verifies geometry-synchronized Canvas progression, major-boundary veils, shorter episode handoffs, calmer typography, 44px mobile assistant collapse, active-chapter assistant prompts, and bounded Persian/English editing for title/body/context/bridge/prompt across all ten states. Images and presentation controls live in Admin Theme editing through private Settings; proof links/copy remain Published CMS Project Cards. Stakeholder visual acceptance remains required before publication.
 - The WordPress public and loopback staging vhosts are disabled. Its files, MariaDB data, Nginx configuration, and a fresh cutover snapshot remain retained for rollback; they must not be removed without explicit acceptance.
-- Application readiness, eight public Persian routes, Scrollwise markup, public security headers, the closed WordPress listener, and the release-local health/backup jobs were directly verified after cutover. Earlier local application/Prisma/SEO/accessibility checks remain recorded; public external DNS/TLS checks remain pending.
-- A self-signed loopback certificate validates only the staging TLS boundary. It is not a trusted production certificate.
+- Application readiness, public Persian routes, Scrollwise markup, public security headers, systemd health/backup jobs, public DNS, trusted TLS, HTTP-to-HTTPS, and `www` canonical redirect were directly verified on `arandivps`. Earlier local application/Prisma/SEO/accessibility checks remain recorded.
+- The legacy VPS self-signed loopback certificate is not part of the current `arandi.io` production boundary. The new production hostname uses the verified trusted Let's Encrypt certificate.
 
 ## Next Implementation Slice
 
-1. Obtain stakeholder visual acceptance for the live Scrollwise footer release `20260825T142500Z-scrollwise-ede9e1` (exact `#EDE9E1`), then observe GitHub CI for commit `e8a54c1`. The release-retention cleanup needed for this deployment is complete; preserve the active release and immediate rollback release.
+1. Obtain stakeholder visual acceptance for the live Scrollwise release `20260826T154500Z-arandivps-initial` at canonical `https://arandi.io` (including exact `#EDE9E1` footer), then observe GitHub CI for commits `e8a54c1` and `d8187cc`. Preserve the active release and immediate rollback release on `arandivps`.
 2. Add approved SMTP credentials only to the server environment, set `EMAIL_PROVIDER=smtp`, and send a controlled notification/reply test to the configured `info@arandi.io` destination without exposing credentials.
 3. Perform authenticated browser QA of the new Admin Dashboard, Settings recipient control, Contact inbox, reply/retry workflow, and public EN/FA consent preference at mobile/tablet/desktop viewports; install an approved Playwright browser locally if headless QA is required.
-4. Obtain stakeholder acceptance or a concrete revision list from the active HTTP Scrollwise site; preserve the current release and WordPress rollback artifacts until acceptance.
+4. Obtain stakeholder acceptance or a concrete revision list from the active HTTPS Scrollwise site; preserve the current release and the prior-VPS rollback source until acceptance.
 5. Review the three remaining high-severity Prisma/deepmerge audit entries in an isolated dependency-upgrade slice before production approval; do not use a forced upgrade without compatibility validation.
-6. Obtain explicit public DNS authority and create the required public A/AAAA records for the VPS.
-7. Issue a trusted certificate, validate its chain and renewal timer, then prepare an HTTP-to-HTTPS redirect and HSTS only for the trusted production hostname.
+6. Monitor public DNS after the `arandi.io` cutover and document any future A/AAAA changes; do not alter the current verified A/CNAME mapping without approval.
+7. Monitor the issued trusted certificate and certbot timer; its first renewal dry run passed, while HSTS and HTTP-to-HTTPS are already active for the trusted production hostname.
 8. Configure an external health/incident alert destination and encrypted off-host backup replication, then exercise both.
 9. After DNS/TLS readiness, rerun health, Prisma, Media, SEO, accessibility, responsive, TLS, provider, analytics, and inbox smoke checks on the public hostname.
 

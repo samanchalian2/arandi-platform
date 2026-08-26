@@ -1,12 +1,20 @@
 # Current State
 
-Last verified: 2026-08-25
+Last verified: 2026-08-26
 
 ## Current Phase
 
 Phase 10 — Quality and Production
 
-Status: the application and production-like VPS staging boundary are validated. The current Node.js Scrollwise worktree is deployed as release `20260825T142500Z-scrollwise-ede9e1` from commit `e8a54c1` on the approved VPS. Nginx serves the Next.js application for `arandi.ir` and the server IP over HTTP; the prior WordPress public and loopback staging vhosts are disabled, while their files, MariaDB database, Nginx configuration, and rollback snapshots remain available. The Scrollwise footer now computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. Trusted public TLS, independent public-DNS verification, provider activation, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260826T154500Z-arandivps-initial` from reviewed commit `d8187cc`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-26 — arandivps production deployment (verified)
+
+- Fresh Ubuntu `arandivps` was provisioned with Node.js 22, PostgreSQL 16, Nginx, certbot, UFW, a systemd-hardened `arandi` application account, release/backup layout, health and daily-backup timers, and a 2GB persistent swap file appropriate to its memory capacity.
+- The real PostgreSQL CMS state was restored before activation (10 Pages, one existing User, and 58 Media records). Existing persistent Media storage was transferred; no credential, private setting value, database connection string, or authentication pepper was stored in source or `.ai`.
+- UFW permits only SSH, HTTP, and HTTPS. PostgreSQL stays local-only. Nginx reverse-proxies Node on loopback, serves governed `/media/`, adds HSTS on HTTPS, and leaves the application CSP/security headers intact.
+- Let's Encrypt issued a certificate for both `arandi.io` and `www.arandi.io` (expiry 2026-11-24); `certbot renew --dry-run` passed. Public checks passed for Home, Company, Services, Projects, Contact, readiness, HTTP-to-HTTPS, and `www`-to-canonical redirects. Browser QA passed FA RTL and EN LTR with Scrollwise, footer, no horizontal overflow, and no console errors.
+- `clamdscan` media protection is active and a clean-file scan passed. The VPS CDN initially blocked FreshClam database download, so the existing verified signature database was copied from the prior deployment; automatic updater remains installed and should be observed after its provider cooldown. SMTP stays disabled until approved credentials are supplied.
 
 ## 2026-08-25 — Scrollwise footer and Taupe surfaces (deployed)
 

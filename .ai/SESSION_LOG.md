@@ -1,5 +1,25 @@
 # Session Log
 
+## 2026-08-26 — arandivps deployment for arandi.io
+
+Objective
+
+- Deploy and test the current Node.js Scrollwise website on the new `arandivps` VPS for `arandi.io`.
+
+Verified implementation
+
+- Inspected the clean source worktree, current `.ai` state, deployment scripts, and public DNS before change. `arandi.io` A and `www.arandi.io` CNAME both resolve to the new VPS.
+- Provisioned Node.js 22, PostgreSQL 16, Nginx, certbot, UFW, systemd application/health/backup units, restricted service account, local PostgreSQL role/database, root-owned private runtime environment, release layout, and persistent swap.
+- Migrated the real database and Media state from the prior Node.js VPS, then activated release `20260826T154500Z-arandivps-initial` from `d8187cc`. The deployment build completed, Prisma found nine current migrations and no pending migration, and the service healthcheck passed.
+- Issued the valid `arandi.io`/`www.arandi.io` Let's Encrypt certificate, enabled HTTP-to-HTTPS and `www` canonical redirect, HSTS, and the automatic renewal timer; renewal dry-run passed.
+- Installed ClamAV. The CDN temporarily blocked first signature download, so the verified signature set was transferred from the prior VPS; the daemon and a clean-file `clamdscan` passed.
+
+Validation
+
+- VPS service checks: PostgreSQL, Nginx, Arandi app, health timer, backup timer, and ClamAV are active; readiness and public Home return `200`.
+- External checks: Home, Company, Services, Projects, Contact, and readiness are `200` at HTTPS; HTTP returns `301` to HTTPS; `www` returns `301` to canonical `arandi.io`; TLS certificate issuance and renewal simulation passed.
+- Browser checks: Persian is RTL, English is LTR, Scrollwise and footer render, footer background computes to `rgb(237, 233, 225)`, no horizontal overflow, and no console errors.
+
 ## 2026-08-25 — Scrollwise footer exact EDE9E1 deployment
 
 Objective

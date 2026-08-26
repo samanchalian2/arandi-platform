@@ -4,6 +4,13 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-26 — arandivps production deployment
+
+- Provisioned the new `arandivps` VPS for `arandi.io` with Node.js 22, PostgreSQL 16, Nginx, Let's Encrypt, UFW, systemd services/timers, local-only database access, and persistent swap.
+- Restored the real CMS database and Media state from the prior Node.js deployment, then built and activated release `20260826T154500Z-arandivps-initial` from commit `d8187cc`. Prisma found nine current migrations with none pending.
+- Verified public HTTPS routes, readiness, HTTP and `www` canonical redirects, valid TLS issuance/renewal dry run, security headers/HSTS, real browser FA RTL/EN LTR rendering, exact `#EDE9E1` footer, no horizontal overflow, and no console errors.
+- Installed and tested ClamAV scanning for future Admin media uploads. The updater is installed; its initial CDN fetch was blocked, so the prior verified signature database was transferred and the daemon was verified with a clean-file scan.
+
 # 2026-08-25 — Scrollwise footer light surface
 
 - Changed only the Scrollwise footer background to exact `#EDE9E1`; retained dark footer text, light finale panel, existing CMS data, and both other public themes.
