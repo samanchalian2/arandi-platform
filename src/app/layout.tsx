@@ -96,6 +96,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             publicTheme={publicTheme}
             scrollwiseShowMotionControl={scrollwiseHeaderDisplay.showMotionControl}
             scrollwiseMenuMode={scrollwiseHeaderDisplay.menuMode}
+            scrollwiseHeaderLogoSize={scrollwiseHeaderDisplay.headerLogoSize}
+            scrollwiseHeaderTitleSize={scrollwiseHeaderDisplay.headerTitleSize}
           >
             {children}
           </AppChrome>

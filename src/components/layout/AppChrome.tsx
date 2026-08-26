@@ -27,9 +27,11 @@ type AppChromeProps = {
     publicTheme: PublicTheme;
     scrollwiseShowMotionControl: boolean;
     scrollwiseMenuMode: ScrollwiseMenuMode;
+    scrollwiseHeaderLogoSize: number;
+    scrollwiseHeaderTitleSize: number;
 };
 
-export function AppChrome({ children, contentByLanguage, lang, publicTheme, scrollwiseShowMotionControl, scrollwiseMenuMode }: AppChromeProps) {
+export function AppChrome({ children, contentByLanguage, lang, publicTheme, scrollwiseShowMotionControl, scrollwiseMenuMode, scrollwiseHeaderLogoSize, scrollwiseHeaderTitleSize }: AppChromeProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
@@ -59,7 +61,7 @@ export function AppChrome({ children, contentByLanguage, lang, publicTheme, scro
                 {currentLanguage === "fa" ? "رفتن به محتوای اصلی" : "Skip to main content"}
             </a>
             {isScrollwiseHome
-                ? <ScrollwiseHeader companyName={content.company.shortName} navigation={content.navigation} lang={currentLanguage} showMotionControl={scrollwiseShowMotionControl} menuMode={scrollwiseMenuMode} />
+                ? <ScrollwiseHeader companyName={content.company.shortName} navigation={content.navigation} lang={currentLanguage} showMotionControl={scrollwiseShowMotionControl} menuMode={scrollwiseMenuMode} logoSize={scrollwiseHeaderLogoSize} titleSize={scrollwiseHeaderTitleSize} />
                 : <Header content={content.navigation} company={content.company} lang={currentLanguage} />}
             <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
             <Footer content={content.footer} company={content.company} navigation={content.navigation} lang={currentLanguage} variant={isScrollwiseHome ? "scrollwise" : "standard"} />

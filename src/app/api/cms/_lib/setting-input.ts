@@ -141,7 +141,7 @@ export function parsePublicSettingValue(key: EditableSettingKey, value: Record<s
         }));
     }
     if (key === "site.scrollwiseExperience") {
-        const supported = ["motionPreset", "showMotionControl", "menuMode", "headingScale", "veilOpacity", "storyHeight", "interludeHeight"] as const;
+        const supported = ["motionPreset", "showMotionControl", "menuMode", "headerLogoSize", "headerTitleSize", "headingScale", "veilOpacity", "storyHeight", "interludeHeight"] as const;
         const extra = Object.keys(value).filter((name) => !supported.includes(name as typeof supported[number]));
         if (extra.length > 0) throw new Error("site.scrollwiseExperience contains an unsupported field.");
         if (!(["subtle", "balanced", "cinematic"] as const).includes(value.motionPreset as "subtle" | "balanced" | "cinematic")) {
@@ -149,7 +149,7 @@ export function parsePublicSettingValue(key: EditableSettingKey, value: Record<s
         }
         if (typeof value.showMotionControl !== "boolean") throw new Error("site.scrollwiseExperience.showMotionControl is invalid.");
         if (value.menuMode !== "narrative" && value.menuMode !== "classic") throw new Error("site.scrollwiseExperience.menuMode is invalid.");
-        const numberInRange = (field: "headingScale" | "veilOpacity" | "storyHeight" | "interludeHeight", minimum: number, maximum: number, integer = false) => {
+        const numberInRange = (field: "headerLogoSize" | "headerTitleSize" | "headingScale" | "veilOpacity" | "storyHeight" | "interludeHeight", minimum: number, maximum: number, integer = false) => {
             const candidate = value[field];
             if (typeof candidate !== "number" || !Number.isFinite(candidate) || candidate < minimum || candidate > maximum || (integer && !Number.isInteger(candidate))) {
                 throw new Error(`site.scrollwiseExperience.${field} is invalid.`);
@@ -160,6 +160,8 @@ export function parsePublicSettingValue(key: EditableSettingKey, value: Record<s
             motionPreset: value.motionPreset,
             showMotionControl: value.showMotionControl,
             menuMode: value.menuMode,
+            headerLogoSize: numberInRange("headerLogoSize", 40, 64, true),
+            headerTitleSize: numberInRange("headerTitleSize", 13, 22, true),
             headingScale: numberInRange("headingScale", 90, 115, true),
             veilOpacity: numberInRange("veilOpacity", 0.5, 0.98),
             storyHeight: numberInRange("storyHeight", 120, 220, true),

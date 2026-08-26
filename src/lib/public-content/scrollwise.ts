@@ -18,6 +18,8 @@ export type ScrollwiseDisplaySettings = {
     motionPreset: ScrollwiseMotionPreset;
     showMotionControl: boolean;
     menuMode: ScrollwiseMenuMode;
+    headerLogoSize: number;
+    headerTitleSize: number;
     headingScale: number;
     veilOpacity: number;
     storyHeight: number;
@@ -59,6 +61,8 @@ const defaultDisplay: ScrollwiseDisplaySettings = {
     motionPreset: "cinematic",
     showMotionControl: false,
     menuMode: "narrative",
+    headerLogoSize: 48,
+    headerTitleSize: 16,
     headingScale: 100,
     veilOpacity: 0.94,
     storyHeight: 150,
@@ -167,6 +171,8 @@ async function resolveScrollwiseSettings() {
             motionPreset,
             showMotionControl: rawDisplay.showMotionControl === true,
             menuMode: rawDisplay.menuMode === "classic" ? "classic" : defaultDisplay.menuMode,
+            headerLogoSize: Math.round(boundedNumber(rawDisplay.headerLogoSize, defaultDisplay.headerLogoSize, 40, 64)),
+            headerTitleSize: Math.round(boundedNumber(rawDisplay.headerTitleSize, defaultDisplay.headerTitleSize, 13, 22)),
             headingScale: Math.round(boundedNumber(rawDisplay.headingScale, defaultDisplay.headingScale, 90, 115)),
             veilOpacity: boundedNumber(rawDisplay.veilOpacity, defaultDisplay.veilOpacity, 0.5, 0.98),
             storyHeight: Math.round(boundedNumber(rawDisplay.storyHeight, defaultDisplay.storyHeight, 120, 220)),
@@ -175,7 +181,7 @@ async function resolveScrollwiseSettings() {
     };
 }
 
-export async function getScrollwiseHeaderDisplay(): Promise<Pick<ScrollwiseDisplaySettings, "showMotionControl" | "menuMode">> {
+export async function getScrollwiseHeaderDisplay(): Promise<Pick<ScrollwiseDisplaySettings, "showMotionControl" | "menuMode" | "headerLogoSize" | "headerTitleSize">> {
     const settings = await loadScrollwiseSettings();
     const displaySetting = settings.find((setting) => setting.key === "site.scrollwiseExperience");
     const display = displaySetting?.value && typeof displaySetting.value === "object" && !Array.isArray(displaySetting.value)
@@ -184,6 +190,8 @@ export async function getScrollwiseHeaderDisplay(): Promise<Pick<ScrollwiseDispl
     return {
         showMotionControl: display.showMotionControl === true,
         menuMode: display.menuMode === "classic" ? "classic" : defaultDisplay.menuMode,
+        headerLogoSize: Math.round(boundedNumber(display.headerLogoSize, defaultDisplay.headerLogoSize, 40, 64)),
+        headerTitleSize: Math.round(boundedNumber(display.headerTitleSize, defaultDisplay.headerTitleSize, 13, 22)),
     };
 }
 

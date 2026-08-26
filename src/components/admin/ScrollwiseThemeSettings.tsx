@@ -38,6 +38,8 @@ type ExperienceSettings = {
     motionPreset: "subtle" | "balanced" | "cinematic";
     showMotionControl: boolean;
     menuMode: "narrative" | "classic";
+    headerLogoSize: number;
+    headerTitleSize: number;
     headingScale: number;
     veilOpacity: number;
     storyHeight: number;
@@ -48,6 +50,8 @@ const defaultExperience: ExperienceSettings = {
     motionPreset: "cinematic",
     showMotionControl: false,
     menuMode: "narrative",
+    headerLogoSize: 48,
+    headerTitleSize: 16,
     headingScale: 100,
     veilOpacity: 0.94,
     storyHeight: 150,
@@ -78,6 +82,8 @@ function initialExperience(setting: SettingItem): ExperienceSettings {
         motionPreset: value.motionPreset === "subtle" || value.motionPreset === "balanced" || value.motionPreset === "cinematic" ? value.motionPreset : defaultExperience.motionPreset,
         showMotionControl: typeof value.showMotionControl === "boolean" ? value.showMotionControl : defaultExperience.showMotionControl,
         menuMode: value.menuMode === "classic" ? "classic" : defaultExperience.menuMode,
+        headerLogoSize: typeof value.headerLogoSize === "number" ? value.headerLogoSize : defaultExperience.headerLogoSize,
+        headerTitleSize: typeof value.headerTitleSize === "number" ? value.headerTitleSize : defaultExperience.headerTitleSize,
         headingScale: typeof value.headingScale === "number" ? value.headingScale : defaultExperience.headingScale,
         veilOpacity: typeof value.veilOpacity === "number" ? value.veilOpacity : defaultExperience.veilOpacity,
         storyHeight: typeof value.storyHeight === "number" ? value.storyHeight : defaultExperience.storyHeight,
@@ -193,6 +199,14 @@ function ScrollwiseThemeSettingsForm({ sceneSetting, experienceSetting, copySett
                             <option value="classic">Classic public pages</option>
                         </select>
                         <span className="text-xs font-normal text-muted-foreground">Choose the story anchors or the CMS-managed Company, Services, Solutions, Industries, Projects, Contact and Articles menu.</span>
+                    </label>
+                    <label className="grid gap-2 text-sm font-medium">Header logo size <output>{experience.headerLogoSize}px</output>
+                        <input type="range" min="40" max="64" step="1" value={experience.headerLogoSize} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headerLogoSize: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
+                        <span className="text-xs font-normal text-muted-foreground">Sets the Arandi symbol size in the public Scrollwise header.</span>
+                    </label>
+                    <label className="grid gap-2 text-sm font-medium">Header title size <output>{experience.headerTitleSize}px</output>
+                        <input type="range" min="13" max="22" step="1" value={experience.headerTitleSize} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headerTitleSize: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
+                        <span className="text-xs font-normal text-muted-foreground">Sets the desktop Arandi brand-title size; compact mobile navigation keeps the title hidden.</span>
                     </label>
                     <label className="grid gap-2 text-sm font-medium">Heading size <output>{experience.headingScale}%</output>
                         <input type="range" min="90" max="115" step="5" value={experience.headingScale} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headingScale: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />

@@ -16,9 +16,11 @@ type ScrollwiseHeaderProps = {
     lang: "en" | "fa";
     showMotionControl: boolean;
     menuMode: "narrative" | "classic";
+    logoSize: number;
+    titleSize: number;
 };
 
-export function ScrollwiseHeader({ companyName, navigation, lang, showMotionControl, menuMode }: ScrollwiseHeaderProps) {
+export function ScrollwiseHeader({ companyName, navigation, lang, showMotionControl, menuMode, logoSize, titleSize }: ScrollwiseHeaderProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [menuOpen, setMenuOpen] = useState(false);
@@ -48,8 +50,8 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
         <header className="pointer-events-none fixed inset-x-0 top-0 z-[var(--z-header)] p-3 sm:p-5" dir={fa ? "rtl" : "ltr"}>
             <div className="pointer-events-auto mx-auto flex max-w-[94rem] items-center justify-between gap-3 rounded-2xl border border-slate-900/8 bg-white/82 px-3 py-2 shadow-[0_0.75rem_3rem_rgb(28_37_48_/_0.05)] backdrop-blur-xl sm:px-4">
                 <Link href={`/?lang=${lang}`} className="ds-focus-visible inline-flex min-h-11 min-w-11 items-center gap-2.5 rounded-xl px-2 text-foreground sm:px-2.5" aria-label={`${companyName} ${fa ? "خانه" : "Home"}`}>
-                    <Image src="/brand/arandi-symbol.png" alt="" width={52} height={52} priority unoptimized className="size-11 object-contain sm:size-12" />
-                    <span className={cn("hidden text-sm font-semibold sm:inline sm:text-base", fa ? "tracking-normal" : "uppercase tracking-[0.2em]")}>{companyName}</span>
+                    <Image src="/brand/arandi-symbol.png" alt="" width={logoSize} height={logoSize} priority unoptimized className="shrink-0 object-contain" style={{ width: logoSize, height: logoSize }} />
+                    <span className={cn("hidden font-semibold sm:inline", fa ? "tracking-normal" : "uppercase tracking-[0.2em]")} style={{ fontSize: titleSize }}>{companyName}</span>
                 </Link>
 
                 <nav aria-label={menuLabel} className="hidden items-center gap-0.5 xl:flex">

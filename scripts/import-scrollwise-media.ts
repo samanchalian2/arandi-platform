@@ -74,7 +74,7 @@ async function main() {
         update: { value: json(value), group: "theme", isPublic: false },
         create: { key: "site.scrollwiseScenes", value: json(value), group: "theme", isPublic: false },
     });
-    const experience = { motionPreset: "cinematic", headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 };
+    const experience = { motionPreset: "cinematic", headerLogoSize: 48, headerTitleSize: 16, headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 };
     const existingExperience = await prisma.setting.findUnique({ where: { key: "site.scrollwiseExperience" }, select: { value: true } });
     const currentExperience = existingExperience?.value && typeof existingExperience.value === "object" && !Array.isArray(existingExperience.value)
         ? existingExperience.value as Record<string, unknown>
