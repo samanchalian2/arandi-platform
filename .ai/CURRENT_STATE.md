@@ -6,7 +6,13 @@ Last verified: 2026-08-26
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260826T-brand-header-scale` from reviewed commit `cc8b724`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260826T-scrollwise-header-controls` from reviewed commit `8fe17fb`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-26 — Scrollwise header controls (deployed)
+
+- The existing private `site.scrollwiseExperience` contract now governs `headerLogoSize` (40–64px) and `headerTitleSize` (13–22px). Safe defaults preserve the approved 48px logo and 16px desktop title for existing settings; no Prisma migration was required.
+- Admin Theme → Scrollwise experience provides two labelled 44px range controls. Saving uses the existing Admin/SuperAdmin API, CSRF protection, validation, cache invalidation, and theme-preview/publication workflow; compact mobile navigation continues to hide only the title for space.
+- Commit `8fe17fb` was validated with 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build, then activated as release `20260826T-scrollwise-header-controls`. Readiness and public Home returned `200`; live Browser QA confirmed the default 48px/16px rendering, no horizontal overflow, and no console errors.
 
 ## 2026-08-26 — Scrollwise header brand scale (deployed)
 

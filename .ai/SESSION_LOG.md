@@ -1,5 +1,22 @@
 # Session Log
 
+## 2026-08-26 — Scrollwise header controls
+
+Objective
+
+- Make the public Scrollwise header logo and Arandi title size adjustable in the existing Admin panel without weakening CMS boundaries.
+
+Verified implementation
+
+- Extended the existing private `site.scrollwiseExperience` contract with integer `headerLogoSize` (40–64px) and `headerTitleSize` (13–22px), with safe defaults of 48px and 16px for legacy saved data.
+- Added accessible labelled range controls in Admin Theme → Scrollwise experience. The existing Settings API retains CSRF, Admin/SuperAdmin access control, allowlisted input parsing, cache invalidation, and publication workflow. No database migration or secret-bearing setting was added.
+- Commit `8fe17fb` was pushed to `origin/scrollwise` and deployed as `20260826T-scrollwise-header-controls` through the release script after a protected backup and no-pending-migration confirmation.
+
+Validation
+
+- All 51 tests, strict typecheck, lint, diff check, and 63-route production build passed. The exact new boundary checks reject a 65px logo and 12px title.
+- Service is active; readiness and Home return `200`. Live Persian Browser QA reports a 48px logo, 16px title, no horizontal overflow, and no console errors.
+
 ## 2026-08-26 — Scrollwise header brand scale
 
 Objective

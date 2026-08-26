@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-26 — Scrollwise header controls
+
+- Added private Admin Theme controls for the Scrollwise header: brand-symbol size (40–64px) and desktop brand-title size (13–22px). Values are validated server-side and retain the approved defaults of 48px and 16px for existing installations.
+- Kept compact mobile title hiding, existing RBAC/CSRF/cache invalidation, and the theme preview/publish boundary. No schema migration or public arbitrary-style input was introduced.
+- Validated 51 tests, typecheck, lint, diff check, production build, VPS readiness, Home `200`, and live Browser defaults with no horizontal overflow or console errors. Commit `8fe17fb` was pushed to `origin/scrollwise` and deployed as `20260826T-scrollwise-header-controls`.
+
 # 2026-08-26 — Scrollwise header brand scale
 
 - Enlarged the active Scrollwise header symbol from 36px to 48px and its desktop brand title from 12px to 16px. Compact mobile navigation retains an icon-only brand treatment to avoid crowding.
