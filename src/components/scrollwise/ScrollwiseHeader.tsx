@@ -47,9 +47,9 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
     return (
         <header className="pointer-events-none fixed inset-x-0 top-0 z-[var(--z-header)] p-3 sm:p-5" dir={fa ? "rtl" : "ltr"}>
             <div className="pointer-events-auto mx-auto flex max-w-[94rem] items-center justify-between gap-3 rounded-2xl border border-slate-900/8 bg-white/82 px-3 py-2 shadow-[0_0.75rem_3rem_rgb(28_37_48_/_0.05)] backdrop-blur-xl sm:px-4">
-                <Link href={`/?lang=${lang}`} className="ds-focus-visible inline-flex min-h-11 min-w-11 items-center gap-2 rounded-xl px-1.5 text-foreground" aria-label={`${companyName} ${fa ? "خانه" : "Home"}`}>
-                    <Image src="/brand/arandi-symbol.png" alt="" width={42} height={42} priority unoptimized className="size-9 object-contain" />
-                    <span className={cn("hidden text-xs font-semibold sm:inline", fa ? "tracking-normal" : "uppercase tracking-[0.2em]")}>{companyName}</span>
+                <Link href={`/?lang=${lang}`} className="ds-focus-visible inline-flex min-h-11 min-w-11 items-center gap-2.5 rounded-xl px-2 text-foreground sm:px-2.5" aria-label={`${companyName} ${fa ? "خانه" : "Home"}`}>
+                    <Image src="/brand/arandi-symbol.png" alt="" width={52} height={52} priority unoptimized className="size-11 object-contain sm:size-12" />
+                    <span className={cn("hidden text-sm font-semibold sm:inline sm:text-base", fa ? "tracking-normal" : "uppercase tracking-[0.2em]")}>{companyName}</span>
                 </Link>
 
                 <nav aria-label={menuLabel} className="hidden items-center gap-0.5 xl:flex">
