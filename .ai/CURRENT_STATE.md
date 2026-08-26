@@ -6,7 +6,13 @@ Last verified: 2026-08-26
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260826T154500Z-arandivps-initial` from reviewed commit `d8187cc`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260826T-brand-header-scale` from reviewed commit `cc8b724`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-26 — Scrollwise header brand scale (deployed)
+
+- Commit `cc8b724` enlarges only the active Scrollwise header brand: the symbol now renders at 48px (from 36px), and the desktop brand name at 16px (from 12px). On compact mobile viewports the title remains intentionally hidden to preserve navigation space, while the larger symbol remains visible.
+- Local 51-test, strict typecheck, zero-warning lint, diff check, and the 63-route production build passed. The rollback-aware deployment created a new backup, found nine Prisma migrations with none pending, and activated release `20260826T-brand-header-scale`.
+- Direct VPS readiness and public Home returned `200`. Live Persian Browser inspection confirmed the 48px symbol, the visible 16px `آرندی` title on the active viewport, no horizontal document overflow, and no console errors.
 
 ## 2026-08-26 — arandivps production deployment (verified)
 

@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-26 — Scrollwise header brand scale
+
+- Enlarged the active Scrollwise header symbol from 36px to 48px and its desktop brand title from 12px to 16px. Compact mobile navigation retains an icon-only brand treatment to avoid crowding.
+- Validated with 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. Pushed commit `cc8b724` to `origin/scrollwise` and activated VPS release `20260826T-brand-header-scale`.
+- Readiness and public Home returned `200`; live Browser inspection confirmed the exact 48px symbol and 16px Persian brand title without horizontal overflow or console errors.
+
 # 2026-08-26 — arandivps production deployment
 
 - Provisioned the new `arandivps` VPS for `arandi.io` with Node.js 22, PostgreSQL 16, Nginx, Let's Encrypt, UFW, systemd services/timers, local-only database access, and persistent swap.

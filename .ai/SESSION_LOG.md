@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-08-26 — Scrollwise header brand scale
+
+Objective
+
+- Increase the live Scrollwise header logo and Arandi brand-title scale, and keep the reviewed source synchronized with GitHub.
+
+Verified implementation
+
+- Commit `cc8b724` changes `ScrollwiseHeader` only: the responsive symbol grows from 36px to 48px, the desktop title from 12px to 16px, and the compact mobile title remains hidden to prevent control collisions.
+- The reviewed commit was pushed to `origin/scrollwise`, then deployed through the rollback-aware release script as `20260826T-brand-header-scale` after a new protected backup and successful Prisma migration-status check.
+
+Validation
+
+- Local 51-test, typecheck, lint, diff check, and 63-route production build passed.
+- VPS service is active; readiness and public Home are `200`. Live Persian Browser inspection measured a 48px symbol and a 16px visible `آرندی` title with no horizontal document overflow or console errors.
+
 ## 2026-08-26 — arandivps deployment for arandi.io
 
 Objective
