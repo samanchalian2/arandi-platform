@@ -14,6 +14,11 @@ Status: the Node.js Scrollwise production deployment is live on the new `arandiv
 - The existing Admin-controlled header-logo default and seed baseline are 64px. Conditional migration `20260827120000_scrollwise_simple_logo` changes only the immediately preceding 128px/28px baseline to 64px, preserving later deliberate Admin changes. The approved 28px desktop title and existing 64–128px Admin range remain available.
 - Commits `ff708eb` and `fe64acf` passed Prisma validation/migration deployment, 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. Release `20260827T-scrollwise-simple-logo` is active; readiness and public Home returned `200`. Live Persian Browser QA verified the original asset at 64px, RTL, and no horizontal overflow.
 
+## 2026-08-27 — Owner-authorized SuperAdmin credential recovery
+
+- The verified production SuperAdmin credential was reset directly after the public recovery flow correctly reported unavailable email delivery. The reset uses the application Argon2id password routine, clears lockout failures, revokes active sessions and outstanding recovery tokens, and records a successful security event.
+- The new credential was verified against its stored hash without creating a browser session. No password, environment value, database connection value, or other secret is retained in source, Git, or project documentation.
+
 ## 2026-08-27 — Scrollwise crystal-orb brand and assistant-send color (deployed)
 
 - The stakeholder-selected solid owl mark within a circular smoky-brown crystal orb now replaces the prior generated glass owl only in the Scrollwise header. The redundant outer glass frame was removed, so the governed 128px size applies directly to the orb. Original brand files, other themes, favicon, metadata, and footer lockup remain unchanged.

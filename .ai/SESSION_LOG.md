@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-08-27 — Owner-authorized SuperAdmin credential recovery
+
+Objective
+
+- Restore owner access to the verified production SuperAdmin account while SMTP-backed recovery remains unavailable.
+
+Verified operation
+
+- Reset the credential using the application Argon2id routine in an atomic database transaction, cleared failure lockout state, revoked prior sessions and pending recovery tokens, and created an audit event.
+- Independently verified the new credential against the persisted hash and the account's active SuperAdmin role without opening a browser session. No secret value is recorded here or in Git.
+
 ## 2026-08-27 — Scrollwise simple 64px brand
 
 Objective
