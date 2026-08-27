@@ -252,7 +252,7 @@
   --scrollwise-taupe-muted: var(--scrollwise-taupe-ink);
   --scrollwise-taupe-line: color-mix(in oklch, var(--scrollwise-taupe-ink) 20%, transparent);
   border-color: var(--scrollwise-taupe-line);
-  background: #ede9e1;
+  background: #edeae7;
   color: var(--scrollwise-taupe-ink);
 }
 
