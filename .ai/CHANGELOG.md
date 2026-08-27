@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-27 — Scrollwise simple 64px brand
+
+- Reverted the Scrollwise header from the crystal-orb treatment to the original simple project symbol and removed the added generated asset. No special frame or glass styling remains around the header symbol.
+- Set the governed default and seed baseline to 64px. Conditional migration `20260827120000_scrollwise_simple_logo` changes only the preceding 128px/28px baseline, while retaining the existing Admin range and 28px title setting.
+- Prisma validation/migration deployment, 51 tests, typecheck, lint, diff check, and the 63-route production build passed. Commits `ff708eb` and `fe64acf` were pushed to `origin/scrollwise` and deployed as `20260827T-scrollwise-simple-logo`; readiness and public Home returned `200`. Browser QA confirms the original asset at 64px, Persian RTL, and no horizontal overflow.
+
 # 2026-08-27 — Scrollwise crystal-orb brand and assistant-send color
 
 - Replaced the prior generated glass owl used only in the Scrollwise header with the stakeholder-selected solid owl inside a smoky-brown crystal orb. Removed the redundant outer frame so the governed 128px setting is the direct visible asset size; original brand files and non-Scrollwise themes remain untouched.

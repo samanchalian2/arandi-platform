@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-08-27 — Scrollwise simple 64px brand
+
+Objective
+
+- Remove the crystal-orb treatment and restore a simple 64px header symbol in Scrollwise.
+
+Verified implementation
+
+- Restored the existing original symbol asset in `ScrollwiseHeader`, removed the dedicated crystal-orb CSS and deleted the unreferenced generated asset.
+- Changed the default and seed value to 64px, with a bounded conditional migration for the persisted 128px/28px baseline. The Admin control remains available from 64px to 128px.
+
+Validation
+
+- Prisma validate/migrate deploy, 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build passed. The new VPS release was activated after backup and its migration completed successfully.
+- Readiness and Home returned `200`; Browser QA confirms `/brand/arandi-symbol.png` at 64×64px in Persian RTL with no horizontal overflow.
+
 ## 2026-08-27 — Scrollwise crystal-orb brand
 
 Objective
