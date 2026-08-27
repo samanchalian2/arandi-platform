@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-27 — Scrollwise crystal-orb brand and assistant-send color
+
+- Replaced the prior generated glass owl used only in the Scrollwise header with the stakeholder-selected solid owl inside a smoky-brown crystal orb. Removed the redundant outer frame so the governed 128px setting is the direct visible asset size; original brand files and non-Scrollwise themes remain untouched.
+- Restored the assistant send control to the requested exact primary color, `oklch(0.34 0.09 245)`, while retaining the accessible focus and disabled behavior. The assistant shell, bot control, and back-to-top control remain translucent.
+- Validated 51 tests, typecheck, lint, diff check, and the 63-route production build. Commit `43cfe2e` was pushed to `origin/scrollwise` and deployed as `20260827T-scrollwise-crystal-orb`; readiness and public Home returned `200`. Live Persian Browser QA confirms RTL, the 128px orb, the computed send color, and no horizontal overflow.
+
 # 2026-08-27 — Scrollwise liquid-glass controls
 
 - Added a transparent smoky-brown glass Arandi owl mark for the Scrollwise header only, inside a 128px translucent glass frame. The desktop brand title is now 28px; the private Admin Theme controls are safely widened to logo 64–128px and title 16–36px.

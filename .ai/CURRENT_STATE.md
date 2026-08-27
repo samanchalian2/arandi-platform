@@ -6,7 +6,13 @@ Last verified: 2026-08-27
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-liquid-glass` from reviewed commit `a5cde7a`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral/liquid-glass treatment; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-crystal-orb` from reviewed commit `43cfe2e`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral treatment; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-27 — Scrollwise crystal-orb brand and assistant-send color (deployed)
+
+- The stakeholder-selected solid owl mark within a circular smoky-brown crystal orb now replaces the prior generated glass owl only in the Scrollwise header. The redundant outer glass frame was removed, so the governed 128px size applies directly to the orb. Original brand files, other themes, favicon, metadata, and footer lockup remain unchanged.
+- The floating assistant send control is now the requested exact Scrollwise primary `oklch(0.34 0.09 245)`, with its native focus and disabled state preserved. The assistant shell, bot control, and back-to-top control retain their scoped translucent surfaces.
+- Commit `43cfe2e` passed 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. Release `20260827T-scrollwise-crystal-orb` is active; readiness and public Home returned `200`. Live Persian Browser QA verified RTL, the new orb asset at 128px, the computed send color, and no horizontal overflow.
 
 ## 2026-08-27 — Scrollwise liquid-glass controls and header (deployed)
 

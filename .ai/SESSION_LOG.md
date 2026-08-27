@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-08-27 — Scrollwise crystal-orb brand
+
+Objective
+
+- Apply the stakeholder-selected solid Arandi mark inside a circular crystal orb to the Scrollwise header, and make the floating assistant send action use the selected primary blue.
+
+Verified implementation
+
+- Added the selected local PNG as a new Scrollwise-only brand asset and removed the former frame/padding that visually reduced the governed logo size. The header now renders the orb directly at its existing 128px Admin-controlled size.
+- Kept the assistant shell, bot control, and back-to-top treatment unchanged. Scoped only the submit control to the theme primary and preserved its focus/disabled behavior.
+
+Validation
+
+- 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build passed. Commit `43cfe2e` was pushed and release `20260827T-scrollwise-crystal-orb` activated after a protected server backup; Prisma had no pending migrations.
+- Server readiness and public Home returned `200`. Live Persian Browser QA confirms the expected asset, exact 128px dimensions, `oklch(0.34 0.09 245)` submit background, RTL, and no horizontal overflow.
+
 ## 2026-08-27 — Scrollwise liquid-glass brand and controls
 
 Objective
