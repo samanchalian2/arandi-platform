@@ -138,12 +138,12 @@ async function seedTheme() {
             slug: "scrollwise", name: "Arandi Scrollwise", isDefault: false,
             tokens: {
                 colors: {
-                    "--background": "oklch(0.965 0.018 85)", "--foreground": "oklch(0.22 0.018 255)",
-                    "--surface": "oklch(0.985 0.012 85)", "--card": "oklch(0.985 0.012 85)",
-                    "--primary": "oklch(0.34 0.09 245)", "--primary-foreground": "oklch(0.98 0.008 85)",
+                    "--background": "oklch(0.985 0.006 247)", "--foreground": "oklch(0.2 0.016 255)",
+                    "--surface": "oklch(0.996 0.004 247)", "--card": "oklch(0.996 0.004 247)",
+                    "--primary": "oklch(0.34 0.09 245)", "--primary-foreground": "oklch(0.985 0.004 247)",
                     "--accent": "oklch(0.62 0.13 225)", "--accent-foreground": "oklch(0.18 0.03 250)",
-                    "--muted": "oklch(0.91 0.018 82)", "--muted-foreground": "oklch(0.42 0.025 250)",
-                    "--border": "oklch(0.78 0.025 80)", "--ring": "oklch(0.51 0.12 235)",
+                    "--muted": "oklch(0.95 0.011 247)", "--muted-foreground": "oklch(0.47 0.024 255)",
+                    "--border": "oklch(0.89 0.012 247)", "--ring": "oklch(0.6 0.13 238)",
                 },
                 radius: { "--radius": "0.45rem", "--radius-card": "1rem", "--radius-panel": "1.4rem" },
                 spacing: { "--section-block-padding": "clamp(5rem, 9vw, 9rem)" },
