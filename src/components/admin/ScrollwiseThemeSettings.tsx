@@ -50,8 +50,8 @@ const defaultExperience: ExperienceSettings = {
     motionPreset: "cinematic",
     showMotionControl: false,
     menuMode: "narrative",
-    headerLogoSize: 48,
-    headerTitleSize: 16,
+    headerLogoSize: 128,
+    headerTitleSize: 28,
     headingScale: 100,
     veilOpacity: 0.94,
     storyHeight: 150,
@@ -201,11 +201,11 @@ function ScrollwiseThemeSettingsForm({ sceneSetting, experienceSetting, copySett
                         <span className="text-xs font-normal text-muted-foreground">Choose the story anchors or the CMS-managed Company, Services, Solutions, Industries, Projects, Contact and Articles menu.</span>
                     </label>
                     <label className="grid gap-2 text-sm font-medium">Header logo size <output>{experience.headerLogoSize}px</output>
-                        <input type="range" min="40" max="64" step="1" value={experience.headerLogoSize} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headerLogoSize: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
+                        <input type="range" min="64" max="128" step="1" value={experience.headerLogoSize} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headerLogoSize: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
                         <span className="text-xs font-normal text-muted-foreground">Sets the Arandi symbol size in the public Scrollwise header.</span>
                     </label>
                     <label className="grid gap-2 text-sm font-medium">Header title size <output>{experience.headerTitleSize}px</output>
-                        <input type="range" min="13" max="22" step="1" value={experience.headerTitleSize} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headerTitleSize: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
+                        <input type="range" min="16" max="36" step="1" value={experience.headerTitleSize} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, headerTitleSize: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
                         <span className="text-xs font-normal text-muted-foreground">Sets the desktop Arandi brand-title size; compact mobile navigation keeps the title hidden.</span>
                     </label>
                     <label className="grid gap-2 text-sm font-medium">Heading size <output>{experience.headingScale}%</output>

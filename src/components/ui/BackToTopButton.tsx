@@ -28,7 +28,7 @@ export function BackToTopButton({ lang }: BackToTopButtonProps) {
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             aria-label={lang === "fa" ? "بازگشت به ابتدای صفحه" : "Back to top"}
-            className="ds-focus-visible fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] end-4 z-40 inline-flex size-11 items-center justify-center rounded-full border border-slate-900/10 bg-background/94 text-foreground shadow-[0_16px_36px_-20px_rgba(15,23,42,0.6)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-background sm:end-6"
+            className="ds-focus-visible ds-back-to-top fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] end-4 z-40 inline-flex size-11 items-center justify-center rounded-full border border-slate-900/10 bg-background/94 text-foreground shadow-[0_16px_36px_-20px_rgba(15,23,42,0.6)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-background sm:end-6"
         >
             <ArrowUp aria-hidden="true" className="size-4" />
         </button>

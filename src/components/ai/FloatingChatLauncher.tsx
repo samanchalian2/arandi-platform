@@ -41,8 +41,8 @@ export function FloatingChatLauncher({ lang }: FloatingChatLauncherProps) {
             aria-label={copy.label}
             className="fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 pointer-events-none px-4 sm:px-6"
         >
-            <form onSubmit={submit} className="ds-chat-shell ds-subtle-ring pointer-events-auto mx-auto flex w-full max-w-xl items-center gap-2 rounded-full bg-background/94 p-2 shadow-[0_22px_60px_-28px_rgba(15,23,42,0.55)] backdrop-blur-xl">
-                <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <form onSubmit={submit} className="ds-chat-shell ds-subtle-ring ds-floating-chat-shell pointer-events-auto mx-auto flex w-full max-w-xl items-center gap-2 rounded-full bg-background/94 p-2 shadow-[0_22px_60px_-28px_rgba(15,23,42,0.55)] backdrop-blur-xl">
+                <span aria-hidden="true" className="ds-floating-chat-bot flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <Bot className="size-4" />
                 </span>
                 <label className="sr-only" htmlFor="floating-assistant-input">{copy.label}</label>
@@ -58,7 +58,7 @@ export function FloatingChatLauncher({ lang }: FloatingChatLauncherProps) {
                 <button
                     type="submit"
                     disabled={!draft.trim()}
-                    className="ds-focus-visible inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[var(--elevation-1)] transition disabled:cursor-not-allowed disabled:opacity-45"
+                    className="ds-focus-visible ds-floating-chat-submit inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[var(--elevation-1)] transition disabled:cursor-not-allowed disabled:opacity-45"
                     aria-label={copy.submit}
                 >
                     <ArrowUp className="size-4 rtl:rotate-180" />
