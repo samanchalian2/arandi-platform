@@ -1,12 +1,19 @@
 # Current State
 
-Last verified: 2026-08-26
+Last verified: 2026-08-27
 
 ## Current Phase
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-footer-edeae7` from reviewed commit `190165a`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDEAE7` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-cache-refresh` from reviewed commit `c7ef375`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages now use the verified light cool-neutral palette; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-27 — Scrollwise internal-page palette (deployed)
+
+- The active Scrollwise theme's generic internal-page tokens were moved from the warm cream baseline to a very light, cool-neutral palette aligned with the published narrative Home: background `oklch(0.985 0.006 247)`, cards/surfaces `oklch(0.996 0.004 247)`, muted panels `oklch(0.95 0.011 247)`, and a lighter matching border. The established blue action/accent colors and all content remain unchanged.
+- Prisma migration `20260827090000_scrollwise_light_palette` is intentionally conditional: it updates only a Scrollwise theme that still holds the former baseline, preserving deliberate later Admin customizations. The seed baseline matches the revised tokens.
+- First deployment exposed a shared Next data-cache entry retaining old public theme tokens even though PostgreSQL had the new values. Commit `c7ef375` updates the release workflow to clear only the disposable shared fetch cache after build/migration and before activation; this prevents future data-only releases from publishing stale CMS appearance data.
+- Commits `a52267c` and `c7ef375` passed 51 tests, strict typecheck, zero-warning lint, diff checks, script syntax validation, and the 63-route production build. Release `20260827T-scrollwise-cache-refresh` is active; readiness and public Projects returned `200`. Live Browser inspection in Persian RTL verified all three new tokens on the root, section, card, and muted surfaces with no horizontal overflow.
 
 ## 2026-08-27 — Scrollwise light-surface color (deployed)
 

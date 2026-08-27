@@ -4,6 +4,13 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-27 — Scrollwise internal-page palette and cache-safe release
+
+- Replaced the active Scrollwise generic warm-cream token baseline with light cool-neutral background, card, muted, border, and foreground tokens; retained the blue action palette, content, Canvas, imagery, Home-only `#EDEAE7` footer, and the Classic/Arandi Pro themes.
+- Added conditional migration `20260827090000_scrollwise_light_palette`, which updates only the unchanged legacy Scrollwise baseline and therefore preserves later intentional Admin theme customization. The seed baseline now matches the production tokens.
+- Corrected the release workflow so data-only Prisma updates cannot remain hidden behind the shared Next fetch cache: it clears only the disposable fetch-cache after migration/build and before atomic activation.
+- Validated 51 tests, strict typecheck, zero-warning lint, diff/script checks, and the 63-route production build. Commits `a52267c` and `c7ef375` were pushed to `origin/scrollwise`; release `20260827T-scrollwise-cache-refresh` is active. Readiness and Projects returned `200`; live Persian Browser QA verified the exact revised root/section/card/muted tokens and no horizontal overflow.
+
 # 2026-08-27 — Scrollwise light surface EDEAE7
 
 - Changed the scoped Scrollwise footer surface from `#EDE9E1` to the approved `#EDEAE7`; left the finale panel, white interaction surfaces, images, Canvas, Classic, and Arandi Pro untouched.

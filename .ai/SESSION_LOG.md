@@ -1,5 +1,23 @@
 # Session Log
 
+## 2026-08-27 — Scrollwise Projects palette alignment
+
+Objective
+
+- Replace the warm cream surfaces on the public Scrollwise Projects page with lighter colors that visually align to the current narrative Home, without broad theme replacement.
+
+Verified implementation
+
+- Traced Projects semantic `bg-background`, `bg-card`, and `bg-muted` surfaces to the active Scrollwise Theme tokens rather than component-specific hardcoded colors. Updated only that theme's shared internal-page baseline and the corresponding seed data.
+- Added a conditional Prisma migration so an Admin-customized Scrollwise palette is never overwritten. PostgreSQL on production verified the expected revised theme tokens.
+- Found and corrected stale CMS theme data retained by the intentionally shared Next fetch cache between releases. The release workflow now purges only that disposable cache after data migration/build and before application activation.
+- Pushed `a52267c` and `c7ef375` to `origin/scrollwise`; activated `20260827T-scrollwise-cache-refresh` through the rollback-aware release workflow after a protected backup.
+
+Validation
+
+- Local: Prisma migration status, 51 tests, strict typecheck, zero-warning lint, diff check, deployment-script syntax, and 63-route production build passed.
+- Production: Prisma migration applied, service active, readiness and Projects route returned `200`. Live in-app Browser Persian RTL inspection found the new background/card/muted tokens on the rendered page and no horizontal overflow.
+
 ## 2026-08-27 — Scrollwise light surface EDEAE7
 
 Objective
