@@ -50,8 +50,8 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
         <header className="pointer-events-none fixed inset-x-0 top-0 z-[var(--z-header)] p-3 sm:p-5" dir={fa ? "rtl" : "ltr"}>
             <div className="pointer-events-auto mx-auto flex max-w-[94rem] items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/55 px-3 py-2 shadow-[0_0.75rem_3rem_rgb(28_37_48_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.82)] backdrop-blur-2xl saturate-150 sm:px-4">
                 <Link href={`/?lang=${lang}`} className="ds-focus-visible inline-flex min-h-11 min-w-11 items-center gap-2.5 rounded-xl px-2 text-foreground sm:px-2.5" aria-label={`${companyName} ${fa ? "خانه" : "Home"}`}>
-                    <span aria-hidden="true" className="ds-scrollwise-crystal-orb flex shrink-0 items-center justify-center overflow-hidden rounded-full" style={{ width: logoSize, height: logoSize }}>
-                        <Image src="/brand/arandi-symbol-crystal-orb.png" alt="" width={logoSize} height={logoSize} priority unoptimized className="size-full object-contain" />
+                    <span aria-hidden="true" className="flex shrink-0 items-center justify-center" style={{ width: logoSize, height: logoSize }}>
+                        <Image src="/brand/arandi-symbol.png" alt="" width={logoSize} height={logoSize} priority unoptimized className="size-full object-contain" />
                     </span>
                     <span className={cn("hidden font-bold sm:inline", fa ? "tracking-normal" : "uppercase tracking-[0.16em]")} style={{ fontSize: titleSize }}>{companyName}</span>
                 </Link>

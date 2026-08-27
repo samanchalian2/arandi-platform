@@ -50,7 +50,7 @@ const defaultExperience: ExperienceSettings = {
     motionPreset: "cinematic",
     showMotionControl: false,
     menuMode: "narrative",
-    headerLogoSize: 128,
+    headerLogoSize: 64,
     headerTitleSize: 28,
     headingScale: 100,
     veilOpacity: 0.94,

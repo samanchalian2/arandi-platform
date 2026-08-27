@@ -345,10 +345,6 @@
   background: color-mix(in oklch, white 93%, transparent);
 }
 
-[data-theme="scrollwise"] .ds-scrollwise-crystal-orb {
-  background: transparent;
-}
-
 [data-theme="scrollwise"] :is(.ds-back-to-top, .ds-floating-chat-bot) {
   border: 1px solid rgb(255 255 255 / 68%);
   background:
