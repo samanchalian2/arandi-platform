@@ -635,6 +635,16 @@
       linear-gradient(150deg, color-mix(in oklch, var(--card) 98%, white 2%), color-mix(in oklch, var(--card) 90%, var(--primary) 10%));
   }
 
+  /* Keep Scrollwise's page CTA in the same quiet, cool-neutral surface family
+     as its internal pages; the general CTA treatment is intentionally richer. */
+  [data-theme="scrollwise"] .ds-cta-surface {
+    background: linear-gradient(
+      150deg,
+      color-mix(in oklch, var(--card) 98%, var(--background) 2%),
+      color-mix(in oklch, var(--card) 94%, var(--muted) 6%)
+    );
+  }
+
   .ds-card {
     border: 1px solid color-mix(in oklch, var(--border) 90%, transparent);
     background: color-mix(in oklch, var(--card) 97%, white 3%);
