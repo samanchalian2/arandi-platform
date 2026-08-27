@@ -1,5 +1,22 @@
 # Session Log
 
+## 2026-08-27 — Scrollwise liquid-glass brand and controls
+
+Objective
+
+- Apply a modern iOS-inspired glass treatment to the stakeholder-selected floating controls and enlarge the Scrollwise brand to a 128px brown glass mark with a larger header title.
+
+Verified implementation
+
+- Generated a new transparent smoky-brown glass owl asset from the supplied symbol while retaining the recognizable silhouette and internal mark. It is referenced only by `ScrollwiseHeader`; the original assets remain intact.
+- Scoped the liquid-glass surfaces to Scrollwise. The chat shell, bot/send buttons, back-to-top button, and logo frame combine translucent light layers, inner highlights, restrained shadows, and blur/saturation where supported.
+- Updated the existing governed size settings and Admin ranges, with a conditional migration for the legacy 48px/16px record. The new initial values are 128px and 28px.
+
+Validation
+
+- Prisma migration status, 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build passed.
+- Release `20260827T-scrollwise-liquid-glass` was activated after a protected backup. Live Browser QA confirms the 128px outer logo frame, 28px title, RTL, the new control gradients, and no horizontal overflow.
+
 ## 2026-08-27 — Projects CTA color correction
 
 Objective

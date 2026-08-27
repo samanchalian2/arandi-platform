@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-27 — Scrollwise liquid-glass controls
+
+- Added a transparent smoky-brown glass Arandi owl mark for the Scrollwise header only, inside a 128px translucent glass frame. The desktop brand title is now 28px; the private Admin Theme controls are safely widened to logo 64–128px and title 16–36px.
+- Added an intentional Liquid Glass surface to the Scrollwise chat shell/send/bot controls and back-to-top button, retaining their accessible semantics, focus, and disabled states. Other public themes are unchanged.
+- Added conditional migration `20260827110000_scrollwise_liquid_header` to change only the former 48px/16px saved default. Commit `a5cde7a` passed current Prisma status, 51 tests, typecheck, lint, diff check, and production build, then deployed as `20260827T-scrollwise-liquid-glass`. Live Persian Browser QA confirmed RTL, control treatment, 128px frame, 28px title, and no horizontal overflow.
+
 # 2026-08-27 — Scrollwise CTA neutralization
 
 - Replaced the Scrollwise-only Projects CTA's lavender-prone compound primary/accent background with a low-contrast cool-neutral gradient derived from existing semantic theme tokens. Classic and Arandi Pro retain the general CTA treatment.

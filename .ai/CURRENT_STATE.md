@@ -6,7 +6,14 @@ Last verified: 2026-08-27
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-neutral-cta` from reviewed commit `8b2c2b2`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages and CTA now use the verified light cool-neutral palette; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-liquid-glass` from reviewed commit `a5cde7a`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral/liquid-glass treatment; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-27 — Scrollwise liquid-glass controls and header (deployed)
+
+- A generated, transparent-background smoky-brown glass version of the supplied owl mark is available only in the Scrollwise header. The original supplied brand files, other public themes, favicon, metadata, and footer lockup remain unchanged.
+- The Scrollwise brand container is 128px, with an approved 28px desktop title. Existing Admin Theme controls now safely allow 64–128px logo and 16–36px title values. Migration `20260827110000_scrollwise_liquid_header` updates only the former 48px/16px baseline, preserving deliberate Admin settings.
+- The Scrollwise floating assistant shell, its bot/send controls, and the back-to-top control use a scoped translucent light surface with inner highlight, soft depth, and blur/saturation where supported. Their native focus and disabled states remain intact.
+- Commit `a5cde7a` passed current Prisma status, 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. Release `20260827T-scrollwise-liquid-glass` is active. Live Persian Browser QA verified the 128px outer brand frame, 28px title, new control surfaces, RTL, and no horizontal overflow.
 
 ## 2026-08-27 — Scrollwise CTA neutralization (deployed)
 
