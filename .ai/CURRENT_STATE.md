@@ -6,7 +6,12 @@ Last verified: 2026-08-27
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-cache-refresh` from reviewed commit `c7ef375`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages now use the verified light cool-neutral palette; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-neutral-cta` from reviewed commit `8b2c2b2`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages and CTA now use the verified light cool-neutral palette; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-27 — Scrollwise CTA neutralization (deployed)
+
+- The generic CTA previously compounded primary/accent radial gradients with the light card surface, producing an unwanted lavender/pink cast in the live Persian Projects call-to-action. Scrollwise now has a scoped CTA override with only a low-contrast cool-neutral card/background/muted gradient; the richer general CTA treatment remains available to Classic and Arandi Pro.
+- Commit `8b2c2b2` passed 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. Release `20260827T-scrollwise-neutral-cta` is active. Browser QA confirms the CTA has one cool-neutral gradient (`oklch(0.99578 0.00404 247)` to `oklch(0.99324 0.00442 247)`), Persian RTL, and no horizontal overflow.
 
 ## 2026-08-27 — Scrollwise internal-page palette (deployed)
 

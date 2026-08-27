@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-08-27 — Projects CTA color correction
+
+Objective
+
+- Remove the unwanted pink/lavender cast from the public Scrollwise Projects call-to-action while retaining the approved light page palette.
+
+Verified implementation
+
+- Scoped the adjustment to `[data-theme="scrollwise"] .ds-cta-surface`. The revised CTA uses only a 2–6% cool-neutral mix of existing `card`, `background`, and `muted` tokens, preserving the global CTA treatment for the other themes.
+- Commit `8b2c2b2` was pushed to `origin/scrollwise` and activated as release `20260827T-scrollwise-neutral-cta` after a protected backup.
+
+Validation
+
+- Passed 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build.
+- Live in-app Browser Persian inspection confirms one neutral `oklch` gradient, RTL direction, and no horizontal overflow.
+
 ## 2026-08-27 — Scrollwise Projects palette alignment
 
 Objective

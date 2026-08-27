@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-27 — Scrollwise CTA neutralization
+
+- Replaced the Scrollwise-only Projects CTA's lavender-prone compound primary/accent background with a low-contrast cool-neutral gradient derived from existing semantic theme tokens. Classic and Arandi Pro retain the general CTA treatment.
+- Validated 51 tests, typecheck, lint, diff check, and the 63-route production build. Commit `8b2c2b2` was pushed to `origin/scrollwise` and deployed as `20260827T-scrollwise-neutral-cta`.
+- Live Persian Browser QA verifies the intended cool-neutral CTA gradient, RTL direction, and no horizontal overflow.
+
 # 2026-08-27 — Scrollwise internal-page palette and cache-safe release
 
 - Replaced the active Scrollwise generic warm-cream token baseline with light cool-neutral background, card, muted, border, and foreground tokens; retained the blue action palette, content, Canvas, imagery, Home-only `#EDEAE7` footer, and the Classic/Arandi Pro themes.
