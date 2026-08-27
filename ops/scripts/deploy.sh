@@ -58,6 +58,12 @@ sudo -u arandi bash -c 'set -a; source /etc/arandi-platform/app.env; set +a; npm
 sudo -u arandi bash -c 'set -a; source /etc/arandi-platform/app.env; set +a; npm run build'
 popd >/dev/null
 
+# Prisma migrations can change public CMS data without a corresponding Admin
+# mutation. The Next data cache is intentionally shared across releases, so
+# invalidate its disposable fetch cache before activating the new release.
+rm -rf -- "${base}/shared/cache/fetch-cache"
+install -d -m 0750 -o arandi -g arandi "${base}/shared/cache/fetch-cache"
+
 install -d -m 0750 -o arandi -g arandi "${release_directory}/.next/standalone/.next"
 if [[ -d "${release_directory}/public" ]]; then
   cp -a "${release_directory}/public" "${release_directory}/.next/standalone/public"
