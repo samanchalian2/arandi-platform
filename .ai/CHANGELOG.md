@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-27 — Scrollwise light surface EDEAE7
+
+- Changed the scoped Scrollwise footer surface from `#EDE9E1` to the approved `#EDEAE7`; left the finale panel, white interaction surfaces, images, Canvas, Classic, and Arandi Pro untouched.
+- Validated 51 tests, typecheck, lint, diff check, and the production build. Commit `190165a` was pushed to `origin/scrollwise` and deployed as `20260827T-scrollwise-footer-edeae7`.
+- VPS readiness and public Home returned `200`; live Browser inspection confirmed a solid `rgb(237, 234, 231)` footer, no background image, no horizontal overflow, and no console errors.
+
 # 2026-08-26 — Scrollwise header controls
 
 - Added private Admin Theme controls for the Scrollwise header: brand-symbol size (40–64px) and desktop brand-title size (13–22px). Values are validated server-side and retain the approved defaults of 48px and 16px for existing installations.

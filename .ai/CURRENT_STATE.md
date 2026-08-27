@@ -6,7 +6,13 @@ Last verified: 2026-08-26
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260826T-scrollwise-header-controls` from reviewed commit `8fe17fb`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDE9E1` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-footer-edeae7` from reviewed commit `190165a`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. The Scrollwise footer computes to exact `#EDEAE7` in live Persian Browser QA, with dark text retained for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-27 — Scrollwise light-surface color (deployed)
+
+- The stakeholder-requested warm light Scrollwise footer surface is now exactly `#EDEAE7` (computed in the Browser as `rgb(237, 234, 231)`). The scope is limited to `.ds-scrollwise-footer`; white interaction surfaces, the bright finale panel, Canvas/media, and Classic/Arandi Pro remain unchanged.
+- Commit `190165a` passed 51 tests, strict typecheck, zero-warning lint, diff check, and the 63-route production build. The rollback-aware deployment created a backup, found nine current Prisma migrations with none pending, and activated release `20260827T-scrollwise-footer-edeae7`.
+- VPS readiness and public Home returned `200`; live Persian Browser QA confirmed the exact solid color with no background image, no horizontal overflow, and no console errors.
 
 ## 2026-08-26 — Scrollwise header controls (deployed)
 

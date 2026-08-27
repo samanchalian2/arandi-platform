@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-08-27 — Scrollwise light surface EDEAE7
+
+Objective
+
+- Update the stakeholder-selected warm light surface to exact `#EDEAE7` without broad theme changes.
+
+Verified implementation
+
+- Inspected the active Scrollwise CSS and confirmed the only exact prior cream surface was the scoped `.ds-scrollwise-footer` background. Changed it from `#EDE9E1` to `#EDEAE7`; the finale panel and white interactive surfaces were deliberately not changed.
+- Commit `190165a` was pushed to `origin/scrollwise` and activated as release `20260827T-scrollwise-footer-edeae7` through the rollback-aware deployment workflow.
+
+Validation
+
+- Local 51-test, strict typecheck, zero-warning lint, diff check, and 63-route production build passed. Prisma reported nine current migrations with none pending during deployment.
+- The active VPS service, readiness, and public Home returned `200`. Live Persian Browser QA measured `rgb(237, 234, 231)` with no background image, horizontal overflow, or console error.
+
 ## 2026-08-26 — Scrollwise header controls
 
 Objective
