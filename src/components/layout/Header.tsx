@@ -195,7 +195,7 @@ export function Header({ content, company, lang }: HeaderProps) {
           href={`/?lang=${currentLang}`}
           className={cn(
             "ds-focus-visible inline-flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground",
-            isRtl ? "col-start-1 row-start-1 justify-self-end flex-row-reverse text-right" : "col-start-1 row-start-1 justify-self-start text-left",
+            isRtl ? "col-start-1 row-start-1 justify-self-end text-right" : "col-start-1 row-start-1 justify-self-start text-left",
           )}
           aria-label={`${brandDisplayName} ${localizedHomeLabel}`}
         >
@@ -256,13 +256,13 @@ export function Header({ content, company, lang }: HeaderProps) {
           >
             <Search className="size-4" />
           </Link>
-          <div className="ds-glass ds-subtle-ring flex shrink-0 items-center rounded-full border border-border/70 p-1 text-xs font-semibold text-muted-foreground">
+          <div className="ds-glass ds-subtle-ring flex shrink-0 items-center rounded-full border border-border/70 p-0 text-xs font-semibold text-muted-foreground">
             <Link
               href={buildLanguageHref("en")}
               aria-current={currentLang === "en" ? "page" : undefined}
               onClick={closeMobileMenu}
               className={cn(
-                "ds-focus-visible rounded-full px-2 py-1.5 transition-colors sm:px-2.5",
+                "ds-focus-visible inline-flex size-11 items-center justify-center rounded-full transition-colors",
                 currentLang === "en"
                   ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]"
                   : "bg-background/72 text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -275,7 +275,7 @@ export function Header({ content, company, lang }: HeaderProps) {
               aria-current={currentLang === "fa" ? "page" : undefined}
               onClick={closeMobileMenu}
               className={cn(
-                "ds-focus-visible rounded-full px-2 py-1.5 transition-colors sm:px-2.5",
+                "ds-focus-visible inline-flex size-11 items-center justify-center rounded-full transition-colors",
                 currentLang === "fa"
                   ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]"
                   : "bg-background/72 text-muted-foreground hover:bg-muted hover:text-foreground",

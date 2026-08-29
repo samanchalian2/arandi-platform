@@ -11,7 +11,7 @@ type FooterContent = {
   social: Record<"instagram" | "telegram" | "whatsapp" | "bale", string | null>;
 };
 
-type CompanyContent = { name: string };
+type CompanyContent = { name: string; shortName: string };
 
 type FooterNavigation = {
   enterpriseLinks: {
@@ -115,6 +115,7 @@ function ScrollwiseFooter({ content, company, navigation, lang, currentYear, map
   copy: { map: string; social: string; unavailable: string; copyright: string; legal: string };
 }) {
   const isFa = lang === "fa";
+  const brandName = isFa ? "آرن دی بنیان" : company.shortName;
   const socialLinks = [
     { label: "Instagram", href: content.social.instagram, icon: <Camera className="size-4" /> },
     { label: "Telegram", href: content.social.telegram, icon: <Send className="size-4" /> },
@@ -150,6 +151,7 @@ function ScrollwiseFooter({ content, company, navigation, lang, currentYear, map
               loading="eager"
               unoptimized
             />
+            <p className={isFa ? "mt-4 text-base font-bold text-foreground" : "mt-4 text-sm font-bold uppercase tracking-[0.12em] text-foreground"}>{brandName}</p>
             <p className="ds-scrollwise-footer-copy mt-5 text-sm leading-7">{content.tagline}</p>
             <a href={`/contact?lang=${lang}`} className="ds-scrollwise-footer-cta ds-focus-visible mt-6 inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-3 text-sm font-bold">
               {labels.contact}<ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />

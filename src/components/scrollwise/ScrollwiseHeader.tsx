@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Menu, Pause, Play, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,12 +26,15 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
     const [menuOpen, setMenuOpen] = useState(false);
     const motionPaused = useScrollwiseMotionPreference();
     const fa = lang === "fa";
+    const brandName = fa ? "آرن دی بنیان" : companyName;
     const chapters = fa
         ? [["gateway", "مسئله"], ["discover", "کشف"], ["design", "نقشه"], ["buildSecure", "بنیان"], ["oilGas", "نفت و گاز"], ["petrochemical", "پتروشیمی"], ["connectedOperations", "انرژی"], ["intelligence", "هوشمندی"], ["outcomes", "نتیجه"]]
         : [["gateway", "Problem"], ["discover", "Discover"], ["design", "Roadmap"], ["buildSecure", "Foundation"], ["oilGas", "Oil & gas"], ["petrochemical", "Petrochemicals"], ["connectedOperations", "Energy"], ["intelligence", "Intelligence"], ["outcomes", "Outcomes"]];
-    const nextLanguage = fa ? "en" : "fa";
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("lang", nextLanguage);
+    const buildLanguageHref = (nextLang: "en" | "fa") => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("lang", nextLang);
+        return `${pathname}?${params.toString()}`;
+    };
     const classicItems = [
         ...buildEnterpriseNavigationItems(navigation.enterpriseLinks, lang),
         { path: "/articles", href: `/articles?lang=${lang}`, label: fa ? "مقالات" : "Articles" },
@@ -49,11 +52,11 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
     return (
         <header className="pointer-events-none fixed inset-x-0 top-0 z-[var(--z-header)] p-3 sm:p-5" dir={fa ? "rtl" : "ltr"}>
             <div className="pointer-events-auto mx-auto flex max-w-[94rem] items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/55 px-3 py-2 shadow-[0_0.75rem_3rem_rgb(28_37_48_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.82)] backdrop-blur-2xl saturate-150 sm:px-4">
-                <Link href={`/?lang=${lang}`} className="ds-focus-visible inline-flex min-h-11 min-w-11 items-center gap-2.5 rounded-xl px-2 text-foreground sm:px-2.5" aria-label={`${companyName} ${fa ? "خانه" : "Home"}`}>
+                <Link href={`/?lang=${lang}`} className="ds-focus-visible inline-flex min-h-11 min-w-0 items-center gap-2 rounded-xl px-2 text-foreground sm:gap-2.5 sm:px-2.5" aria-label={`${brandName} ${fa ? "خانه" : "Home"}`}>
                     <span aria-hidden="true" className="flex shrink-0 items-center justify-center" style={{ width: logoSize, height: logoSize }}>
                         <Image src="/brand/arandi-symbol.png" alt="" width={logoSize} height={logoSize} priority unoptimized className="size-full object-contain" />
                     </span>
-                    <span className={cn("hidden font-bold sm:inline", fa ? "tracking-normal" : "uppercase tracking-[0.16em]")} style={{ fontSize: titleSize }}>{companyName}</span>
+                    <span className={cn("min-w-0 truncate font-bold text-[clamp(0.75rem,3.4vw,0.875rem)] sm:text-[length:var(--scrollwise-brand-title-size)]", fa ? "max-w-[7.5rem] tracking-normal sm:max-w-none" : "max-w-[5.5rem] uppercase tracking-[0.12em] sm:max-w-none sm:tracking-[0.16em]")} style={{ "--scrollwise-brand-title-size": `${titleSize}px` } as CSSProperties}>{brandName}</span>
                 </Link>
 
                 <nav aria-label={menuLabel} className="hidden items-center gap-0.5 xl:flex">
@@ -66,9 +69,14 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
                     {showMotionControl ? <button type="button" onClick={toggleMotion} aria-pressed={motionPaused} aria-label={motionPaused ? (fa ? "فعال‌کردن حرکت" : "Enable motion") : (fa ? "توقف حرکت" : "Pause motion")} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-foreground hover:bg-white">
                         {motionPaused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
                     </button> : null}
-                    <Link href={`${pathname}?${params.toString()}`} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-xs font-bold uppercase text-foreground hover:bg-white" lang={nextLanguage}>
-                        {nextLanguage}
-                    </Link>
+                    <div className="ds-glass ds-subtle-ring flex shrink-0 items-center rounded-full border border-slate-900/8 p-0 text-xs font-semibold text-muted-foreground" aria-label={fa ? "انتخاب زبان" : "Language selection"}>
+                        <Link href={buildLanguageHref("en")} aria-current={lang === "en" ? "page" : undefined} className={cn("ds-focus-visible inline-flex size-11 items-center justify-center rounded-full transition-colors", lang === "en" ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]" : "bg-white/72 text-muted-foreground hover:bg-white hover:text-foreground")} lang="en">
+                            {navigation.languageSwitch.en}
+                        </Link>
+                        <Link href={buildLanguageHref("fa")} aria-current={lang === "fa" ? "page" : undefined} className={cn("ds-focus-visible inline-flex size-11 items-center justify-center rounded-full transition-colors", lang === "fa" ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]" : "bg-white/72 text-muted-foreground hover:bg-white hover:text-foreground")} lang="fa">
+                            {navigation.languageSwitch.fa}
+                        </Link>
+                    </div>
                     <button type="button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="scrollwise-mobile-menu" aria-label={menuOpen ? (fa ? "بستن منو" : "Close menu") : (fa ? "باز کردن منو" : "Open menu")} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-foreground hover:bg-white xl:hidden">
                         {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
                     </button>

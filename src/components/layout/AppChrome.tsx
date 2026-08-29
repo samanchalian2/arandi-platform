@@ -47,7 +47,8 @@ export function AppChrome({ children, contentByLanguage, lang, publicTheme, scro
     const hideFloatingChat = pathname === "/assistant"
         || pathname.startsWith("/account")
         || pathname.startsWith("/recover");
-    const isScrollwiseHome = publicTheme.slug === "scrollwise" && pathname === "/";
+    const isScrollwiseTheme = publicTheme.slug === "scrollwise";
+    const isScrollwiseHome = isScrollwiseTheme && pathname === "/";
 
     return (
         <MotionProvider>
@@ -67,7 +68,7 @@ export function AppChrome({ children, contentByLanguage, lang, publicTheme, scro
                 ? <ScrollwiseHeader companyName={content.company.shortName} navigation={content.navigation} lang={currentLanguage} showMotionControl={scrollwiseShowMotionControl} menuMode={scrollwiseMenuMode} logoSize={scrollwiseHeaderLogoSize} titleSize={scrollwiseHeaderTitleSize} />
                 : <Header content={content.navigation} company={content.company} lang={currentLanguage} />}
             <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
-            <Footer content={content.footer} company={content.company} navigation={content.navigation} lang={currentLanguage} variant={isScrollwiseHome ? "scrollwise" : "standard"} />
+            <Footer content={content.footer} company={content.company} navigation={content.navigation} lang={currentLanguage} variant={isScrollwiseTheme ? "scrollwise" : "standard"} />
             {!hideFloatingChat ? <FloatingChatLauncher lang={currentLanguage} /> : null}
             {!hideFloatingChat ? <BackToTopButton lang={currentLanguage} /> : null}
             <AnalyticsConsent lang={currentLanguage} />
