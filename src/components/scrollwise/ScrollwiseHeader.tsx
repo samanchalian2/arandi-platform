@@ -69,11 +69,11 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
                     {showMotionControl ? <button type="button" onClick={toggleMotion} aria-pressed={motionPaused} aria-label={motionPaused ? (fa ? "فعال‌کردن حرکت" : "Enable motion") : (fa ? "توقف حرکت" : "Pause motion")} className="ds-focus-visible inline-flex size-11 items-center justify-center rounded-xl border border-slate-900/8 bg-white/72 text-foreground hover:bg-white">
                         {motionPaused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
                     </button> : null}
-                    <div className="ds-glass ds-subtle-ring flex shrink-0 items-center rounded-full border border-slate-900/8 p-0 text-xs font-semibold text-muted-foreground" aria-label={fa ? "انتخاب زبان" : "Language selection"}>
-                        <Link href={buildLanguageHref("en")} aria-current={lang === "en" ? "page" : undefined} className={cn("ds-focus-visible inline-flex size-11 items-center justify-center rounded-full transition-colors", lang === "en" ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]" : "bg-white/72 text-muted-foreground hover:bg-white hover:text-foreground")} lang="en">
+                    <div className="ds-glass ds-subtle-ring flex shrink-0 items-center rounded-full border border-slate-900/8 p-1 text-xs font-semibold text-muted-foreground" aria-label={fa ? "انتخاب زبان" : "Language selection"}>
+                        <Link href={buildLanguageHref("en")} aria-current={lang === "en" ? "page" : undefined} className={cn("ds-focus-visible rounded-full px-2 py-1.5 transition-colors sm:px-2.5", lang === "en" ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]" : "bg-white/72 text-muted-foreground hover:bg-white hover:text-foreground")} lang="en">
                             {navigation.languageSwitch.en}
                         </Link>
-                        <Link href={buildLanguageHref("fa")} aria-current={lang === "fa" ? "page" : undefined} className={cn("ds-focus-visible inline-flex size-11 items-center justify-center rounded-full transition-colors", lang === "fa" ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]" : "bg-white/72 text-muted-foreground hover:bg-white hover:text-foreground")} lang="fa">
+                        <Link href={buildLanguageHref("fa")} aria-current={lang === "fa" ? "page" : undefined} className={cn("ds-focus-visible rounded-full px-2 py-1.5 transition-colors sm:px-2.5", lang === "fa" ? "bg-primary font-bold text-primary-foreground shadow-[var(--elevation-1)]" : "bg-white/72 text-muted-foreground hover:bg-white hover:text-foreground")} lang="fa">
                             {navigation.languageSwitch.fa}
                         </Link>
                     </div>
