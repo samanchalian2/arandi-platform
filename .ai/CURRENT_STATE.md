@@ -6,14 +6,15 @@ Last verified: 2026-08-29
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260827T-scrollwise-simple-logo` from reviewed commits `ff708eb` and `fe64acf`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral treatment; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260829T-persian-default-r2` from reviewed commit `6729f0d`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral treatment; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
 
-## 2026-08-29 — Persian default and public brand labels (validated, awaiting release)
+## 2026-08-29 — Persian default and public brand labels (deployed)
 
 - Public routes without a `lang` query now resolve to Persian/RTL. Explicit `?lang=en` remains English/LTR; both `x-default` alternate metadata and sitemap now identify Persian as the canonical default.
 - Scrollwise and standard headers read the public company short name as `آرن دی بنیان` in Persian and `Arandi` in English. The Persian copyright in both footer variants now says `شرکت آرن دی بنیان`.
 - Migration `20260829133000_persian_default_language_and_branding` updates the persisted default Language record and the two public company short names without changing unrelated CMS data. The seed and local CMS fallback are aligned.
-- The 51 focused tests, strict typecheck, zero-warning lint, production build, and diff check pass. Production release is intentionally pending because the current PostgreSQL application-role password was changed outside the runtime configuration; the server environment and backup credential must be synchronized before running migrations or activating a release.
+- The 51 focused tests, strict typecheck, zero-warning lint, production build, and diff check passed locally. Production release `20260829T-persian-default-r2` built successfully, applied migrations `20260829120000_contact_analytics_role_permissions` and `20260829133000_persian_default_language_and_branding`, activated cleanly, and returned `200` for internal Home, public Home, and explicit English requests.
+- The private PostgreSQL runtime and backup credentials were synchronized before the release. Password-authenticated application-role access, a fresh encrypted-on-host backup, systemd service state, and readiness were verified. No credential value is stored in source, Git, deployment archives, or this document.
 
 ## 2026-08-29 — Production Dashboard RBAC repair (verified)
 
