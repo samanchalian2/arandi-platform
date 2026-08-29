@@ -1127,6 +1127,7 @@ async function seedRoles() {
                 "user.read", "user.write", "security_event.read", "session.revoke",
                 "navigation.read", "navigation.write", "navigation.translate", "navigation.delete",
                 "setting.read", "setting.write",
+                "contact.read", "contact.write", "analytics.read",
             ],
         },
         {
@@ -1141,6 +1142,7 @@ async function seedRoles() {
                 "user.read", "security_event.read",
                 "navigation.read", "navigation.write", "navigation.translate", "navigation.delete",
                 "setting.read", "setting.write",
+                "contact.read", "contact.write", "analytics.read",
             ],
         },
         {

@@ -1,5 +1,17 @@
 # Session Log
 
+## 2026-08-29 — Production Dashboard RBAC repair
+
+Objective
+
+- Restore analytics dashboard access for the verified persisted SuperAdmin without weakening CMS authorization.
+
+Verified implementation
+
+- Diagnosed the API-only `403` as stale persisted role-permission arrays, not a login, session, or browser failure. Updated only the two authorized system-role arrays in one production PostgreSQL transaction.
+- Added the matching idempotent Prisma migration and canonical seed permissions. Reloading the active SuperAdmin dashboard then showed the live consented analytics summary with no browser errors.
+- Prisma validation, focused tests, typecheck, lint, diff check, and production build passed. Local Prisma Client regeneration was blocked by a separately running Windows process locking its engine DLL; it was not needed for the data-only migration.
+
 ## 2026-08-27 — Owner-authorized SuperAdmin credential recovery
 
 Objective

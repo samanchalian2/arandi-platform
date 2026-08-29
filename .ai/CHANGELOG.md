@@ -4,7 +4,14 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-29 — Dashboard role-permission repair
+
+- Added `contact.read`, `contact.write`, and `analytics.read` to the canonical `SuperAdmin` and `Admin` seed roles.
+- Added idempotent migration `20260829120000_contact_analytics_role_permissions` for installations whose existing system roles predate the consent analytics and Contact inbox capabilities.
+- Applied and verified the production role-data correction: the previously authenticated SuperAdmin Dashboard now reads live analytics successfully, with no browser-console errors.
+
 # 2026-08-27 — Scrollwise simple 64px brand
+
 
 - Reverted the Scrollwise header from the crystal-orb treatment to the original simple project symbol and removed the added generated asset. No special frame or glass styling remains around the header symbol.
 - Set the governed default and seed baseline to 64px. Conditional migration `20260827120000_scrollwise_simple_logo` changes only the preceding 128px/28px baseline, while retaining the existing Admin range and 28px title setting.
