@@ -4,6 +4,13 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-29 — Scrollwise shared chrome
+
+- Applied the four-column Scrollwise footer to every public Scrollwise route while retaining the standard footer for Classic and Arandi Pro. Added visible `آرن دی بنیان`/`Arandi` footer brand text by locale.
+- Made the Scrollwise mobile company name visible beside the governed symbol, replaced the Home-only language button with the shared segmented FA/EN control, and made both choices 44px touch targets.
+- Corrected the Persian internal-header brand ordering so the symbol is rightmost and the name follows on its left.
+- Added deployment support for explicitly forwarding approved npm cache settings to the unprivileged build user; this preserves the rollback-aware release procedure when registry access is slow.
+
 # 2026-08-29 — Persian default language and public brand labels
 
 - Changed public language resolution to Persian/RTL when `lang` is omitted; explicit `?lang=en` retains English/LTR. Updated x-default alternates and sitemap to Persian.

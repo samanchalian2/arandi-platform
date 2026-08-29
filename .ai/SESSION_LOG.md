@@ -1,5 +1,18 @@
 # Session Log
 
+## 2026-08-29 — Scrollwise shared header and footer
+
+Objective
+
+- Make the four-column Scrollwise footer consistent across public Scrollwise routes and correct the requested Persian mobile/RTL header behavior.
+
+Verified implementation
+
+- Scrollwise now selects its four-column footer by active theme rather than Home pathname. Persian Scrollwise visibly uses `آرن دی بنیان`; English uses `Arandi`.
+- The mobile Scrollwise header retains its Admin-governed 64px symbol while displaying the Persian company name with responsive sizing. Home and internal pages share the same FA/EN segmented control with 44px targets.
+- Removing the Persian `flex-row-reverse` makes the logo the rightmost brand item on standard internal headers; English remains left-to-right.
+- All focused tests, typecheck, lint, build, shell syntax, responsive checks, and public release checks passed. Release `20260829T-scrollwise-unified-chrome-r3` is active with no pending Prisma migrations. No secret was written to source, logs, or documentation.
+
 ## 2026-08-29 — Persian default and public brand labels
 
 Objective

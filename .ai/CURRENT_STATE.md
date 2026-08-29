@@ -6,7 +6,15 @@ Last verified: 2026-08-29
 
 Phase 10 — Quality and Production
 
-Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260829T-persian-default-r2` from reviewed commit `6729f0d`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral treatment; the Home-only footer remains exact `#EDEAE7` with dark text for contrast. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260829T-scrollwise-unified-chrome-r3` from reviewed commits `687533f` and `b9f4ff9`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral treatment; its four-column footer is shared across all Scrollwise public pages. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+
+## 2026-08-29 — Scrollwise shared chrome (deployed)
+
+- The complete four-column Scrollwise footer is now used on every public Scrollwise route; Classic and Arandi Pro retain the standard footer. The Scrollwise footer visibly renders `آرن دی بنیان` in Persian and `Arandi` in English alongside the existing lockup.
+- On Scrollwise Home, the Persian brand name is visible beside the 64px mark on mobile with a responsive text size. Its language control is now the same two-option FA/EN segmented control used by internal pages, with each option providing a 44px touch target.
+- The standard Persian header no longer reverses the brand flex row: the logo is the rightmost brand item and the company name follows to its left. English order is unchanged.
+- Commits `687533f` and `b9f4ff9` passed 51 focused tests, strict typecheck, zero-warning lint, production build, shell syntax validation, and diff check. Release `20260829T-scrollwise-unified-chrome-r3` created a fresh backup, found no pending Prisma migrations, activated successfully, and returned `200` for public Home, Services, and English Home.
+- Browser QA passed Home and Services at 390px in Persian plus Home at 1280px in English; local responsive QA covered 390/768/1280px for both languages with no horizontal overflow. The Persian mobile brand was visible, Persian logo ordering was correct, the shared footer was present, and both language options measured 44px.
 
 ## 2026-08-29 — Persian default and public brand labels (deployed)
 
