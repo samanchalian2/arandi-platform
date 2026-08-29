@@ -13,6 +13,7 @@ Phase 10 — Controlled Production Cutover
 
 ## Next Implementation Slice
 
+0. Before any next production release, synchronize the approved current PostgreSQL application-role credential in the private runtime environment and backup credential file, then verify a password-authenticated database connection, application health, and backup. The existing release is retained until this operational recovery is directly verified.
 1. Obtain stakeholder visual acceptance for the live Scrollwise release `20260827T-scrollwise-simple-logo` at canonical `https://arandi.io` (including the Admin-governed 64px simple header symbol, 28px title, light internal-page/CTA palette, exact `#EDEAE7` footer, and primary-color assistant send control), then observe GitHub CI for the reviewed Scrollwise commits. Preserve the active release and immediate rollback release on `arandivps`.
 2. Add approved SMTP credentials only to the server environment, set `EMAIL_PROVIDER=smtp`, and send a controlled notification/reply test to the configured `info@arandi.io` destination without exposing credentials.
 3. Perform authenticated browser QA of the new Admin Dashboard, Settings recipient control, Contact inbox, reply/retry workflow, and public EN/FA consent preference at mobile/tablet/desktop viewports; install an approved Playwright browser locally if headless QA is required.

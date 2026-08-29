@@ -18,7 +18,7 @@ type PageProps = {
 
 async function resolvePageLanguage(searchParams: PageProps["searchParams"]) {
   const params = await Promise.resolve(searchParams);
-  return params?.lang === "fa" ? "fa" as const : "en" as const;
+  return params?.lang === "en" ? "en" as const : "fa" as const;
 }
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {

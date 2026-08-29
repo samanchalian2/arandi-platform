@@ -1,5 +1,17 @@
 # Session Log
 
+## 2026-08-29 — Persian default and public brand labels
+
+Objective
+
+- Make Persian the default public language and apply the approved header and footer brand labels while retaining explicit English navigation.
+
+Verified implementation
+
+- Public language resolution, initial document direction, AppChrome, Header, analytics-consent UI, metadata, sitemap, local CMS fallback, seed Language records, and persisted public-company migration were aligned so an omitted language resolves to Persian and `?lang=en` remains English.
+- The public short name is `آرن دی بنیان` in Persian and `Arandi` in English. Both standard and Scrollwise Persian footer copyright variants now use `شرکت آرن دی بنیان`.
+- All 51 focused tests, strict typecheck, lint, production build, and diff check passed. Production release remains pending only until the application PostgreSQL credential and private backup credential are synchronized after the owner-initiated database password change.
+
 ## 2026-08-29 — Production Dashboard RBAC repair
 
 Objective

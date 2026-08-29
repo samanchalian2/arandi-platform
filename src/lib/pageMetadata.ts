@@ -57,7 +57,7 @@ export function buildLocalizedMetadata({
             languages: {
                 "en": localized("en"),
                 "fa": localized("fa"),
-                "x-default": localized("en"),
+                "x-default": localized("fa"),
             },
         },
         openGraph: {
@@ -81,7 +81,7 @@ type EnterprisePageMetadataInput = {
 
 export async function resolveLanguage(searchParams?: SearchParams): Promise<Language> {
     const params = await Promise.resolve(searchParams);
-    return params?.lang === "fa" ? "fa" : "en";
+    return params?.lang === "en" ? "en" : "fa";
 }
 
 export async function buildEnterprisePageMetadata({

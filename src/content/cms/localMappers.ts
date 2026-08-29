@@ -264,7 +264,7 @@ export function mapDomainToCmsCollection(model: DomainContentModel): CmsEntityCo
     const site: CmsSiteModel = {
         id: SITE_ID,
         slug: "arandi-bonyan",
-        defaultLocale: "en",
+        defaultLocale: "fa",
         locales: ["en", "fa"],
         title: model.company.shortName,
         audit: buildAudit(),

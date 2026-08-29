@@ -46,7 +46,7 @@ type RootLayoutProps = Readonly<{
 }>;
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const lang = "en" as const;
+  const lang = "fa" as const;
   const cookieStore = await cookies();
   const [englishContent, persianContent, publicTheme, scrollwiseHeaderDisplay] = await Promise.all([
     getPublicChromeContent("en"),
@@ -65,8 +65,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 
   return (
     <html
-      lang="en"
-      dir="ltr"
+      lang="fa"
+      dir="rtl"
       data-scroll-behavior="smooth"
       className={`${exo.variable} ${vazirmatn.variable} h-full antialiased`}
     >

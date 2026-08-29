@@ -54,8 +54,8 @@ function findServiceBySlug(services: ServiceEntity[], slug: string): ServiceEnti
 
 async function seedLanguages() {
     const languages = [
-        { code: "en", name: "English", isDefault: true, isActive: true },
-        { code: "fa", name: "Persian", isDefault: false, isActive: true },
+        { code: "en", name: "English", isDefault: false, isActive: true },
+        { code: "fa", name: "Persian", isDefault: true, isActive: true },
     ];
 
     for (const language of languages) {

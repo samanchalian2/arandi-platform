@@ -20,7 +20,7 @@ function localizedEntries(
     priority: number,
 ): MetadataRoute.Sitemap {
     const url = (language: "en" | "fa") => `${origin}${path}?lang=${language}`;
-    const languages = { en: url("en"), fa: url("fa"), "x-default": url("en") };
+    const languages = { en: url("en"), fa: url("fa"), "x-default": url("fa") };
     return (["en", "fa"] as const).map((language) => ({
         url: url(language),
         lastModified,

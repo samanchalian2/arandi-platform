@@ -45,7 +45,10 @@ export function AnalyticsConsent({ lang }: { lang: "en" | "fa" }) {
     const decision = useSyncExternalStore(subscribeToConsent, readConsent, () => null);
     const [preferencesOpen, setPreferencesOpen] = useState(false);
     const [storageError, setStorageError] = useState(false);
-    const currentLanguage = searchParams.get("lang") === "fa" ? "fa" : lang;
+    const requestedLanguage = searchParams.get("lang");
+    const currentLanguage = requestedLanguage === "en" || requestedLanguage === "fa"
+        ? requestedLanguage
+        : lang;
     const fa = currentLanguage === "fa";
 
     useEffect(() => {

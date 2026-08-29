@@ -4,6 +4,12 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-29 — Persian default language and public brand labels
+
+- Changed public language resolution to Persian/RTL when `lang` is omitted; explicit `?lang=en` retains English/LTR. Updated x-default alternates and sitemap to Persian.
+- Changed the public header short name to `آرن دی بنیان` in Persian and `Arandi` in English, and changed both Persian footer variants to `شرکت آرن دی بنیان`.
+- Added migration `20260829133000_persian_default_language_and_branding` to align persisted Language and public company-setting data with the approved default and labels.
+
 # 2026-08-29 — Dashboard role-permission repair
 
 - Added `contact.read`, `contact.write`, and `analytics.read` to the canonical `SuperAdmin` and `Admin` seed roles.

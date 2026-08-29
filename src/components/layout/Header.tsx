@@ -53,7 +53,7 @@ type Language = "en" | "fa";
 const emptySubscribe = () => () => { };
 
 function normalizeLanguage(value: string | null | undefined, fallback: Language): Language {
-  return value === "fa" ? "fa" : fallback === "fa" ? "fa" : "en";
+  return value === "en" || value === "fa" ? value : fallback;
 }
 
 function useIsMounted() {

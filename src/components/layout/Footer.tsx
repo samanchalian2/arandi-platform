@@ -41,7 +41,7 @@ export function Footer({ content, company, navigation, lang, variant = "standard
         map: "مشاهده روی نقشه",
         social: "شبکه‌های اجتماعی",
         unavailable: "هنوز تنظیم نشده",
-        copyright: `© ${currentYear} آرندی. تمامی حقوق محفوظ است.`,
+        copyright: `© ${currentYear} شرکت آرن دی بنیان. تمامی حقوق محفوظ است.`,
         legal: "حریم خصوصی",
       }
     : {
@@ -132,7 +132,7 @@ function ScrollwiseFooter({ content, company, navigation, lang, currentYear, map
     ["/articles", isFa ? "مقالات" : "Articles"],
   ];
   const labels = isFa
-    ? { contact: "گفت‌وگو با ما", explore: "مسیرها", portfolio: "حوزه‌ها", connect: "ارتباط", map: "موقعیت روی نقشه", copyright: `© ${currentYear} آرندی. تمامی حقوق محفوظ است.` }
+    ? { contact: "گفت‌وگو با ما", explore: "مسیرها", portfolio: "حوزه‌ها", connect: "ارتباط", map: "موقعیت روی نقشه", copyright: `© ${currentYear} شرکت آرن دی بنیان. تمامی حقوق محفوظ است.` }
     : { contact: "Talk to us", explore: "Explore", portfolio: "Focus areas", connect: "Connect", map: "Find us on the map", copyright: `© ${currentYear} Arandi. All rights reserved.` };
 
   return (

@@ -39,7 +39,10 @@ export function AppChrome({ children, contentByLanguage, lang, publicTheme, scro
         return children;
     }
 
-    const currentLanguage = searchParams.get("lang") === "fa" ? "fa" : lang;
+    const requestedLanguage = searchParams.get("lang");
+    const currentLanguage = requestedLanguage === "en" || requestedLanguage === "fa"
+        ? requestedLanguage
+        : lang;
     const content = contentByLanguage[currentLanguage];
     const hideFloatingChat = pathname === "/assistant"
         || pathname.startsWith("/account")

@@ -14,7 +14,7 @@ import type {
 } from "./types";
 
 function normalizeLanguage(lang?: string | null): Language {
-    return lang === "fa" ? "fa" : "en";
+    return lang === "en" ? "en" : "fa";
 }
 
 function cms(id: string, locale: Language) {
@@ -37,7 +37,7 @@ const domainContent: Record<Language, DomainContentModel> = {
             status: "published",
             cms: cms("company-arandi-bonyan-en", "en"),
             legalName: "Arandi Bonyan",
-            shortName: "Arandi Bonyan",
+            shortName: "Arandi",
             assistant: {
                 name: "Jupiter",
                 label: "Jupiter AI",

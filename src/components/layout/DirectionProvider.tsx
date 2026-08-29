@@ -9,7 +9,8 @@ export function DirectionProvider() {
 
   useEffect(() => {
     const language = searchParams.get("lang");
-    const isRtl = language === "fa" || language === "ar";
+    const isAdmin = pathname.startsWith("/admin");
+    const isRtl = !isAdmin && language !== "en";
     const dir = isRtl ? "rtl" : "ltr";
     const lang = isRtl ? "fa" : "en";
 
