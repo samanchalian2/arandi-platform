@@ -51,7 +51,10 @@ chown -R arandi:arandi "${release_directory}"
 bash "${release_directory}/ops/scripts/backup.sh"
 
 pushd "${release_directory}" >/dev/null
-sudo -u arandi npm ci --ignore-scripts
+sudo -u arandi env \
+  "NPM_CONFIG_OFFLINE=${NPM_CONFIG_OFFLINE:-false}" \
+  "NPM_CONFIG_PREFER_OFFLINE=${NPM_CONFIG_PREFER_OFFLINE:-false}" \
+  npm ci --ignore-scripts
 sudo -u arandi npm rebuild sharp @prisma/client
 sudo -u arandi bash -c 'set -a; source /etc/arandi-platform/app.env; set +a; npm exec -- prisma generate'
 sudo -u arandi bash -c 'set -a; source /etc/arandi-platform/app.env; set +a; npm exec -- prisma migrate deploy'
