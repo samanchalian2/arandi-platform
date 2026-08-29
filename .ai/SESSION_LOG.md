@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-08-29 — Compact language-control correction
+
+Objective
+
+- Restore the established compact language selector after the larger replacement made internal headers visually inconsistent.
+
+Verified implementation
+
+- Standard internal-page headers and Scrollwise Home now use the same earlier compact FA/EN segmented control. No footer, brand-name, brand-order, content, or data setting changed.
+- Commit `22a175b` passed 51 focused tests, strict typecheck, zero-warning lint, production build, diff check, and local Home/Services visual review. Production release `20260829T-compact-language-controls-r5` is active, has a fresh backup, and returned `200` for public Home and Services.
+
 ## 2026-08-29 — Scrollwise shared header and footer
 
 Objective

@@ -4,6 +4,11 @@ All important project changes are recorded here.
 
 ---
 
+# 2026-08-29 — Compact language-control correction
+
+- Restored the established compact FA/EN segmented control on standard headers and applied that same pattern to Scrollwise Home. The prior 44px visual variant is no longer used for this control.
+- Kept the shared Scrollwise footer, Persian mobile brand visibility, governed 64px logo, and corrected Persian header ordering unchanged.
+
 # 2026-08-29 — Scrollwise shared chrome
 
 - Applied the four-column Scrollwise footer to every public Scrollwise route while retaining the standard footer for Classic and Arandi Pro. Added visible `آرن دی بنیان`/`Arandi` footer brand text by locale.
