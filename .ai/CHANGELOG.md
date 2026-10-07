@@ -2,12 +2,13 @@
 
 All important project changes are recorded here.
 
-## 2026-10-07 — Jupiter training page (local only)
+## 2026-10-07 — Jupiter training page (published)
 
 - Added a Persian, role-based Jupiter guide and served the existing 15-page PDF unchanged; integrated the guide into Knowledge and the Persian sitemap.
 - Added a narrow Admin setting for the product's public action URLs and optional display name, with validation, seed data, and an idempotent data migration.
 - Scoped the guide's purple/beige design to the guide page, keeping the existing site header/footer and other themes intact. Fixed checklist and table-of-contents accessibility issues found in local browser QA.
 - Completed the supplied acceptance details: locally licensed Shabnam font, visible-first ordinary-user path, concise feature disclosure, two role-specific journey diagrams, nine honest screenshot placeholders, 44px guide controls, and reduced-motion-aware scrolling.
+- Published release `20261007T-jupiter-guide-r1` with a fresh server backup and the `site.jupiterGuide` data migration. Public HTTPS guide, Knowledge link and PDF returned `200`; live 390/768/1280px Chrome checks found no horizontal overflow. Product sign-in and organization-request CTAs remain hidden until approved URLs are entered in Admin.
 
 ---
 

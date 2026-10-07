@@ -1,5 +1,11 @@
 # Session Log
 
+## 2026-10-07 — Jupiter guide public deployment
+
+- After explicit owner authorization, verified the clean `scrollwise` worktree, reran 52 tests, typecheck, lint, diff check and production build, and packaged only tracked Git content. Deployment staging initially stopped before any production change because the archive contained CRLF shell scripts; normalized only the temporary server-side source copy and retried.
+- The controlled deploy created backup `20261007T074723Z`, applied migration `20261007120000_jupiter_guide_settings`, built the Linux standalone app and activated release `20261007T-jupiter-guide-r1`. The service was active and readiness passed. Public HTTPS guide, Knowledge listing, and unchanged PDF returned `200`.
+- Live Chrome at 390/768/1280px confirmed the Persian title, PDF links and no horizontal overflow. Admin settings interaction and product CTA destinations remain pending; no URLs were invented. A production dependency audit reported six high and one critical existing package findings, reserved for a separate remediation slice.
+
 ## 2026-10-07 — Jupiter guide local implementation and QA
 
 - Read the revised training-page Markdown and 15-page PDF, implemented a dedicated Persian guide with three role paths, 15 administrator steps, search, FAQ, PDF link, responsive Jupiter accents, and safe Admin-controlled destination settings. Added a Knowledge-list feature link and Persian sitemap entry.
