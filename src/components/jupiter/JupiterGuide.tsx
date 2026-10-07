@@ -13,11 +13,30 @@ import styles from "./JupiterGuide.module.css";
 
 type PathId = keyof JupiterGuideContent["paths"];
 
-const paths: Array<{ id: PathId; title: string; description: string; time: string }> = [
-    { id: "organization-admin", title: "مدیر یا مالک سازمان هستم", description: "ثبت سازمان، تنظیم خدمات و راه‌اندازی ژوپیتر", time: "۲۰ دقیقه" },
-    { id: "organization-user", title: "عضو یک سازمان هستم", description: "ثبت درخواست، پیگیری پاسخ و استفادهٔ روزمره", time: "۷ دقیقه" },
-    { id: "independent-user", title: "کاربر مستقل هستم", description: "دریافت عضویت یا شروع ثبت سازمان خودم", time: "۳ دقیقه" },
+const paths: Array<{ id: PathId; title: string; description: string; action: string; time: string }> = [
+    { id: "organization-user", title: "عضو یک سازمان هستم", description: "می‌خواهم وارد سامانه شوم، تیکت ثبت کنم، پاسخ‌ها را ببینم یا به درخواست‌ها رسیدگی کنم.", action: "یادگیری استفاده روزمره", time: "۷ دقیقه" },
+    { id: "organization-admin", title: "مدیر یا مالک سازمان هستم", description: "می‌خواهم سازمان را ثبت کنم، کاربران و خدمات را آماده کنم و ژوپیتر را راه‌اندازی کنم.", action: "شروع راه‌اندازی سازمان", time: "۲۰ دقیقه" },
+    { id: "independent-user", title: "کاربر مستقل هستم", description: "عضو هیچ سازمانی نیستم و می‌خواهم برای سازمان خودم درخواست ثبت بدهم یا از مدیر یک سازمان موجود دسترسی بگیرم.", action: "راهنمای دریافت دسترسی", time: "۳ دقیقه" },
 ];
+
+const imagePlaces = [
+    { title: "صفحهٔ ورود و ثبت درخواست سازمان", ratio: "16:9", alt: "صفحهٔ ورود ژوپیتر و گزینهٔ ثبت درخواست سازمان" },
+    { title: "درخواست سازمان و تأیید ایمیل", ratio: "16:9", alt: "فضای درخواست سازمان و وضعیت تأیید ایمیل" },
+    { title: "راهنمای ده‌مرحله‌ای راه‌اندازی", ratio: "16:9", alt: "راهنمای ده مرحلهٔ راه‌اندازی و وضعیت هر مرحله" },
+    { title: "مدیریت کاربران و پیش‌نمایش CSV", ratio: "16:9", alt: "مدیریت کاربران و پیش‌نمایش ورود گروهی CSV" },
+    { title: "ثبت درخواست جدید", ratio: "4:3", alt: "فرم واقعی ثبت درخواست برای کاربر سازمان" },
+    { title: "گفتگو، جزئیات و فعالیت تیکت", ratio: "16:9", alt: "سه بخش گفتگو، جزئیات و فعالیت در صفحهٔ تیکت" },
+    { title: "Directory Connector", ratio: "16:9", alt: "نمای واقعی تنظیمات Directory Connector بدون اطلاعات حساس" },
+    { title: "دو مسیر کاربر مستقل", ratio: "4:3", alt: "انتخاب دریافت عضویت یا ثبت درخواست سازمان" },
+    { title: "داشبورد مالک سازمان", ratio: "16:9", alt: "نمای سهمیه و خدمات پشتیبانی مالک سازمان بدون دادهٔ حساس" },
+] as const;
+
+function Journey({ label, steps }: { label: string; steps: string[] }) {
+    return <div className={styles.journey} role="img" aria-label={`${label}: ${steps.join("، سپس ")}`}>
+        <p aria-hidden="true">{label}</p>
+        <div aria-hidden="true">{steps.map((step, index) => <span key={step} className={styles.journeyStep}>{step}{index < steps.length - 1 ? <span className={styles.journeyArrow}>←</span> : null}</span>)}</div>
+    </div>;
+}
 
 function headingId(scope: string, text: string): string {
     return `${scope}-${text.trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/gu, "")}`;
@@ -62,11 +81,12 @@ function GuideTabs({ active, onSelect }: { active: PathId; onSelect: (path: Path
         document.getElementById(`jupiter-tab-${paths[next].id}`)?.focus();
     }
     return <div className={styles.tabList} role="tablist" aria-label="مسیرهای آموزش ژوپیتر" onKeyDown={onKeyDown}>
-        {paths.map(({ id, title, description, time }) => <button key={id} id={`jupiter-tab-${id}`} type="button" role="tab"
+        {paths.map(({ id, title, description, action, time }) => <button key={id} id={`jupiter-tab-${id}`} type="button" role="tab"
             aria-selected={active === id} aria-controls={`jupiter-panel-${id}`} tabIndex={active === id ? 0 : -1}
             onClick={() => onSelect(id)} className={`${styles.tab} ${active === id ? styles.tabActive : ""}`}>
             <span className={styles.tabTitle}>{title}</span>
             <span className={styles.tabDescription}>{description}</span>
+            <span className={styles.tabAction}>{action}</span>
             <span className={styles.tabTime}>زمان مطالعه: {time}</span>
         </button>)}
     </div>;
@@ -86,7 +106,7 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
     useEffect(() => {
         const syncHash = () => {
             const requested = window.location.hash.slice(1);
-            if (paths.some(({ id }) => id === requested)) setActive(requested as PathId);
+            setActive(paths.some(({ id }) => id === requested) ? requested as PathId : "organization-user");
         };
         syncHash();
         window.addEventListener("hashchange", syncHash);
@@ -118,7 +138,7 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
             const target = document.getElementById(id);
             const disclosure = target?.closest("details");
             if (disclosure) disclosure.open = true;
-            target?.scrollIntoView({ behavior: "smooth", block: "start" });
+            target?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
         });
         setTocOpen(false);
     };
@@ -156,9 +176,10 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
 
             <section className={styles.features} aria-labelledby="jupiter-features-title">
                 <div className={styles.sectionHeading}><p>امکانات در یک نگاه</p><h2 id="jupiter-features-title">از ثبت درخواست تا پاسخ‌گویی منظم</h2></div>
-                <div className={styles.featureGrid}>{content.features.map(({ title, body }) => <article key={title} className={styles.feature}>
+                <div className={styles.featureGrid}>{content.features.slice(0, 3).map(({ title, body }) => <article key={title} className={styles.feature}>
                     <h3>{title}</h3><Markdown source={body} scope={`feature-${title}`} />
                 </article>)}</div>
+                <details className={styles.featureMore}><summary>همهٔ امکانات ژوپیتر</summary><div className={styles.featureGrid}>{content.features.slice(3).map(({ title, body }) => <article key={title} className={styles.feature}><h3>{title}</h3><Markdown source={body} scope={`feature-${title}`} /></article>)}</div></details>
             </section>
 
             <section className={styles.learning} aria-labelledby="jupiter-choose-title">
@@ -188,11 +209,16 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
                                     {selectedHeadings.filter(({ title }) => /^مرحله (?:[۶-۹]|۱[۰-۵]):/u.test(title)).map(({ title, id: headingTarget }) => <button key={headingTarget} type="button" onClick={() => goTo(headingTarget)}>{title.replace(/^مرحله /u, "")}</button>)}
                                 </div>
                                 <Markdown source={content.paths[id]} scope={id} />
+                                <div className={styles.pathActions}><Cta href={links.organizationRequestUrl} primary host={host}>شروع راه‌اندازی سازمان</Cta></div>
                             </> : id === "organization-user" && userParts && userAdvancedParts ? <>
+                                <Journey label="مسیر معمول استفاده" steps={["ورود", "ثبت درخواست", "دریافت پاسخ", "حل مشکل"]} />
                                 <Markdown source={userParts[0]} scope={id} />
                                 <details className={styles.advanced}><summary>اگر کارشناس یا سرپرست هستید</summary><Markdown source={userAdvancedParts[0].replace(/^\s*این بخش تکمیلی را در Accordion نمایش بده\.\s*/u, "")} scope={id} /></details>
                                 <Markdown source={`${userChecklistMarker}${userAdvancedParts[1] ?? ""}`} scope={id} />
-                            </> : <Markdown source={content.paths[id]} scope={id} />}
+                            </> : <>
+                                <Journey label="مسیر دریافت دسترسی" steps={["دریافت عضویت یا ثبت سازمان", "ورود", "استفاده از ژوپیتر"]} />
+                                <Markdown source={content.paths[id]} scope={id} />
+                            </>}
                         </section>)}
                     </div>
                 </div>
@@ -206,6 +232,8 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
                     <div id={`jupiter-faq-answer-${index}`} hidden={openQuestion !== index}><Markdown source={answer} scope={`faq-${index}`} /></div>
                 </div>)}</div>
             </section>
+
+            <details className={styles.imagePlaces}><summary>جایگاه تصاویر واقعی ژوپیتر</summary><p>این قاب‌ها محل قرارگیری اسکرین‌شات‌های بازبینی‌شدهٔ محصول هستند؛ هیچ نمای ساختگی از سامانه نمایش داده نمی‌شود.</p><div className={styles.imageGrid}>{imagePlaces.map(({ title, ratio, alt }) => <div key={title} className={styles.imagePlace}><div role="img" aria-label={`${title}؛ تصویر محصول در این بخش قرار می‌گیرد`}>تصویر محصول در این بخش قرار می‌گیرد</div><strong>{title}</strong><small>نسبت پیشنهادی: {ratio} · متن جایگزین پیشنهادی: {alt}</small></div>)}</div></details>
 
             <section className={styles.closing} aria-labelledby="jupiter-closing-title"><div><p>گام بعدی</p><h2 id="jupiter-closing-title">آماده‌اید با ژوپیتر شروع کنید؟</h2><p>{content.closing.match(/\*\*متن:\*\*\s*([\s\S]*?)(?:\n\n- دکمه اصلی:|$)/u)?.[1]?.replace(/\s+/gu, " ").trim()}</p></div><div className={styles.actions}><Cta href={links.appUrl} primary host={host}>ورود به ژوپیتر</Cta><Cta href={links.organizationRequestUrl} host={host}>ثبت درخواست سازمان</Cta><Cta href={links.supportUrl} host={host}>دریافت کمک</Cta></div></section>
             <div className={styles.pdfFooter}><Download size={18} aria-hidden="true" /><span>نسخهٔ ۱۵ صفحه‌ای برای مطالعه یا چاپ:</span><a href={pdfPath} target="_blank" rel="noopener noreferrer">باز کردن PDF<span className="sr-only"> در برگهٔ جدید</span></a></div>

@@ -6,6 +6,7 @@
 - Corrected two accessibility findings from browser QA: noninteractive checklist boxes now have no unlabeled input, and the nested table of contents is a labelled group rather than a complementary landmark.
 - 52 tests, typecheck, lint, Prisma validate, production build, and diff check passed. Local browser QA covered 390/768/1280/1440px without overflow or client errors; axe reported no violations at 390/1280px. Persian and English routes, PDF response, tabs, fragments, search, and FAQ were exercised. The temporary database tunnel and local server were closed; no production data mutation, release, or push occurred.
 - Remaining for publication: stakeholder acceptance, approved Jupiter app/request URLs, migration deployment, live HTTPS QA, and isolated dependency-security remediation.
+- A requirement-by-requirement review of the supplied Markdown identified missing journey diagrams, screenshot placeholders, complete role-choice descriptions, Shabnam typography, and the exact 375/1024px and browser-history checks. These were implemented and revalidated locally. The product-image slots explicitly say an authentic screenshot is still needed; no fabricated UI image was used.
 
 ## 2026-08-29 — Compact language-control correction
 

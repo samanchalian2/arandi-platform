@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import localFont from "next/font/local";
 
 import { JupiterGuide } from "@/components/jupiter/JupiterGuide";
 import { jupiterFaqSchema, loadJupiterGuide } from "@/lib/jupiter-guide";
@@ -10,6 +11,15 @@ type Props = { searchParams?: Promise<{ lang?: string }> | { lang?: string } };
 
 const guidePath = "/knowledge/jupiter-guide";
 const pdfPath = "/guides/jupiter-comprehensive-user-guide-fa.pdf";
+const shabnam = localFont({
+    src: [
+        { path: "../../../../node_modules/shabnam-font/dist/Shabnam.woff2", weight: "400", style: "normal" },
+        { path: "../../../../node_modules/shabnam-font/dist/Shabnam-Medium.woff2", weight: "500", style: "normal" },
+        { path: "../../../../node_modules/shabnam-font/dist/Shabnam-Bold.woff2", weight: "700", style: "normal" },
+    ],
+    variable: "--font-shabnam",
+    display: "swap",
+});
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
     const lang = await resolveLanguage(searchParams);
@@ -52,6 +62,6 @@ export default async function JupiterGuidePage({ searchParams }: Props) {
     ];
     return <>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-        <JupiterGuide content={content} links={links} pdfPath={pdfPath} host={new URL(origin).hostname} />
+        <div className={shabnam.variable}><JupiterGuide content={content} links={links} pdfPath={pdfPath} host={new URL(origin).hostname} /></div>
     </>;
 }
