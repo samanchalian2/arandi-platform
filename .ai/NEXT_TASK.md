@@ -2,6 +2,13 @@
 
 Phase 10 — Controlled Production Cutover
 
+## Immediate Jupiter Guide Follow-up (2026-10-07)
+
+1. Obtain the approved public HTTPS URLs for Jupiter sign-in and organization registration; configure them in Admin Settings after deployment. Do not invent local/IP destinations.
+2. Review and approve the locally validated Persian guide and unchanged PDF. The guide is not yet pushed or published.
+3. If publication is authorized, use the controlled release flow with backup, deploy the `site.jupiterGuide` data migration, configure the approved URLs, and verify the canonical HTTPS guide, PDF, Knowledge link, mobile/desktop layouts, Admin settings, and rollback. Do not deploy as part of an unrelated task.
+4. Address the current production dependency-audit findings in an isolated, compatibility-tested security change before release approval.
+
 ## Verified Starting Point
 
 - Release `20260827T-scrollwise-simple-logo`, sourced from reviewed commits `ff708eb` and `fe64acf`, is active on `arandivps` for the canonical `https://arandi.io` hostname. DNS, HTTPS, HSTS, canonical redirects, CMS/Media migration, readiness, public-route checks, and FA/EN Browser QA are directly verified. The active Scrollwise header defaults to the original simple 64px symbol and 28px desktop title, both adjustable through the private Admin Theme controls; internal pages, CTA, and floating controls use the verified light cool-neutral palette, the Home footer remains exactly `#EDEAE7`, and the prior VPS remains a rollback source and is not modified by this deployment.

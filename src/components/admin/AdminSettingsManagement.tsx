@@ -31,10 +31,49 @@ async function readEnvelope<T>(response: Response): Promise<T> {
 
 function SettingEditor({ setting }: { setting: SettingItem }) {
     if (setting.key === "contact.notifications") return <ContactNotificationSettingEditor setting={setting} />;
+    if (setting.key === "site.jupiterGuide") return <JupiterGuideSettingEditor setting={setting} />;
     if (setting.key === "site.social") return <SocialSettingEditor setting={setting} />;
     if (setting.key === "site.heroMedia") return <HeroMediaSettingEditor setting={setting} />;
     if (setting.key === "site.scrollwiseScenes") return <ScrollwiseScenesSettingEditor setting={setting} />;
     return <GenericSettingEditor setting={setting} />;
+}
+
+function JupiterGuideSettingEditor({ setting }: { setting: SettingItem }) {
+    const queryClient = useQueryClient();
+    const initial = setting.value ?? {};
+    const [links, setLinks] = useState({
+        appUrl: typeof initial.appUrl === "string" ? initial.appUrl : "",
+        organizationRequestUrl: typeof initial.organizationRequestUrl === "string" ? initial.organizationRequestUrl : "",
+        supportUrl: typeof initial.supportUrl === "string" ? initial.supportUrl : "",
+        companyName: typeof initial.companyName === "string" ? initial.companyName : "",
+    });
+    const [error, setError] = useState<string | null>(null);
+    const mutation = useMutation({
+        mutationFn: async () => readEnvelope<SettingItem>(await cmsFetch("/api/cms/settings", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key: setting.key, value: links }),
+        })),
+        onSuccess: async () => { setError(null); await queryClient.invalidateQueries({ queryKey: ["admin-settings"] }); },
+        onError: (value) => setError(value instanceof Error ? value.message : "Unable to save Jupiter guide links."),
+    });
+    const fields = [
+        { key: "appUrl", label: "Jupiter sign-in URL", placeholder: "https://…" },
+        { key: "organizationRequestUrl", label: "Organization request URL", placeholder: "https://…" },
+        { key: "supportUrl", label: "Support URL", placeholder: "/contact?lang=fa" },
+        { key: "companyName", label: "Company name override (optional)", placeholder: "Uses the existing company setting when blank" },
+    ] as const;
+    return <article className="rounded-2xl border border-border/70 bg-card p-4 shadow-[var(--elevation-1)] lg:col-span-2">
+        <h2 className="font-semibold">Jupiter guide links</h2>
+        <p className="mt-1 text-xs text-muted-foreground">Public calls to action on the Persian Jupiter training page. Empty URLs hide their buttons. Use HTTPS for external destinations.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {fields.map(({ key, label, placeholder }) => <label key={key} className="grid gap-1.5 text-sm font-medium">{label}
+                <input type="text" value={links[key]} onChange={(event) => setLinks((current) => ({ ...current, [key]: event.target.value }))} placeholder={placeholder} maxLength={key === "companyName" ? 160 : 2048} className="h-11 min-w-0 rounded-xl border border-border/70 bg-background px-3 text-sm" />
+            </label>)}
+        </div>
+        {error ? <p role="alert" className="mt-3 text-sm text-destructive">{error}</p> : null}
+        <div className="mt-4 flex justify-end"><Button size="sm" disabled={mutation.isPending} onClick={() => mutation.mutate()}>{mutation.isPending ? "Saving…" : "Save Jupiter links"}</Button></div>
+    </article>;
 }
 
 function ContactNotificationSettingEditor({ setting }: { setting: SettingItem }) {

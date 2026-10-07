@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-10-07 — Jupiter guide local implementation and QA
+
+- Read the revised training-page Markdown and 15-page PDF, implemented a dedicated Persian guide with three role paths, 15 administrator steps, search, FAQ, PDF link, responsive Jupiter accents, and safe Admin-controlled destination settings. Added a Knowledge-list feature link and Persian sitemap entry.
+- Corrected two accessibility findings from browser QA: noninteractive checklist boxes now have no unlabeled input, and the nested table of contents is a labelled group rather than a complementary landmark.
+- 52 tests, typecheck, lint, Prisma validate, production build, and diff check passed. Local browser QA covered 390/768/1280/1440px without overflow or client errors; axe reported no violations at 390/1280px. Persian and English routes, PDF response, tabs, fragments, search, and FAQ were exercised. The temporary database tunnel and local server were closed; no production data mutation, release, or push occurred.
+- Remaining for publication: stakeholder acceptance, approved Jupiter app/request URLs, migration deployment, live HTTPS QA, and isolated dependency-security remediation.
+
 ## 2026-08-29 — Compact language-control correction
 
 Objective

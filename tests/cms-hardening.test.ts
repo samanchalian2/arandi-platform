@@ -748,6 +748,25 @@ test("Settings allowlist rejects secret-bearing keys and nested secret fields", 
     assert.throws(() => parseSettingValue({ nested: { password: "never" } }), /forbidden field/);
 });
 
+test("Jupiter guide settings allow only safe public destinations", () => {
+    assert.equal(parseEditableSettingKey("site.jupiterGuide"), "site.jupiterGuide");
+    assert.deepEqual(parsePublicSettingValue("site.jupiterGuide", {
+        appUrl: "https://jupiter.example.org/login",
+        organizationRequestUrl: "",
+        supportUrl: "/contact?lang=fa",
+        companyName: "آرن دی بنیان",
+    }), {
+        appUrl: "https://jupiter.example.org/login",
+        organizationRequestUrl: "",
+        supportUrl: "/contact?lang=fa",
+        companyName: "آرن دی بنیان",
+    });
+    assert.throws(() => parsePublicSettingValue("site.jupiterGuide", { appUrl: "javascript:alert(1)" }), /safe site path or HTTPS/);
+    assert.throws(() => parsePublicSettingValue("site.jupiterGuide", { appUrl: "https://user:secret@jupiter.example.org" }), /safe site path or HTTPS/);
+    assert.throws(() => parsePublicSettingValue("site.jupiterGuide", { supportUrl: "//example.org" }), /safe site path or HTTPS/);
+    assert.throws(() => parsePublicSettingValue("site.jupiterGuide", { apiKey: "value" }), /unsupported field/);
+});
+
 test("Scrollwise scene settings accept only the fixed local image map", () => {
     const value = Object.fromEntries([
         "gateway", "discover", "design", "buildSecure", "oilGas", "petrochemical", "connectedOperations", "intelligence", "outcomes", "finale",

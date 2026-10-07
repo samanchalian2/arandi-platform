@@ -1,10 +1,17 @@
 # Current State
 
-Last verified: 2026-08-29
+Last verified: 2026-10-07 (Jupiter guide: local build and browser QA only)
 
 ## Current Phase
 
 Phase 10 — Quality and Production
+
+## 2026-10-07 — Jupiter product guide (local, not published)
+
+- Added a Persian Jupiter installation/use guide at `/knowledge/jupiter-guide?lang=fa`, linked from `/knowledge?lang=fa`. It uses the existing public chrome and scoped Jupiter purple/beige accents; the existing 15-page PDF is served unchanged from `/guides/jupiter-comprehensive-user-guide-fa.pdf`.
+- The guide contains three role-specific fragment-linked paths, 15 administrator steps, feature cards, troubleshooting, search, FAQ, and a PDF action. `?lang=en` shows an English availability notice with `noindex` rather than an unreviewed translation. Product sign-in and organization-request URLs are intentionally blank until supplied by the product owner; their public values are Admin-editable through `site.jupiterGuide` after the included data migration is deployed.
+- Local validation passed 52 tests, typecheck, lint, Prisma schema validation, production build, and diff check. With a temporary, closed SSH tunnel to the private PostgreSQL service, the guide and Knowledge listing returned `200`; the PDF returned `200` as `application/pdf`. Browser checks at 390/768/1280/1440px found no horizontal overflow or page errors; tabs, fragment loading, search, FAQ, and mobile table of contents worked. Axe found zero violations at 390px and 1280px after checklist/landmark repairs. No production migration, push, or deployment was performed.
+- Dependency audit still reports high/critical findings in existing platform packages, including Next.js, Nodemailer, Prisma/deepmerge-ts, Sharp, and source-map-js. Handle these in a separate compatibility-reviewed security slice before approving a public release.
 
 Status: the Node.js Scrollwise production deployment is live on the new `arandivps` host (`130.185.74.112`) as release `20260829T-compact-language-controls-r5` from reviewed commit `22a175b`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header now use the verified light cool-neutral treatment; its four-column footer is shared across all Scrollwise public pages. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
 

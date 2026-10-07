@@ -1050,6 +1050,7 @@ async function seedMediaAndSettings() {
             isPublic: true,
         },
         { key: "site.social", value: { instagram: "", telegram: "", whatsapp: "", bale: "" }, group: "social", isPublic: true },
+        { key: "site.jupiterGuide", value: { appUrl: "", organizationRequestUrl: "", supportUrl: "/contact?lang=fa", companyName: "" }, group: "product-guides", isPublic: true },
         { key: "site.heroMedia", value: { enabled: false, videoUrl: "/media-generated/arandi-hero-digital-infrastructure.webm", posterUrl: "/media-generated/arandi-bid-boland-energy-poster.webp" }, group: "hero", isPublic: true },
         {
             key: "site.scrollwiseScenes",

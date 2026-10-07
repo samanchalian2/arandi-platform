@@ -3,6 +3,9 @@ import type { MetadataRoute } from "next";
 import { getSiteOrigin } from "@/lib/pageMetadata";
 import { prisma } from "@/lib/prisma";
 
+// Sitemap entries depend on published CMS records and must be resolved at request time.
+export const dynamic = "force-dynamic";
+
 const SAFE_ROUTE = /^\/(?:[a-z0-9][a-z0-9/-]*)?$/;
 const SAFE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const COLLECTIONS = ["services", "solutions", "industries", "projects"] as const;
@@ -96,6 +99,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         seen.add(route);
         entries.push(...localizedEntries(origin, route, latestPageUpdate, 0.8));
     }
+    entries.push({
+        url: `${origin}/knowledge/jupiter-guide?lang=fa`,
+        lastModified: new Date("2026-10-07T00:00:00.000Z"),
+        changeFrequency: "monthly",
+        priority: 0.7,
+    });
     for (const page of collectionPages) {
         if (!COLLECTIONS.includes(page.slug as typeof COLLECTIONS[number])) continue;
         for (const card of page.sections.flatMap((section) => section.cards)) {

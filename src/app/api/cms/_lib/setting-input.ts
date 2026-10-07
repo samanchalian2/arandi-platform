@@ -10,6 +10,7 @@ export const EDITABLE_SETTING_KEYS = [
     "site.scrollwiseCopy",
     "site.seo",
     "site.contact",
+    "site.jupiterGuide",
     "site.logo",
     "ai.runtime",
     "contact.notifications",
@@ -97,6 +98,28 @@ function parseOptionalHttpsUrl(value: unknown, field: string, hosts: readonly st
 }
 
 export function parsePublicSettingValue(key: EditableSettingKey, value: Record<string, unknown>): Record<string, unknown> {
+    if (key === "site.jupiterGuide") {
+        const supported = ["appUrl", "organizationRequestUrl", "supportUrl", "companyName"];
+        if (Object.keys(value).some((field) => !supported.includes(field))) throw new Error("site.jupiterGuide contains an unsupported field.");
+        const safeLink = (candidate: unknown, field: string): string => {
+            if (candidate === undefined || candidate === null || candidate === "") return "";
+            if (typeof candidate !== "string" || candidate.length > 2_048) throw new Error(`${field} is invalid.`);
+            if (candidate.startsWith("/") && !candidate.startsWith("//") && !candidate.includes("\\") && !/[\u0000-\u001f]/u.test(candidate)) return candidate;
+            try {
+                const parsed = new URL(candidate);
+                if (parsed.protocol === "https:" && !parsed.username && !parsed.password) return parsed.toString();
+            } catch { /* handled below */ }
+            throw new Error(`${field} must be a safe site path or HTTPS URL.`);
+        };
+        const companyName = value.companyName;
+        if (companyName !== undefined && (typeof companyName !== "string" || companyName.length > 160)) throw new Error("site.jupiterGuide.companyName is invalid.");
+        return {
+            appUrl: safeLink(value.appUrl, "site.jupiterGuide.appUrl"),
+            organizationRequestUrl: safeLink(value.organizationRequestUrl, "site.jupiterGuide.organizationRequestUrl"),
+            supportUrl: safeLink(value.supportUrl, "site.jupiterGuide.supportUrl"),
+            companyName: typeof companyName === "string" ? companyName.trim() : "",
+        };
+    }
     if (key === "contact.notifications") {
         const recipient = value.recipient;
         if (typeof recipient !== "string" || recipient.trim().length < 5 || recipient.trim().length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient.trim())) {
