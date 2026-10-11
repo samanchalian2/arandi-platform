@@ -2,6 +2,11 @@
 
 All important project changes are recorded here.
 
+## 2026-10-11 — Jupiter logo on guide and PDF cover (published)
+
+- Replaced the guide hero's placeholder `J` with the owner-provided transparent Jupiter logo, visible across mobile/tablet/desktop, and placed the same logo on the lower half of the existing PDF cover. The guide's other 14 pages and text stayed intact.
+- Validated 52 tests, typecheck, lint, production build, PDF rendering/page count, and live browser layout. Published release `20261011T-jupiter-logo-r1` after a fresh backup, with no pending database migrations. Live image/PDF checksums matched the source assets.
+
 ## 2026-10-07 — Jupiter training page (published)
 
 - Added a Persian, role-based Jupiter guide and served the existing 15-page PDF unchanged; integrated the guide into Knowledge and the Persian sitemap.

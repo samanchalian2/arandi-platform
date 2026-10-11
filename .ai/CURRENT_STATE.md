@@ -1,10 +1,16 @@
 # Current State
 
-Last verified: 2026-10-07 (Jupiter guide deployed and public HTTPS smoke-tested)
+Last verified: 2026-10-11 (Jupiter logo and PDF cover deployed and visually verified)
 
 ## Current Phase
 
 Phase 10 — Quality and Production
+
+## 2026-10-11 — Jupiter product logo on guide and PDF (deployed)
+
+- Replaced the guide hero's letterform `J` and decorative orbit with the stakeholder-provided transparent Jupiter logo; the logo is visible with preserved proportions on mobile as well as desktop and has a Persian text alternative. No other site logo or theme asset changed.
+- Placed the same logo in the open lower area of the existing 15-page Persian PDF cover, without moving the title/table/date. All pages and extracted text were preserved; the cover was rendered and visually inspected.
+- Commit `5ae2d72` passed 52 tests, typecheck, lint, production build and diff check. Release `20261011T-jupiter-logo-r1` activated after backup `20261011T142746Z`; no migration was pending. The service and readiness passed. Public Chrome verified the guide at 390/768/1280px: logo visible, no horizontal overflow or page errors. Public logo and PDF SHA-256 hashes matched local assets, and the live PDF still had 15 A4 pages.
 
 ## 2026-10-07 — Jupiter product guide (published)
 
@@ -16,7 +22,7 @@ Phase 10 — Quality and Production
 - Additional local browser QA at 375/768/1024/1440px found no horizontal overflow or client errors. Direct fragments, Refresh/Back/Forward restoration, dark color-scheme readability, reduced-motion behavior, and all nine placeholders were checked. Axe returned zero violations at 375px and 1440px.
 - Owner-authorized release `20261007T-jupiter-guide-r1` was deployed on `arandivps` from reviewed code commit `9b22f9e` after backup `20261007T074723Z`. Migration `20261007120000_jupiter_guide_settings` applied successfully. Active systemd service and readiness passed. Public HTTPS guide, Knowledge listing, and PDF returned `200`; live Chrome checks at 390/768/1280px confirmed the Persian heading, PDF links, and no horizontal overflow. Product sign-in and organization-request URLs remain intentionally unset, so their CTAs are hidden until approved destinations are configured. A fresh production dependency audit still reports six high and one critical finding; these require a separate compatibility-tested remediation slice.
 
-Status: the Node.js Scrollwise production deployment is live on `arandivps` (`130.185.74.112`) as release `20261007T-jupiter-guide-r1` from reviewed code commit `9b22f9e`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header use the verified light cool-neutral treatment; its four-column footer is shared across all Scrollwise public pages. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on `arandivps` (`130.185.74.112`) as release `20261011T-jupiter-logo-r1` from reviewed code commit `5ae2d72`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header use the verified light cool-neutral treatment; its four-column footer is shared across all Scrollwise public pages. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
 
 ## 2026-08-29 — Compact language-control correction (deployed)
 

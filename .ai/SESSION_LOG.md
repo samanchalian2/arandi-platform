@@ -1,5 +1,10 @@
 # Session Log
 
+## 2026-10-11 — Jupiter visual identity on site and PDF
+
+- Used the stakeholder-supplied transparent logo without regenerating or recoloring it. The guide's desktop and mobile hero now display the real mark; the existing PDF cover received the mark in its lower whitespace while retaining all 15 pages and text. Visual rendering of the cover was reviewed.
+- Commit `5ae2d72` passed 52 tests, typecheck, lint, production build and diff check. Release `20261011T-jupiter-logo-r1` was deployed after backup `20261011T142746Z`; Prisma found no pending migrations. Live readiness returned `200`. Chrome at 390/768/1280px showed the new image with no page errors or horizontal overflow, and public PNG/PDF SHA-256 values matched the local files. No other site branding was changed.
+
 ## 2026-10-07 — Jupiter guide public deployment
 
 - After explicit owner authorization, verified the clean `scrollwise` worktree, reran 52 tests, typecheck, lint, diff check and production build, and packaged only tracked Git content. Deployment staging initially stopped before any production change because the archive contained CRLF shell scripts; normalized only the temporary server-side source copy and retried.
