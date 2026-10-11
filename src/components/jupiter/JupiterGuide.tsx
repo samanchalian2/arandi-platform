@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowUpLeft, BookOpen, ChevronDown, Download, FileText, Printer, Search } from "lucide-react";
@@ -166,7 +167,9 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
                         <a href={pdfPath} target="_blank" rel="noopener noreferrer" className={styles.pdfCta}><FileText size={18} aria-hidden="true" />مشاهده راهنمای PDF<span className="sr-only"> در برگهٔ جدید</span></a>
                     </div>
                 </div>
-                <div className={styles.heroAside} aria-hidden="true"><span>J</span><span className={styles.heroOrbit} /></div>
+                <div className={styles.heroAside}>
+                    <Image className={styles.heroLogo} src="/brand/jupiter-logo.png" alt="لوگوی ژوپیتر" width={1774} height={887} sizes="(max-width: 700px) 12rem, (max-width: 1000px) 8rem, 14rem" priority />
+                </div>
             </header>
 
             <section className={styles.intro} aria-labelledby="jupiter-intro-title">
