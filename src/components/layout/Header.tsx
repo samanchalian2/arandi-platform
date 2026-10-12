@@ -233,13 +233,13 @@ export function Header({ content, company, lang }: HeaderProps) {
           ))}
           <Link
             href={`/articles?lang=${currentLang}`}
-            aria-current={pathname === "/articles" || pathname.startsWith("/articles/") ? "page" : undefined}
+            aria-current={pathname === "/articles" || pathname.startsWith("/articles/") || pathname.startsWith("/knowledge/") ? "page" : undefined}
             className={cn(
               "ds-focus-visible rounded-full px-3.5 py-2.5 transition-all duration-[var(--duration-base)] ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:bg-muted/78 hover:text-foreground",
-              (pathname === "/articles" || pathname.startsWith("/articles/")) && "bg-muted text-foreground shadow-[var(--elevation-1)]",
+              (pathname === "/articles" || pathname.startsWith("/articles/") || pathname.startsWith("/knowledge/")) && "bg-muted text-foreground shadow-[var(--elevation-1)]",
             )}
           >
-            {currentLang === "fa" ? "مقالات" : "Articles"}
+            {currentLang === "fa" ? "مقالات و راهنماها" : "Articles and guides"}
           </Link>
         </nav>
 
@@ -356,15 +356,15 @@ export function Header({ content, company, lang }: HeaderProps) {
               ))}
               <Link
                 href={`/articles?lang=${currentLang}`}
-                aria-current={pathname === "/articles" || pathname.startsWith("/articles/") ? "page" : undefined}
+                aria-current={pathname === "/articles" || pathname.startsWith("/articles/") || pathname.startsWith("/knowledge/") ? "page" : undefined}
                 className={cn(
                   "ds-focus-visible rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold transition-all duration-[var(--duration-base)] ease-[var(--ease-standard)] hover:border-border/75 hover:bg-muted/72 hover:text-foreground",
-                  (pathname === "/articles" || pathname.startsWith("/articles/")) && "border-primary/25 bg-primary/10 text-foreground shadow-[var(--elevation-1)]",
+                  (pathname === "/articles" || pathname.startsWith("/articles/") || pathname.startsWith("/knowledge/")) && "border-primary/25 bg-primary/10 text-foreground shadow-[var(--elevation-1)]",
                 )}
                 onClick={closeMobileMenu}
               >
                 <span className={cn("block truncate", isRtl ? "text-right" : "text-left")}>
-                  {currentLang === "fa" ? "مقالات" : "Articles"}
+                  {currentLang === "fa" ? "مقالات و راهنماها" : "Articles and guides"}
                 </span>
               </Link>
             </nav>

@@ -19,6 +19,7 @@ const result = spawnSync(
         path.join("tests", "cms-hardening.test.ts"),
         path.join("tests", "auth-foundation.test.ts"),
         path.join("tests", "ai-foundation.test.ts"),
+        path.join("tests", "public-content-hub.test.ts"),
     ],
     {
         cwd: process.cwd(),

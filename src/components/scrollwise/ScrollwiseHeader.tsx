@@ -37,12 +37,12 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
     };
     const classicItems = [
         ...buildEnterpriseNavigationItems(navigation.enterpriseLinks, lang),
-        { path: "/articles", href: `/articles?lang=${lang}`, label: fa ? "مقالات" : "Articles" },
+        { path: "/articles", href: `/articles?lang=${lang}`, label: fa ? "مقالات و راهنماها" : "Articles and guides" },
     ];
     const isClassicMenu = menuMode === "classic";
     const menuLabel = isClassicMenu
         ? (fa ? "صفحات اصلی" : "Primary pages")
-        : (fa ? "فصل‌های روایت" : "Story chapters");
+        : (fa ? "فصل‌های روایت و راهنماها" : "Story chapters and guides");
 
     const toggleMotion = () => {
         const next = !motionPaused;
@@ -61,8 +61,11 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
 
                 <nav aria-label={menuLabel} className="hidden items-center gap-0.5 xl:flex">
                     {isClassicMenu
-                        ? classicItems.map((item) => <Link key={item.path} href={item.href} aria-current={pathname === item.path || (item.path === "/articles" && pathname.startsWith("/articles/")) ? "page" : undefined} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground">{item.label}</Link>)
-                        : chapters.map(([id, label]) => <a key={id} href={`#${id}`} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground">{label}</a>)}
+                        ? classicItems.map((item) => <Link key={item.path} href={item.href} aria-current={pathname === item.path || (item.path === "/articles" && (pathname.startsWith("/articles/") || pathname.startsWith("/knowledge/"))) ? "page" : undefined} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground">{item.label}</Link>)
+                        : <>
+                            {chapters.map(([id, label]) => <a key={id} href={`#${id}`} className="ds-focus-visible rounded-full px-2.5 py-2 text-[0.68rem] font-semibold text-foreground/70 hover:bg-foreground/5 hover:text-foreground">{label}</a>)}
+                            <Link href={`/articles?lang=${lang}`} className="ds-focus-visible ms-1 rounded-full border-s border-foreground/15 px-2.5 py-2 text-[0.68rem] font-semibold text-primary hover:bg-foreground/5">{fa ? "مقالات و راهنماها" : "Articles and guides"}</Link>
+                        </>}
                 </nav>
 
                 <div className="flex items-center gap-1.5">
@@ -84,10 +87,11 @@ export function ScrollwiseHeader({ companyName, navigation, lang, showMotionCont
             </div>
             {menuOpen ? <nav id="scrollwise-mobile-menu" aria-label={menuLabel} className="pointer-events-auto mx-auto mt-2 max-h-[calc(100svh-6rem)] max-w-[94rem] overflow-y-auto rounded-2xl border border-slate-900/8 bg-white/96 p-2 shadow-[0_1rem_4rem_rgb(28_37_48_/_0.08)] backdrop-blur-xl xl:hidden">
                 {isClassicMenu
-                    ? classicItems.map((item) => <Link key={item.path} href={item.href} aria-current={pathname === item.path || (item.path === "/articles" && pathname.startsWith("/articles/")) ? "page" : undefined} onClick={() => setMenuOpen(false)} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">{item.label}</Link>)
+                    ? classicItems.map((item) => <Link key={item.path} href={item.href} aria-current={pathname === item.path || (item.path === "/articles" && (pathname.startsWith("/articles/") || pathname.startsWith("/knowledge/"))) ? "page" : undefined} onClick={() => setMenuOpen(false)} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">{item.label}</Link>)
                     : <>
                         {chapters.map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted">{label}</a>)}
                         <Link href={`/projects?lang=${lang}`} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-primary hover:bg-muted">{fa ? "مشاهده پروژه‌ها" : "View projects"}</Link>
+                        <Link href={`/articles?lang=${lang}`} onClick={() => setMenuOpen(false)} className="ds-focus-visible block min-h-11 rounded-xl px-4 py-3 text-sm font-semibold text-primary hover:bg-muted">{fa ? "مقالات و راهنماها" : "Articles and guides"}</Link>
                     </>}
             </nav> : null}
         </header>

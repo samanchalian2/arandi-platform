@@ -153,7 +153,7 @@ export function JupiterGuide({ content, links, pdfPath, host }: {
     return <div className={styles.guide} lang="fa" dir="rtl">
         <div className={styles.container}>
             <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
-                <Link href="/?lang=fa">خانه</Link><span aria-hidden="true">/</span><Link href="/knowledge?lang=fa">دانش‌نامه</Link><span aria-hidden="true">/</span><span aria-current="page">راهنمای ژوپیتر</span>
+                <Link href="/?lang=fa">خانه</Link><span aria-hidden="true">/</span><Link href="/articles?lang=fa">مقالات و راهنماها</Link><span aria-hidden="true">/</span><span aria-current="page">راهنمای ژوپیتر</span>
             </nav>
 
             <header className={styles.hero}>

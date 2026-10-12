@@ -7,6 +7,7 @@ export { PageGrid } from "./PageGrid";
 export { PageCTA } from "./PageCTA";
 export { EnterprisePage } from "./EnterprisePage";
 export {
+    PublicContentHub,
     PublicDocumentList,
     PublicDocumentView,
     PublicCollectionDetailView,

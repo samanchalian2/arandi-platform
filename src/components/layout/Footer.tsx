@@ -77,6 +77,7 @@ export function Footer({ content, company, navigation, lang, variant = "standard
                 ["/company", navigation.enterpriseLinks.company],
                 ["/services", navigation.enterpriseLinks.services],
                 ["/projects", navigation.enterpriseLinks.projects],
+                ["/articles", lang === "fa" ? "مقالات و راهنماها" : "Articles and guides"],
                 ["/contact", navigation.enterpriseLinks.contact],
               ].map(([href, label]) => (
                 <a key={href} href={`${href}?lang=${lang}`} className="hover:text-primary hover:underline">{label}</a>
@@ -130,7 +131,7 @@ function ScrollwiseFooter({ content, company, navigation, lang, currentYear, map
   const secondaryLinks = [
     ["/industries", navigation.enterpriseLinks.industries],
     ["/projects", navigation.enterpriseLinks.projects],
-    ["/articles", isFa ? "مقالات" : "Articles"],
+    ["/articles", isFa ? "مقالات و راهنماها" : "Articles and guides"],
   ];
   const labels = isFa
     ? { contact: "گفت‌وگو با ما", explore: "مسیرها", portfolio: "حوزه‌ها", connect: "ارتباط", map: "موقعیت روی نقشه", copyright: `© ${currentYear} شرکت آرن دی بنیان. تمامی حقوق محفوظ است.` }

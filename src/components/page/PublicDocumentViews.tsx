@@ -36,10 +36,82 @@ const labels = {
 } as const;
 
 function listRoute(type: PublicDocumentType): string {
-    return type === "article" ? "/articles" : `/${type}`;
+    return type === "legal" ? "/legal" : "/articles";
 }
 
 const documentIcons = { article: FileText, knowledge: BookOpen, legal: Scale } as const;
+
+function DocumentCards({ type, lang, items, headingLevel = 2 }: {
+    type: PublicDocumentType;
+    lang: Language;
+    items: PublicDocumentSummary[];
+    headingLevel?: 2 | 3;
+}) {
+    const Icon = documentIcons[type];
+    const Heading = headingLevel === 2 ? "h2" : "h3";
+    return items.map((item) => (
+        <article key={`${type}:${item.slug}`} className="flex flex-col overflow-hidden rounded-[1.5rem] border border-border/70 bg-card shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
+            <div className="flex min-h-28 items-end bg-[linear-gradient(135deg,rgba(14,116,144,0.16),rgba(255,255,255,0.7))] p-6">
+                <span className="inline-flex size-11 items-center justify-center rounded-2xl border border-primary/15 bg-background/72 text-primary shadow-[var(--elevation-1)]"><Icon className="size-5" aria-hidden="true" /></span>
+            </div>
+            <div className="flex flex-1 flex-col p-6">
+                <Heading className="text-xl font-semibold text-foreground">{item.title}</Heading>
+                <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{item.description}</p>
+                <Link className="ds-focus-visible mt-6 inline-flex min-h-11 items-center font-semibold text-primary hover:underline" href={`${item.route}?lang=${lang}`}>
+                    {labels[lang].read}<span className="sr-only">: {item.title}</span>
+                </Link>
+            </div>
+        </article>
+    ));
+}
+
+export function PublicContentHub({ lang, articles, guides }: {
+    lang: Language;
+    articles: PublicDocumentSummary[];
+    guides: PublicDocumentSummary[];
+}) {
+    const fa = lang === "fa";
+    const copy = fa
+        ? { eyebrow: "دیدگاه‌ها و دانش", title: "مقالات و راهنماها", description: "مقاله‌ها، دیدگاه‌ها و راهنماهای کاربردی آرن دی بنیان را در یک مسیر پیدا کنید.", articles: "مقالات", guides: "راهنماها", guideIntro: "راهنماهای گام‌به‌گام محصولات و محتوای دانشی", jupiter: "آموزش راه‌اندازی و استفاده از ژوپیتر", jupiterDescription: "راهنمای مدیر سازمان، کاربران سازمان و کاربران مستقل؛ همراه با مراحل کاربردی و نسخهٔ PDF.", viewGuide: "مشاهدهٔ راهنمای ژوپیتر" }
+        : { eyebrow: "Insights and knowledge", title: "Articles and guides", description: "Explore Arandi articles, insights, and practical guides in one place.", articles: "Articles", guides: "Guides", guideIntro: "Step-by-step product guides and knowledge resources", jupiter: "", jupiterDescription: "", viewGuide: "" };
+    const publishedGuides = guides.filter((item) => item.route !== "/knowledge/jupiter-guide");
+
+    return <div data-content-source="prisma" className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
+        <header className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">{copy.eyebrow}</p>
+            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">{copy.title}</h1>
+            <p className="mt-5 text-base leading-8 text-muted-foreground">{copy.description}</p>
+        </header>
+        <nav aria-label={copy.title} className="mt-8 flex flex-wrap gap-3">
+            <a className="ds-focus-visible inline-flex min-h-11 items-center rounded-full border border-border bg-card px-5 text-sm font-semibold text-primary hover:bg-muted" href="#hub-articles">{copy.articles}</a>
+            <a className="ds-focus-visible inline-flex min-h-11 items-center rounded-full border border-border bg-card px-5 text-sm font-semibold text-primary hover:bg-muted" href="#hub-guides">{copy.guides}</a>
+        </nav>
+
+        <section id="hub-articles" aria-labelledby="hub-articles-title" className="mt-14 scroll-mt-32">
+            <h2 id="hub-articles-title" className="text-2xl font-semibold text-foreground sm:text-3xl">{copy.articles}</h2>
+            {articles.length ? <div className="mt-7 grid gap-5 md:grid-cols-2"><DocumentCards type="article" lang={lang} items={articles} headingLevel={3} /></div>
+                : <p className="mt-7 rounded-2xl border border-border/70 bg-card p-6 text-muted-foreground">{labels[lang].article.empty}</p>}
+        </section>
+
+        <section id="hub-guides" aria-labelledby="hub-guides-title" className="mt-16 scroll-mt-32">
+            <h2 id="hub-guides-title" className="text-2xl font-semibold text-foreground sm:text-3xl">{copy.guides}</h2>
+            <p className="mt-3 text-sm leading-7 text-muted-foreground">{copy.guideIntro}</p>
+            {fa || publishedGuides.length ? <div className="mt-7 grid gap-5 md:grid-cols-2">
+                {fa ? <article data-guide-id="jupiter" className="flex flex-col overflow-hidden rounded-[1.5rem] border border-[#796E89]/25 bg-[linear-gradient(120deg,#f8f7f9,#f0edf3)] shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
+                    <div className="flex min-h-28 items-center bg-white/50 px-6 py-3">
+                        <Image src="/brand/jupiter-logo.png" alt="لوگوی ژوپیتر" width={1774} height={887} className="h-20 w-auto max-w-full object-contain object-right" sizes="200px" />
+                    </div>
+                    <div className="flex flex-1 flex-col p-6">
+                        <h3 className="text-xl font-semibold text-foreground">{copy.jupiter}</h3>
+                        <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{copy.jupiterDescription}</p>
+                        <Link className="ds-focus-visible mt-6 inline-flex min-h-11 items-center font-semibold text-primary hover:underline" href="/knowledge/jupiter-guide?lang=fa">{copy.viewGuide}</Link>
+                    </div>
+                </article> : null}
+                <DocumentCards type="knowledge" lang={lang} items={publishedGuides} headingLevel={3} />
+            </div> : <p className="mt-7 rounded-2xl border border-border/70 bg-card p-6 text-muted-foreground">{labels[lang].knowledge.empty}</p>}
+        </section>
+    </div>;
+}
 
 export function PublicDocumentList({
     type,
@@ -51,7 +123,6 @@ export function PublicDocumentList({
     items: PublicDocumentSummary[];
 }) {
     const copy = labels[lang][type];
-    const Icon = documentIcons[type];
     return (
         <div data-content-source="prisma" className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
             <header className="max-w-3xl">
@@ -62,20 +133,7 @@ export function PublicDocumentList({
                 <p className="mt-12 rounded-2xl border border-border/70 bg-card p-6 text-muted-foreground">{copy.empty}</p>
             ) : (
                 <section className={items.length === 1 ? "mt-12 max-w-3xl" : "mt-12 grid gap-5 md:grid-cols-2"} aria-label={copy.title}>
-                    {items.map((item) => (
-                        <article key={item.slug} className="flex flex-col overflow-hidden rounded-[1.5rem] border border-border/70 bg-card shadow-[0_18px_50px_-28px_rgba(15,23,42,0.25)]">
-                            <div className="flex min-h-28 items-end bg-[linear-gradient(135deg,rgba(14,116,144,0.16),rgba(255,255,255,0.7))] p-6">
-                                <span className="inline-flex size-11 items-center justify-center rounded-2xl border border-primary/15 bg-background/72 text-primary shadow-[var(--elevation-1)]"><Icon className="size-5" /></span>
-                            </div>
-                            <div className="flex flex-1 flex-col p-6">
-                            <h2 className="text-xl font-semibold text-foreground">{item.title}</h2>
-                            <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{item.description}</p>
-                            <Link className="mt-6 font-semibold text-primary hover:underline" href={`${item.route}?lang=${lang}`}>
-                                {labels[lang].read}
-                            </Link>
-                            </div>
-                        </article>
-                    ))}
+                    <DocumentCards type={type} lang={lang} items={items} />
                 </section>
             )}
         </div>

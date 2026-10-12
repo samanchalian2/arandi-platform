@@ -83,6 +83,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const page of pages) {
         if (
             !SAFE_ROUTE.test(page.route)
+            || page.route === "/knowledge"
             || !page.translations.some(({ languageCode }) => languageCode === "en")
             || !page.translations.some(({ languageCode }) => languageCode === "fa")
             || seen.has(page.route)
@@ -94,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         (latest, page) => page.updatedAt > latest ? page.updatedAt : latest,
         new Date(0),
     );
-    for (const route of ["/articles", "/knowledge", "/legal"]) {
+    for (const route of ["/articles", "/legal"]) {
         if (seen.has(route)) continue;
         seen.add(route);
         entries.push(...localizedEntries(origin, route, latestPageUpdate, 0.8));

@@ -44,6 +44,7 @@ export default async function JupiterGuidePage({ searchParams }: Props) {
             <h1 className="mt-4 text-3xl font-semibold text-foreground">The guide is available in Persian</h1>
             <p className="mt-4 text-base leading-8 text-muted-foreground">The complete, reviewed training content has not yet been translated into English.</p>
             <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/articles?lang=en" className="inline-flex min-h-11 items-center rounded-full border border-border px-5 text-sm font-semibold text-foreground">Browse articles and guides</Link>
                 <Link href={`${guidePath}?lang=fa`} className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground">Read the Persian guide</Link>
                 <a href={pdfPath} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-full border border-border px-5 text-sm font-semibold text-foreground">Open the Persian PDF</a>
             </div>
@@ -55,7 +56,7 @@ export default async function JupiterGuidePage({ searchParams }: Props) {
     const jsonLd = [
         { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
             { "@type": "ListItem", position: 1, name: "خانه", item: `${origin}/?lang=fa` },
-            { "@type": "ListItem", position: 2, name: "دانش‌نامه", item: `${origin}/knowledge?lang=fa` },
+            { "@type": "ListItem", position: 2, name: "مقالات و راهنماها", item: `${origin}/articles?lang=fa` },
             { "@type": "ListItem", position: 3, name: content.title, item: `${origin}${guidePath}?lang=fa` },
         ] },
         jupiterFaqSchema(content.questions),
