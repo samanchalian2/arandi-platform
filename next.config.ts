@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       "./tests/**/*",
     ],
   },
+  async redirects() {
+    return [{ source: "/knowledge", destination: "/articles", permanent: true }];
+  },
   async headers() {
     return [
       {
