@@ -1,10 +1,16 @@
 # Current State
 
-Last verified: 2026-10-11 (Jupiter logo and PDF cover deployed and visually verified)
+Last verified: 2026-10-12 (unified articles and guides hub deployed and verified)
 
 ## Current Phase
 
 Phase 10 — Quality and Production
+
+## 2026-10-12 — Unified articles and guides hub (deployed)
+
+- `/articles` is now the bilingual public hub with distinct article and guide sections. The Persian guides section contains one Jupiter feature card linking to the existing detailed guide; the unreviewed Jupiter translation is not advertised in English. Published CMS articles and knowledge documents retain separate `pageType` and detail routes.
+- Standard and Scrollwise classic navigation, Scrollwise narrative navigation, both footer variants, and Jupiter breadcrumbs lead to `/articles`. The old `/knowledge` list URL returns an actual permanent HTTP `308` to `/articles`, preserving `lang`; the Jupiter detail URL and PDF remain unchanged. The sitemap lists the hub but not the redirected list.
+- Commits `4b5fb69` and `d6279bd` passed 54 tests, typecheck, lint, production build and diff checks. Release `20261012T-articles-guides-hub-r2` is active after backup `20261012T134149Z`; no migration was pending. Public readiness and both hub languages return `200`, old list URLs return `308`, and guide/PDF return `200`. Live Chrome at 390/768/1280px in FA/EN found the correct card visibility, navigation, no overflow or page errors; axe at 390/1280px found no violations. The preceding release and both new backups remain retained.
 
 ## 2026-10-11 — Jupiter product logo on guide and PDF (deployed)
 
@@ -22,7 +28,7 @@ Phase 10 — Quality and Production
 - Additional local browser QA at 375/768/1024/1440px found no horizontal overflow or client errors. Direct fragments, Refresh/Back/Forward restoration, dark color-scheme readability, reduced-motion behavior, and all nine placeholders were checked. Axe returned zero violations at 375px and 1440px.
 - Owner-authorized release `20261007T-jupiter-guide-r1` was deployed on `arandivps` from reviewed code commit `9b22f9e` after backup `20261007T074723Z`. Migration `20261007120000_jupiter_guide_settings` applied successfully. Active systemd service and readiness passed. Public HTTPS guide, Knowledge listing, and PDF returned `200`; live Chrome checks at 390/768/1280px confirmed the Persian heading, PDF links, and no horizontal overflow. Product sign-in and organization-request URLs remain intentionally unset, so their CTAs are hidden until approved destinations are configured. A fresh production dependency audit still reports six high and one critical finding; these require a separate compatibility-tested remediation slice.
 
-Status: the Node.js Scrollwise production deployment is live on `arandivps` (`130.185.74.112`) as release `20261011T-jupiter-logo-r1` from reviewed code commit `5ae2d72`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header use the verified light cool-neutral treatment; its four-column footer is shared across all Scrollwise public pages. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
+Status: the Node.js Scrollwise production deployment is live on `arandivps` (`130.185.74.112`) as release `20261012T-articles-guides-hub-r2` from reviewed code commit `d6279bd`. Public DNS resolves `arandi.io` and `www.arandi.io` to that host; Nginx serves the application at HTTPS, redirects HTTP and `www` to canonical `https://arandi.io`, and has a valid renewable Let's Encrypt certificate. The full CMS database and persistent Media state were migrated from the prior Node.js deployment, while the prior host remains an independent rollback source. Scrollwise internal pages, CTA, floating controls, and header use the verified light cool-neutral treatment; its four-column footer is shared across all Scrollwise public pages. SMTP/provider delivery, external alerting/off-host backup, and observed GitHub CI remain unapproved.
 
 ## 2026-08-29 — Compact language-control correction (deployed)
 

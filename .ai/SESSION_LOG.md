@@ -1,5 +1,11 @@
 # Session Log
 
+## 2026-10-12 — Articles/Knowledge discoverability and canonical routing
+
+- Built one `/articles` hub for separately grouped published CMS articles and knowledge documents. Featured the Persian Jupiter guide once, without advertising an untranslated English guide. Updated header/footer links, Scrollwise classic and narrative menus, article/guide back paths and Jupiter breadcrumbs; preserved existing detail URLs and PDF.
+- The first controlled release exposed a streaming redirect with HTTP `200` for `/knowledge`. Added a Next configuration redirect, verified local and public HTTP `308` with FA/EN query preservation, and activated corrected release `20261012T-articles-guides-hub-r2`. The first release and earlier Jupiter release are retained as rollback options; backups `20261012T133318Z` and `20261012T134149Z` were created.
+- The final code passed 54 tests, typecheck, lint, build and diff check. Public HTTP and Chrome verified hub, guide, PDF, sitemap, Home menu and footer at FA/EN 390/768/1280px; no horizontal overflow, broken hub images or page errors. Axe on hub at 390/1280px reported zero violations. No database migration or secret-bearing source change occurred.
+
 ## 2026-10-11 — Jupiter visual identity on site and PDF
 
 - Used the stakeholder-supplied transparent logo without regenerating or recoloring it. The guide's desktop and mobile hero now display the real mark; the existing PDF cover received the mark in its lower whitespace while retaining all 15 pages and text. Visual rendering of the cover was reviewed.

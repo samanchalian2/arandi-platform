@@ -2,6 +2,12 @@
 
 All important project changes are recorded here.
 
+## 2026-10-12 — Articles and guides hub (published)
+
+- Unified published articles and knowledge guides in a two-section, bilingual `/articles` hub with a single Persian Jupiter feature card; retained distinct CMS types and existing detail/PDF URLs.
+- Updated standard and both Scrollwise menu modes, both footer variants, guide breadcrumbs and sitemap. `/knowledge` now returns a direct `308` to the hub with query parameters preserved.
+- Added hub rendering tests. Validated 54 tests, typecheck, lint, build, live FA/EN responsive/browser checks and axe. Published release `20261012T-articles-guides-hub-r2` with backup; no database migration.
+
 ## 2026-10-11 — Jupiter logo on guide and PDF cover (published)
 
 - Replaced the guide hero's placeholder `J` with the owner-provided transparent Jupiter logo, visible across mobile/tablet/desktop, and placed the same logo on the lower half of the existing PDF cover. The guide's other 14 pages and text stayed intact.
