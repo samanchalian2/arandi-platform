@@ -37,6 +37,7 @@ type SceneMap = Record<SceneKey, { desktopUrl: string; mobileUrl: string }>;
 type ExperienceSettings = {
     motionPreset: "subtle" | "balanced" | "cinematic";
     showMotionControl: boolean;
+    showExperienceSummary: boolean;
     menuMode: "narrative" | "classic";
     headerLogoSize: number;
     headerTitleSize: number;
@@ -49,6 +50,7 @@ type ExperienceSettings = {
 const defaultExperience: ExperienceSettings = {
     motionPreset: "cinematic",
     showMotionControl: false,
+    showExperienceSummary: false,
     menuMode: "narrative",
     headerLogoSize: 64,
     headerTitleSize: 28,
@@ -81,6 +83,7 @@ function initialExperience(setting: SettingItem): ExperienceSettings {
     return {
         motionPreset: value.motionPreset === "subtle" || value.motionPreset === "balanced" || value.motionPreset === "cinematic" ? value.motionPreset : defaultExperience.motionPreset,
         showMotionControl: typeof value.showMotionControl === "boolean" ? value.showMotionControl : defaultExperience.showMotionControl,
+        showExperienceSummary: typeof value.showExperienceSummary === "boolean" ? value.showExperienceSummary : defaultExperience.showExperienceSummary,
         menuMode: value.menuMode === "classic" ? "classic" : defaultExperience.menuMode,
         headerLogoSize: typeof value.headerLogoSize === "number" ? value.headerLogoSize : defaultExperience.headerLogoSize,
         headerTitleSize: typeof value.headerTitleSize === "number" ? value.headerTitleSize : defaultExperience.headerTitleSize,
@@ -223,6 +226,14 @@ function ScrollwiseThemeSettingsForm({ sceneSetting, experienceSetting, copySett
                         <input type="range" min="60" max="140" step="5" value={experience.interludeHeight} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, interludeHeight: Number(event.target.value) })); }} className="h-11 w-full accent-primary" />
                     </label>
                 </div>
+            </fieldset>
+
+            <fieldset className="rounded-2xl border border-border/70 bg-card p-5">
+                <legend className="px-1 text-base font-semibold">Closing section</legend>
+                <label className="mt-3 flex min-h-11 items-start gap-3 rounded-xl border border-border/70 bg-background px-3 py-3 text-sm font-medium">
+                    <input type="checkbox" checked={experience.showExperienceSummary} onChange={(event) => { setSaved(false); setExperience((current) => ({ ...current, showExperienceSummary: event.target.checked })); }} className="mt-0.5 size-4 accent-primary" />
+                    <span>Show Arandi experience summary <span className="mt-1 block text-xs font-normal text-muted-foreground">Display the dark summary strip with project, service, and industry counts above the footer on the Scrollwise homepage. Hidden by default.</span></span>
+                </label>
             </fieldset>
 
             <section className="rounded-2xl border border-border/70 bg-card p-5" aria-labelledby="scrollwise-copy-title">

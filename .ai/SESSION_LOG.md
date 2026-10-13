@@ -1,5 +1,10 @@
 # Session Log
 
+## 2026-10-13 — Scrollwise summary visibility, awaiting publication
+
+- Added a default-hidden `showExperienceSummary` option to the existing Scrollwise experience setting, the Admin Theme checkbox, validation, seed data and tests. Public Home renders the existing experience-summary strip only when enabled.
+- 54 tests, typecheck, lint, production build and diff check passed. Read-only SSH authentication against the production host failed with both the available key and the ignored local credential; no server mutation or deployment occurred.
+
 ## 2026-10-12 — Articles/Knowledge discoverability and canonical routing
 
 - Built one `/articles` hub for separately grouped published CMS articles and knowledge documents. Featured the Persian Jupiter guide once, without advertising an untranslated English guide. Updated header/footer links, Scrollwise classic and narrative menus, article/guide back paths and Jupiter breadcrumbs; preserved existing detail URLs and PDF.

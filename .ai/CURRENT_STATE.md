@@ -1,10 +1,15 @@
 # Current State
 
-Last verified: 2026-10-12 (unified articles and guides hub deployed and verified)
+Last verified: 2026-10-13 (Scrollwise summary visibility implemented locally; production deployment pending)
 
 ## Current Phase
 
 Phase 10 — Quality and Production
+
+## 2026-10-13 — Scrollwise experience-summary visibility (local only)
+
+- The dark experience-summary strip after the Scrollwise story is now hidden by default and controlled by a labelled checkbox in Admin → Theme → Scrollwise experience → Closing section. The existing `site.scrollwiseExperience` setting holds the boolean; missing values resolve to hidden, and only an explicit `true` renders the strip. No schema migration is needed.
+- All 54 tests, typecheck, lint, production build and diff check passed. This change is not live: production SSH rejected both the available key and the credential from the ignored local credential file. No production files, database values or service state were changed.
 
 ## 2026-10-12 — Unified articles and guides hub (deployed)
 

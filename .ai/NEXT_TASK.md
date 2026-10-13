@@ -2,6 +2,10 @@
 
 Phase 10 — Controlled Production Cutover
 
+## Pending Scrollwise summary publication (2026-10-13)
+
+- Publish the validated `showExperienceSummary` change only after production SSH access to `130.185.74.112` is restored. The available SSH key and ignored local credential were rejected; do not assume either is current. Take the normal pre-release backup, deploy through the rollback-aware release script, then verify the summary is absent in Persian and English and the Admin checkbox can show and hide it.
+
 ## Current public release (2026-10-12)
 
 - `20261012T-articles-guides-hub-r2` is active at `https://arandi.io` from commits `4b5fb69` and `d6279bd`. `/articles?lang=fa` presents articles and guides, including the Persian Jupiter guide. `/knowledge?lang=fa|en` permanently redirects to the hub. Preserve this release, its `20261012T134149Z` backup and the preceding `20261011T-jupiter-logo-r1` release until stakeholder acceptance.

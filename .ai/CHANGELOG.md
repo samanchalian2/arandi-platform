@@ -2,6 +2,11 @@
 
 All important project changes are recorded here.
 
+## 2026-10-13 — Scrollwise summary visibility (not yet published)
+
+- Added an Admin-controlled, default-hidden experience-summary strip for the Scrollwise homepage. Existing settings without the new field remain hidden, with no database migration.
+- Validated 54 tests, typecheck, lint and build. Production publication is pending restored SSH authentication; no live change was made.
+
 ## 2026-10-12 — Articles and guides hub (published)
 
 - Unified published articles and knowledge guides in a two-section, bilingual `/articles` hub with a single Persian Jupiter feature card; retained distinct CMS types and existing detail/PDF URLs.

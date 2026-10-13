@@ -17,6 +17,7 @@ export type ScrollwiseMenuMode = "narrative" | "classic";
 export type ScrollwiseDisplaySettings = {
     motionPreset: ScrollwiseMotionPreset;
     showMotionControl: boolean;
+    showExperienceSummary: boolean;
     menuMode: ScrollwiseMenuMode;
     headerLogoSize: number;
     headerTitleSize: number;
@@ -60,6 +61,7 @@ export type ScrollwiseExperience = {
 const defaultDisplay: ScrollwiseDisplaySettings = {
     motionPreset: "cinematic",
     showMotionControl: false,
+    showExperienceSummary: false,
     menuMode: "narrative",
     headerLogoSize: 64,
     headerTitleSize: 28,
@@ -170,6 +172,7 @@ async function resolveScrollwiseSettings() {
         display: {
             motionPreset,
             showMotionControl: rawDisplay.showMotionControl === true,
+            showExperienceSummary: rawDisplay.showExperienceSummary === true,
             menuMode: rawDisplay.menuMode === "classic" ? "classic" : defaultDisplay.menuMode,
             headerLogoSize: Math.round(boundedNumber(rawDisplay.headerLogoSize, defaultDisplay.headerLogoSize, 64, 128)),
             headerTitleSize: Math.round(boundedNumber(rawDisplay.headerTitleSize, defaultDisplay.headerTitleSize, 16, 36)),

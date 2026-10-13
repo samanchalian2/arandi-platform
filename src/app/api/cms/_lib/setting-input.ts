@@ -164,13 +164,14 @@ export function parsePublicSettingValue(key: EditableSettingKey, value: Record<s
         }));
     }
     if (key === "site.scrollwiseExperience") {
-        const supported = ["motionPreset", "showMotionControl", "menuMode", "headerLogoSize", "headerTitleSize", "headingScale", "veilOpacity", "storyHeight", "interludeHeight"] as const;
+        const supported = ["motionPreset", "showMotionControl", "showExperienceSummary", "menuMode", "headerLogoSize", "headerTitleSize", "headingScale", "veilOpacity", "storyHeight", "interludeHeight"] as const;
         const extra = Object.keys(value).filter((name) => !supported.includes(name as typeof supported[number]));
         if (extra.length > 0) throw new Error("site.scrollwiseExperience contains an unsupported field.");
         if (!(["subtle", "balanced", "cinematic"] as const).includes(value.motionPreset as "subtle" | "balanced" | "cinematic")) {
             throw new Error("site.scrollwiseExperience.motionPreset is invalid.");
         }
         if (typeof value.showMotionControl !== "boolean") throw new Error("site.scrollwiseExperience.showMotionControl is invalid.");
+        if (typeof value.showExperienceSummary !== "boolean") throw new Error("site.scrollwiseExperience.showExperienceSummary is invalid.");
         if (value.menuMode !== "narrative" && value.menuMode !== "classic") throw new Error("site.scrollwiseExperience.menuMode is invalid.");
         const numberInRange = (field: "headerLogoSize" | "headerTitleSize" | "headingScale" | "veilOpacity" | "storyHeight" | "interludeHeight", minimum: number, maximum: number, integer = false) => {
             const candidate = value[field];
@@ -182,6 +183,7 @@ export function parsePublicSettingValue(key: EditableSettingKey, value: Record<s
         return {
             motionPreset: value.motionPreset,
             showMotionControl: value.showMotionControl,
+            showExperienceSummary: value.showExperienceSummary,
             menuMode: value.menuMode,
             headerLogoSize: numberInRange("headerLogoSize", 64, 128, true),
             headerTitleSize: numberInRange("headerTitleSize", 16, 36, true),

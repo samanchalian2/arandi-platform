@@ -1063,7 +1063,7 @@ async function seedMediaAndSettings() {
         },
         {
             key: "site.scrollwiseExperience",
-            value: { motionPreset: "cinematic", showMotionControl: false, menuMode: "narrative", headerLogoSize: 64, headerTitleSize: 28, headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 },
+            value: { motionPreset: "cinematic", showMotionControl: false, showExperienceSummary: false, menuMode: "narrative", headerLogoSize: 64, headerTitleSize: 28, headingScale: 100, veilOpacity: 0.94, storyHeight: 150, interludeHeight: 90 },
             group: "theme",
             isPublic: false,
         },
